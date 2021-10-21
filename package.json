@@ -1,5 +1,5 @@
 {
-  "name": "@salesforce/plugin-template",
+  "name": "@salesforce/plugin-info",
   "description": "A template repository for sfdx plugins",
   "version": "1.0.0",
   "author": "Salesforce",
@@ -79,7 +79,7 @@
       }
     }
   },
-  "repository": "salesforcecli/plugin-template",
+  "repository": "salesforcecli/plugin-info",
   "scripts": {
     "build": "sf-build",
     "clean": "sf-clean",
