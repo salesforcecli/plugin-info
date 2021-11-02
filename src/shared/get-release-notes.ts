@@ -5,27 +5,26 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
+import got from 'got';
 import { major } from 'semver';
+import { PLUGIN_INFO_GET_TIMEOUT } from '../constants';
 
-export async function getReleaseNotes(base: string, filename: string, version: string): Promise<AxiosResponse> {
+export async function getReleaseNotes(base: string, filename: string, version: string): Promise<string> {
   const majorVersion = major(version);
 
-  const options: AxiosRequestConfig = {
-    timeout: 5000,
-    validateStatus: () => true,
+  const options = {
+    timeout: PLUGIN_INFO_GET_TIMEOUT,
+    throwHttpErrors: false,
   };
 
   const getPromises = [
-    axios.get<AxiosResponse>(`${base}/v${majorVersion}.md`, options),
-    axios.get<AxiosResponse>(`${base}/${filename}`, options),
+    got(`${base}/v${majorVersion}.md`, options),
+    got(`${base}/${filename}`, { ...options, throwHttpErrors: true }),
   ];
 
   const [versioned, readme] = await Promise.all(getPromises);
 
-  const { data } = versioned.status === 200 ? versioned : readme;
+  const { body } = versioned.statusCode === 200 ? versioned : readme;
 
-  // check readme status too
-
-  return data;
+  return body;
 }

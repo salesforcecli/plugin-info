@@ -8,7 +8,7 @@
 // Needed this to ensure the "helpers" were decalred before read in examples
 /* eslint-disable @typescript-eslint/member-ordering */
 
-import axios from 'axios';
+import got from 'got';
 import { Env } from '@salesforce/kit';
 import { flags, SfdxCommand } from '@salesforce/command';
 import { getString } from '@salesforce/ts-types';
@@ -16,6 +16,8 @@ import { Messages } from '@salesforce/core';
 
 import { getInfoConfig, InfoConfig } from '../../../shared/get-info-config';
 import { getReleaseNotes } from '../../../shared/get-release-notes';
+
+import { PLUGIN_INFO_GET_TIMEOUT } from '../../../constants';
 
 // Initialize Messages with the current plugin directory
 Messages.importMessagesDirectory(__dirname);
@@ -63,8 +65,6 @@ export default class Display extends SfdxCommand {
     let infoConfig: InfoConfig;
 
     try {
-      // this.config.root should be cross platform, it is set here:
-      // https://github.com/salesforcecli/sfvm/blob/2211d7b7b34cb21f6b738dc31ca27ef2e46de1cb/src/api/installation.ts#L111
       infoConfig = await getInfoConfig(this.config.root);
     } catch (err) {
       const msg = getString(err, 'message');
@@ -80,9 +80,16 @@ export default class Display extends SfdxCommand {
 
     if (Display.helpers.includes(version)) {
       try {
-        const { data } = await axios.get(distTagUrl);
+        const options = { timeout: PLUGIN_INFO_GET_TIMEOUT };
 
-        version = version.includes('rc') ? data['latest-rc'] : data['latest'];
+        type DistTagJson = {
+          latest: string;
+          'latest-rc': string;
+        };
+
+        const body = await got(distTagUrl, options).json<DistTagJson>();
+
+        version = version.includes('rc') ? body['latest-rc'] : body['latest'];
       } catch (err) {
         // TODO: Could fallback up using npm here? That way private cli repos could auth with .npmrc
         // -- could use this: https://github.com/salesforcecli/plugin-trust/blob/0393b906a30e8858816625517eda5db69377c178/src/lib/npmCommand.ts
@@ -99,11 +106,12 @@ export default class Display extends SfdxCommand {
     } catch (err) {
       const msg = getString(err, 'message');
 
-      this.ux.warn(`Release notes GET request failed with message:\n${msg}`);
+      this.ux.warn(`getReleaseNotes() request failed with message:\n${msg}`);
 
       return;
     }
 
+    // temp until markdown parser is added
     this.ux.log(releaseNotes);
   }
 }

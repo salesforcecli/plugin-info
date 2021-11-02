@@ -16,6 +16,7 @@
     "got": "^11.8.2",
     "marked-terminal": "^4.2.0",
     "semver": "^7.3.5",
+    "sinon-chai": "^3.7.0",
     "tslib": "^2"
   },
   "devDependencies": {

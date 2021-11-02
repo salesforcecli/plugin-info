@@ -10,7 +10,7 @@ import { readJson } from 'fs-extra';
 import { PJSON } from '@oclif/config';
 import { get } from '@salesforce/ts-types';
 
-interface PjsonWithInfo extends PJSON {
+export interface PjsonWithInfo extends PJSON {
   oclif: PJSON['oclif'] & {
     info: InfoConfig;
   };
@@ -39,8 +39,8 @@ Add to oclif object
 }
 */
 
-export async function getInfoConfig(root: string): Promise<InfoConfig> {
-  const fullPath = join(root, 'package.json');
+export async function getInfoConfig(path: string): Promise<InfoConfig> {
+  const fullPath = join(path, 'package.json');
 
   const json = (await readJson(fullPath)) as PjsonWithInfo;
 
