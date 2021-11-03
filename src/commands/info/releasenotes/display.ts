@@ -8,7 +8,6 @@
 // Needed this to ensure the "helpers" were decalred before read in examples
 /* eslint-disable @typescript-eslint/member-ordering */
 
-import got from 'got';
 import { Env } from '@salesforce/kit';
 import { flags, SfdxCommand } from '@salesforce/command';
 import { getString } from '@salesforce/ts-types';
@@ -16,8 +15,7 @@ import { Messages } from '@salesforce/core';
 
 import { getInfoConfig, InfoConfig } from '../../../shared/get-info-config';
 import { getReleaseNotes } from '../../../shared/get-release-notes';
-
-import { PLUGIN_INFO_GET_TIMEOUT } from '../../../constants';
+import { getDistTagVersion } from '../../../shared/get-dist-tag-version';
 
 // Initialize Messages with the current plugin directory
 Messages.importMessagesDirectory(__dirname);
@@ -54,11 +52,17 @@ export default class Display extends SfdxCommand {
 
   public async run(): Promise<void> {
     if (new Env().getBoolean('PLUGIN_INFO_HIDE_RELEASE_NOTES')) {
+      // We don't ever want to exit the process for info:releasenotes:display
+      // In most cases we will log a message, but here we only trace log in case someone using stdout of the update command
       this.logger.trace('release notes disabled via env var: PLUGIN_INFO_HIDE_RELEASE_NOTES_ENV');
       this.logger.trace('exiting');
 
       return;
     }
+
+    const warn = (msg: string, err): void => {
+      this.ux.warn(`${msg}\n${getString(err, 'message')}`);
+    };
 
     const installedVersion = this.config.pjson.version;
 
@@ -67,34 +71,18 @@ export default class Display extends SfdxCommand {
     try {
       infoConfig = await getInfoConfig(this.config.root);
     } catch (err) {
-      const msg = getString(err, 'message');
-
-      this.ux.warn(`Loading plugin-info config from package.json failed with message:\n${msg}`);
-
+      warn('Loading plugin-info config from package.json failed with message:', err);
       return;
     }
-
     const { distTagUrl, releaseNotesPath, releaseNotesFilename } = infoConfig.releasenotes;
 
     let version = (this.flags.version as string) || installedVersion;
 
     if (Display.helpers.includes(version)) {
       try {
-        const options = { timeout: PLUGIN_INFO_GET_TIMEOUT };
-
-        type DistTagJson = {
-          latest: string;
-          'latest-rc': string;
-        };
-
-        const body = await got(distTagUrl, options).json<DistTagJson>();
-
-        version = version.includes('rc') ? body['latest-rc'] : body['latest'];
+        version = await getDistTagVersion(distTagUrl, version);
       } catch (err) {
-        // TODO: Could fallback up using npm here? That way private cli repos could auth with .npmrc
-        // -- could use this: https://github.com/salesforcecli/plugin-trust/blob/0393b906a30e8858816625517eda5db69377c178/src/lib/npmCommand.ts
-        this.ux.warn(`Was not able to look up dist-tags from ${distTagUrl}. Try using a version instead.`);
-
+        warn('Getting dist-tag info failed with message:', err);
         return;
       }
     }
@@ -104,10 +92,7 @@ export default class Display extends SfdxCommand {
     try {
       releaseNotes = await getReleaseNotes(releaseNotesPath, releaseNotesFilename, version);
     } catch (err) {
-      const msg = getString(err, 'message');
-
-      this.ux.warn(`getReleaseNotes() request failed with message:\n${msg}`);
-
+      warn('getReleaseNotes() request failed with message:', err);
       return;
     }
 

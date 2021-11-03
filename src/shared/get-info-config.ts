@@ -26,7 +26,7 @@ export interface InfoConfig {
 
 /* sfdx example to add to cli pjson.oclif
 
-location with npm install:
+example location with npm install:
 ~/.nvm/versions/node/v14.17.5/lib/node_modules/sfdx-cli/package.json
 
 Add to oclif object
