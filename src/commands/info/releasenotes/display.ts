@@ -74,6 +74,7 @@ export default class Display extends SfdxCommand {
       warn('Loading plugin-info config from package.json failed with message:', err);
       return;
     }
+
     const { distTagUrl, releaseNotesPath, releaseNotesFilename } = infoConfig.releasenotes;
 
     let version = (this.flags.version as string) || installedVersion;

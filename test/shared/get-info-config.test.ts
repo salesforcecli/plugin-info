@@ -54,14 +54,18 @@ describe('getInfoConfig tests', () => {
   it('join is called with path arg and package.json', async () => {
     await getInfoConfig(path);
 
+    const expected = pathPkg.join(path, 'package.json');
+
     expect(joinSpy.args[0]).to.deep.equal([path, 'package.json']);
-    expect(joinSpy.returnValues[0]).to.equal(`${path}/package.json`);
+    expect(joinSpy.returnValues[0]).to.equal(expected);
   });
 
   it('calls readJson with pjson path', async () => {
     await getInfoConfig(path);
 
-    expect(readJsonStub.args[0][0]).to.deep.equal(`${path}/package.json`);
+    const expected = pathPkg.join(path, 'package.json');
+
+    expect(readJsonStub.args[0][0]).to.deep.equal(expected);
   });
 
   it('info config is extracted from package.json', async () => {

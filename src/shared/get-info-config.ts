@@ -40,6 +40,7 @@ Add to oclif object
 */
 
 export async function getInfoConfig(path: string): Promise<InfoConfig> {
+  // TODO: could add env var support for these values
   const fullPath = join(path, 'package.json');
 
   const json = (await readJson(fullPath)) as PjsonWithInfo;
