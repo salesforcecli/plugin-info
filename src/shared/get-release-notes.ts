@@ -12,14 +12,16 @@ import { PLUGIN_INFO_GET_TIMEOUT } from '../constants';
 export async function getReleaseNotes(base: string, filename: string, version: string): Promise<string> {
   const majorVersion = major(version);
 
+  const rawBase = base.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/').replace('/tree/', '/');
+
   const options = {
     timeout: PLUGIN_INFO_GET_TIMEOUT,
     throwHttpErrors: false,
   };
 
   const getPromises = [
-    got(`${base}/v${majorVersion}.md`, options),
-    got(`${base}/${filename}`, { ...options, throwHttpErrors: true }),
+    got(`${rawBase}/v${majorVersion}.md`, options),
+    got(`${rawBase}/${filename}`, { ...options, throwHttpErrors: true }),
   ];
 
   const [versioned, readme] = await Promise.all(getPromises);

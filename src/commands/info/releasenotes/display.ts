@@ -5,9 +5,11 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-// Needed this to ensure the "helpers" were decalred before read in examples
+// Needed this to ensure the "helpers" were declared before read in examples
 /* eslint-disable @typescript-eslint/member-ordering */
 
+import { marked } from 'marked';
+import * as TerminalRenderer from 'marked-terminal';
 import { Env } from '@salesforce/kit';
 import { flags, SfdxCommand } from '@salesforce/command';
 import { getString } from '@salesforce/ts-types';
@@ -16,12 +18,13 @@ import { Messages } from '@salesforce/core';
 import { getInfoConfig, InfoConfig } from '../../../shared/get-info-config';
 import { getReleaseNotes } from '../../../shared/get-release-notes';
 import { getDistTagVersion } from '../../../shared/get-dist-tag-version';
+import { parseReleaseNotes } from '../../../shared/parse-release-notes';
 
 // Initialize Messages with the current plugin directory
 Messages.importMessagesDirectory(__dirname);
 
 // Load the specific messages for this file. Messages from @salesforce/command, @salesforce/core,
-// or any library that is sfdxusing the messages framework can also be loaded this way.
+// or any library that is sfdx using the messages framework can also be loaded this way.
 const messages = Messages.loadMessages('@salesforce/plugin-info', 'display');
 
 export default class Display extends SfdxCommand {
@@ -97,7 +100,16 @@ export default class Display extends SfdxCommand {
       return;
     }
 
-    // temp until markdown parser is added
-    this.ux.log(releaseNotes);
+    try {
+      const tokens = parseReleaseNotes(releaseNotes, version, releaseNotesPath);
+
+      marked.setOptions({
+        renderer: new TerminalRenderer(),
+      });
+
+      this.ux.log(marked.parser(tokens));
+    } catch (err) {
+      warn('parseReleaseNotes() failed with message', err);
+    }
   }
 }
