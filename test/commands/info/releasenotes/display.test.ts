@@ -11,9 +11,9 @@ import * as SinonChai from 'sinon-chai';
 import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
 import { IConfig } from '@oclif/config';
 import { UX } from '@salesforce/command';
-import * as getInfoConfig from '../../../../src/shared/get-info-config';
-import * as getReleaseNotes from '../../../../src/shared/get-release-notes';
-import * as getDistTagVersion from '../../../../src/shared/get-dist-tag-version';
+import * as getInfoConfig from '../../../../src/shared/getInfoConfig';
+import * as getReleaseNotes from '../../../../src/shared/getReleaseNotes';
+import * as getDistTagVersion from '../../../../src/shared/getDistTagVersion';
 import Display from '../../../../src/commands/info/releasenotes/display';
 
 chaiUse(SinonChai);

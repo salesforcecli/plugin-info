@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, salesforce.com, inc.
+ * Copyright (c) 2021, salesforce.com, inc.
  * All rights reserved.
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
@@ -10,12 +10,13 @@ import { expect, use as chaiUse } from 'chai';
 import * as Sinon from 'sinon';
 import * as SinonChai from 'sinon-chai';
 import { stubMethod } from '@salesforce/ts-sinon';
-import { getDistTagVersion, DistTagJson } from '../../src/shared/get-dist-tag-version';
+import { getDistTagVersion, DistTagJson } from '../../src/shared/getDistTagVersion';
 
 chaiUse(SinonChai);
 
-describe('getReleaseNotes tests', () => {
-  let sandbox: sinon.SinonSandbox;
+describe('getDistTagVersion tests', () => {
+  const sandbox = Sinon.createSandbox();
+
   let gotStub: sinon.SinonStub;
 
   let url;
@@ -28,8 +29,6 @@ describe('getReleaseNotes tests', () => {
       'latest-rc': '1.3.0',
     };
 
-    sandbox = Sinon.createSandbox();
-
     gotStub = stubMethod(sandbox, got, 'default');
     gotStub.returns({
       json: () => gotResponse,
@@ -37,7 +36,6 @@ describe('getReleaseNotes tests', () => {
   });
 
   afterEach(() => {
-    gotStub.restore();
     sandbox.restore();
   });
 
