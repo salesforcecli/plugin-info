@@ -13,7 +13,7 @@ export type DistTagJson = {
   'latest-rc': string;
 };
 
-export async function getDistTagVersion(url: string, distTag: string): Promise<string> {
+const getDistTagVersion = async (url: string, distTag: string): Promise<string> => {
   // TODO: Could use npm instead here. That way private cli repos could auth with .npmrc
   // -- could utilize this: https://github.com/salesforcecli/plugin-trust/blob/0393b906a30e8858816625517eda5db69377c178/src/lib/npmCommand.ts
   const options = { timeout: PLUGIN_INFO_GET_TIMEOUT };
@@ -22,4 +22,6 @@ export async function getDistTagVersion(url: string, distTag: string): Promise<s
 
   // We are only interested in latest and latest-rc, could update this if other tags are desired
   return distTag.includes('rc') ? body['latest-rc'] : body['latest'];
-}
+};
+
+export { getDistTagVersion };

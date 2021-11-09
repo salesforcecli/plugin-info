@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, salesforce.com, inc.
+ * Copyright (c) 2021, salesforce.com, inc.
  * All rights reserved.
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
@@ -11,7 +11,7 @@ import * as Sinon from 'sinon';
 import * as SinonChai from 'sinon-chai';
 import * as semver from 'semver';
 import { stubMethod, spyMethod } from '@salesforce/ts-sinon';
-import { getReleaseNotes } from '../../src/shared/get-release-notes';
+import { getReleaseNotes } from '../../src/shared/getReleaseNotes';
 import { PLUGIN_INFO_GET_TIMEOUT } from '../../src/constants';
 
 chaiUse(SinonChai);
@@ -22,7 +22,8 @@ type gotResponse = {
 };
 
 describe('getReleaseNotes tests', () => {
-  let sandbox: sinon.SinonSandbox;
+  const sandbox = Sinon.createSandbox();
+
   let gotStub: sinon.SinonStub;
   let semverSpy: Sinon.SinonSpy;
 
@@ -50,7 +51,6 @@ describe('getReleaseNotes tests', () => {
       body: 'readme response body',
     };
 
-    sandbox = Sinon.createSandbox();
     gotStub = stubMethod(sandbox, got, 'default');
     semverSpy = spyMethod(sandbox, semver, 'major');
 
@@ -59,8 +59,6 @@ describe('getReleaseNotes tests', () => {
   });
 
   afterEach(() => {
-    semverSpy.restore();
-    gotStub.restore();
     sandbox.restore();
   });
 

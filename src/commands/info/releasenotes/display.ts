@@ -1,27 +1,27 @@
 /*
- * Copyright (c) 2020, salesforce.com, inc.
+ * Copyright (c) 2021, salesforce.com, inc.
  * All rights reserved.
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-// Needed this to ensure the "helpers" were decalred before read in examples
+// Needed this to ensure the "helpers" were declared before read in examples
 /* eslint-disable @typescript-eslint/member-ordering */
 
+import * as os from 'os';
 import { Env } from '@salesforce/kit';
 import { flags, SfdxCommand } from '@salesforce/command';
-import { getString } from '@salesforce/ts-types';
 import { Messages } from '@salesforce/core';
 
-import { getInfoConfig, InfoConfig } from '../../../shared/get-info-config';
-import { getReleaseNotes } from '../../../shared/get-release-notes';
-import { getDistTagVersion } from '../../../shared/get-dist-tag-version';
+import { getInfoConfig, InfoConfig } from '../../../shared/getInfoConfig';
+import { getReleaseNotes } from '../../../shared/getReleaseNotes';
+import { getDistTagVersion } from '../../../shared/getDistTagVersion';
 
 // Initialize Messages with the current plugin directory
 Messages.importMessagesDirectory(__dirname);
 
 // Load the specific messages for this file. Messages from @salesforce/command, @salesforce/core,
-// or any library that is sfdxusing the messages framework can also be loaded this way.
+// or any library that is using the messages framework can also be loaded this way.
 const messages = Messages.loadMessages('@salesforce/plugin-info', 'display');
 
 export default class Display extends SfdxCommand {
@@ -31,22 +31,12 @@ export default class Display extends SfdxCommand {
 
   public static aliases = ['whatsnew'];
 
-  public static examples = [
-    `$ sfdx info:releasenotes:display
-  display release notes for currently installed CLI version
-  `,
-    `$ sfdx info:releasenotes:display --version "1.2.3"
-  display release notes for CLI version 1.2.3
-  `,
-    `$ sfdx info:releasenotes:display --version "stable-rc"
-  can be called with tag "helpers", available options are: ${Display.helpers.join(', ')}
-`,
-  ];
+  public static examples = messages.getMessage('examples', [Display.helpers.join(', ')]).split(os.EOL);
 
   protected static flagsConfig = {
     version: flags.string({
       char: 'v',
-      description: messages.getMessage('versionFlagDescription'),
+      description: messages.getMessage('flags.version'),
     }),
   };
 
@@ -60,8 +50,9 @@ export default class Display extends SfdxCommand {
       return;
     }
 
-    const warn = (msg: string, err): void => {
-      this.ux.warn(`${msg}\n${getString(err, 'message')}`);
+    const warn = (msg: string, err: Error): void => {
+      this.logger.trace(err.stack);
+      this.ux.warn(`${msg}\n${err.message}`);
     };
 
     const installedVersion = this.config.pjson.version;
@@ -77,7 +68,7 @@ export default class Display extends SfdxCommand {
 
     const { distTagUrl, releaseNotesPath, releaseNotesFilename } = infoConfig.releasenotes;
 
-    let version = (this.flags.version as string) || installedVersion;
+    let version = (this.flags.version as string) ?? installedVersion;
 
     if (Display.helpers.includes(version)) {
       try {

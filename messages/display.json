@@ -1,5 +1,0 @@
-{
-  "commandDescription": "display CLI release notes on the command line",
-  "versionFlagDescription": "display release notes for this version",
-  "pjsonConfigLoadFailure": "unable to load config from package.json, see plugin-info readme for instructions"
-}

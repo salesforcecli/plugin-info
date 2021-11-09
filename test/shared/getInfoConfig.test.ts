@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, salesforce.com, inc.
+ * Copyright (c) 2021, salesforce.com, inc.
  * All rights reserved.
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
@@ -10,14 +10,14 @@ import { expect, use as chaiUse } from 'chai';
 import * as Sinon from 'sinon';
 import * as SinonChai from 'sinon-chai';
 import { stubMethod, spyMethod } from '@salesforce/ts-sinon';
-import * as fsExtra from 'fs-extra';
-import { getString } from '@salesforce/ts-types';
-import { getInfoConfig, PjsonWithInfo } from '../../src/shared/get-info-config';
+import { fs } from '@salesforce/core';
+import { getInfoConfig, PjsonWithInfo } from '../../src/shared/getInfoConfig';
 
 chaiUse(SinonChai);
 
 describe('getInfoConfig tests', () => {
-  let sandbox: sinon.SinonSandbox;
+  const sandbox = Sinon.createSandbox();
+
   let readJsonStub: Sinon.SinonStub;
   let joinSpy: Sinon.SinonSpy;
 
@@ -40,14 +40,11 @@ describe('getInfoConfig tests', () => {
       },
     };
 
-    sandbox = Sinon.createSandbox();
-    readJsonStub = stubMethod(sandbox, fsExtra, 'readJson').returns(pjsonMock);
+    readJsonStub = stubMethod(sandbox, fs, 'readJson').returns(pjsonMock);
     joinSpy = spyMethod(sandbox, pathPkg, 'join');
   });
 
   afterEach(() => {
-    joinSpy.restore();
-    readJsonStub.restore();
     sandbox.restore();
   });
 
@@ -80,9 +77,8 @@ describe('getInfoConfig tests', () => {
     try {
       await getInfoConfig(path);
     } catch (err) {
-      const msg = getString(err, 'message');
-
-      expect(msg).to.equal('getInfoConfig() failed to find pjson.oclif.info config');
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      expect(err.message).to.equal('getInfoConfig() failed to find pjson.oclif.info config');
     }
   });
 });

@@ -1,14 +1,13 @@
 /*
- * Copyright (c) 2018, salesforce.com, inc.
+ * Copyright (c) 2021, salesforce.com, inc.
  * All rights reserved.
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
 import { join } from 'path';
-import { readJson } from 'fs-extra';
+import { fs } from '@salesforce/core';
 import { PJSON } from '@oclif/config';
-import { get } from '@salesforce/ts-types';
 
 export interface PjsonWithInfo extends PJSON {
   oclif: PJSON['oclif'] & {
@@ -39,15 +38,17 @@ Add to oclif object
 }
 */
 
-export async function getInfoConfig(path: string): Promise<InfoConfig> {
+const getInfoConfig = async (path: string): Promise<InfoConfig> => {
   // TODO: could add env var support for these values
   const fullPath = join(path, 'package.json');
 
-  const json = (await readJson(fullPath)) as PjsonWithInfo;
+  const json = (await fs.readJson(fullPath)) as PjsonWithInfo;
 
-  const info = get(json, 'oclif.info') as InfoConfig;
+  const { info } = json.oclif;
 
   if (!info) throw new Error('getInfoConfig() failed to find pjson.oclif.info config');
 
   return info;
-}
+};
+
+export { getInfoConfig };
