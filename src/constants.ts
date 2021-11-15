@@ -4,6 +4,5 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-module.exports = {
-  extends: ['eslint-config-salesforce-typescript', 'eslint-config-salesforce-license'],
-};
+
+export const PLUGIN_INFO_GET_TIMEOUT = (process.env.PLUGIN_INFO_GET_TIMEOUT || 3000) as number;
