@@ -7,13 +7,13 @@
 
 import { marked } from 'marked';
 
-export function parseReleaseNotes(notes: string, version: string, baseUrl?: string): marked.Token[] {
+const parseReleaseNotes = (notes: string, version: string, baseUrl: string): marked.Token[] => {
   let found = false;
 
   const parsed = marked.lexer(notes);
 
   const tokens = parsed.filter((token) => {
-    // TODO: Make header depth a setting in oclif.info?
+    // TODO: Could make header depth (2) a setting in oclif.info.releasenotes
     if (token.type === 'heading' && token.depth === 2) {
       if (token.text.includes(version)) {
         found = true;
@@ -33,6 +33,7 @@ export function parseReleaseNotes(notes: string, version: string, baseUrl?: stri
 
   const fixRelativeLinks = (token: marked.Token): void => {
     // If link is relative, add the baseurl. https://regex101.com/r/h802kJ/1
+    // FWIW: 'marked' does have a 'baseURL' option, but the 'marked-terminal' renderer does not honor it
     if (token.type === 'link' && !token.href.match(/(?:[a-z][a-z0-9+.-]*:|\/\/)/gi)) {
       token.href = `${baseUrl}/${token.href}`;
     }
@@ -41,4 +42,6 @@ export function parseReleaseNotes(notes: string, version: string, baseUrl?: stri
   marked.walkTokens(tokens, fixRelativeLinks);
 
   return tokens;
-}
+};
+
+export { parseReleaseNotes };

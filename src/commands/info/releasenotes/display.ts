@@ -18,7 +18,7 @@ import { Messages } from '@salesforce/core';
 import { getInfoConfig, InfoConfig } from '../../../shared/getInfoConfig';
 import { getReleaseNotes } from '../../../shared/getReleaseNotes';
 import { getDistTagVersion } from '../../../shared/getDistTagVersion';
-import { parseReleaseNotes } from '../../../shared/parse-release-notes';
+import { parseReleaseNotes } from '../../../shared/parseReleaseNotes';
 
 // Initialize Messages with the current plugin directory
 Messages.importMessagesDirectory(__dirname);

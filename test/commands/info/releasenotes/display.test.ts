@@ -8,12 +8,14 @@
 import { expect, use as chaiUse } from 'chai';
 import * as Sinon from 'sinon';
 import * as SinonChai from 'sinon-chai';
-import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
+import { fromStub, stubInterface, stubMethod, spyMethod } from '@salesforce/ts-sinon';
 import { IConfig } from '@oclif/config';
 import { UX } from '@salesforce/command';
+import { marked } from 'marked';
 import * as getInfoConfig from '../../../../src/shared/getInfoConfig';
 import * as getReleaseNotes from '../../../../src/shared/getReleaseNotes';
 import * as getDistTagVersion from '../../../../src/shared/getDistTagVersion';
+import * as parseReleaseNotes from '../../../../src/shared/parseReleaseNotes';
 import Display from '../../../../src/commands/info/releasenotes/display';
 
 chaiUse(SinonChai);
@@ -27,6 +29,8 @@ describe('info:releasenotes:display', () => {
   let getInfoConfigStub: Sinon.SinonStub;
   let getReleaseNotesStub: Sinon.SinonStub;
   let getDistTagVersionStub: Sinon.SinonStub;
+  let parseReleaseNotesSpy: Sinon.SinonSpy;
+  let markedParserSpy: Sinon.SinonSpy;
 
   const oclifConfigStub = fromStub(stubInterface<IConfig>(sandbox));
 
@@ -45,13 +49,14 @@ describe('info:releasenotes:display', () => {
 
     return cmd.runIt();
   };
+
   let suppressEnvVarBackup;
 
   beforeEach(() => {
     mockInfoConfig = {
       releasenotes: {
         distTagUrl: 'https://registry.npmjs.org/-/package/sfdx-cli/dist-tags',
-        releaseNotesPath: 'https://raw.githubusercontent.com/forcedotcom/cli/main/releasenotes/sfdx',
+        releaseNotesPath: 'https://github.com/forcedotcom/cli/tree/main/releasenotes/sfdx',
         releaseNotesFilename: 'README.md',
       },
     };
@@ -62,24 +67,17 @@ describe('info:releasenotes:display', () => {
     suppressEnvVarBackup = process.env.PLUGIN_INFO_HIDE_RELEASE_NOTES;
 
     getInfoConfigStub = stubMethod(sandbox, getInfoConfig, 'getInfoConfig').returns(mockInfoConfig);
-    getReleaseNotesStub = stubMethod(sandbox, getReleaseNotes, 'getReleaseNotes').returns('release-notes');
+    getReleaseNotesStub = stubMethod(sandbox, getReleaseNotes, 'getReleaseNotes').returns('## Release notes for 3.3.3');
     getDistTagVersionStub = stubMethod(sandbox, getDistTagVersion, 'getDistTagVersion').returns('1.2.3');
+    parseReleaseNotesSpy = spyMethod(sandbox, parseReleaseNotes, 'parseReleaseNotes');
+    markedParserSpy = spyMethod(sandbox, marked, 'parser');
   });
 
   afterEach(() => {
-    getInfoConfigStub.restore();
-    getReleaseNotesStub.restore();
-    getDistTagVersionStub.restore();
     sandbox.restore();
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     process.env.PLUGIN_INFO_HIDE_RELEASE_NOTES = suppressEnvVarBackup;
-  });
-
-  it('logs release notes', async () => {
-    await runDisplayCmd([]);
-
-    expect(uxLogStub.args[0][0]).to.equal('release-notes');
   });
 
   it('allows you to suppress release notes output with env var', async () => {
@@ -155,5 +153,38 @@ describe('info:releasenotes:display', () => {
     await runDisplayCmd([]);
 
     expect(uxWarnStub.args[0][0]).to.contain('release notes error');
+  });
+
+  it('parseReleaseNotes is called with the correct args', async () => {
+    await runDisplayCmd([]);
+
+    expect(parseReleaseNotesSpy.args[0]).to.deep.equal([
+      '## Release notes for 3.3.3',
+      '3.3.3',
+      mockInfoConfig.releasenotes.releaseNotesPath,
+    ]);
+  });
+
+  it('parser is called with tokens', async () => {
+    await runDisplayCmd([]);
+
+    const tokens = parseReleaseNotesSpy.returnValues[0] as marked.Token;
+
+    expect(markedParserSpy.calledOnce).to.be.true;
+    expect(markedParserSpy.args[0][0]).to.deep.equal(tokens);
+  });
+
+  it('logs markdown on the command line', async () => {
+    await runDisplayCmd([]);
+
+    expect(uxLogStub.args[0][0]).to.contain('## Release notes for 3.3.3');
+  });
+
+  it('logs warning if parsing fails', async () => {
+    await runDisplayCmd(['-v', '4.5.6']);
+
+    expect(uxWarnStub.args[0][0]).to.contain(
+      `Version '4.5.6' was not found. You can view release notes online at: ${mockInfoConfig.releasenotes.releaseNotesPath}`
+    );
   });
 });
