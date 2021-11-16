@@ -5,14 +5,15 @@ module.exports = {
     hook: 'hidden flag used after install or update, will suppress errors',
   },
   examples: [
-    `<%= config.bin %> <%= command.id %>
-  display release notes for currently installed CLI
+    `Display release notes for installed CLI version:
+  <%= config.bin %> <%= command.id %>
 
-<%= config.bin %> <%= command.id %> --version "1.2.3"
-  display release notes for CLI version 1.2.3
+Display release notes for CLI version 1.2.3:
+  <%= config.bin %> <%= command.id %> --version "1.2.3"
 
-<%= config.bin %> <%= command.id %> --version "stable-rc"
-  can be called with tag "helpers", available options are: %s`,
+Can be called with these dist tag helpers: "%s"
+  <%= config.bin %> <%= command.id %> --version latest
+  `,
   ],
   footer: `---
  Release notes can be displayed at any point by running \`%s whatsnew\`
