@@ -20,7 +20,7 @@ Display release notes for the CLI version that corresponds to a tag (%s):
 
  You can also view them on GitHub by visiting the [forcedotcom/cli](%s) repo.
 
- Disable this automatic display of release notes by setting the \`%s\` env var to \`true\`.
+ Silence notes by setting the \`%s\` env var to \`true\`.
 
  Hide this footer by setting the \`%s\` env var to \`true\`.
 
