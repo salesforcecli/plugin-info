@@ -28,7 +28,7 @@ const parseReleaseNotes = (notes: string, version: string, baseUrl: string): mar
   });
 
   if (!tokens.length) {
-    throw new Error(`Version '${version}' was not found. You can view release notes online at: ${baseUrl}`);
+    throw new Error(`Didn't find version '${version}'. View release notes online at: ${baseUrl}`);
   }
 
   const fixRelativeLinks = (token: marked.Token): void => {

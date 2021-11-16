@@ -36,7 +36,7 @@ export default class Display extends SfdxCommand {
 
   public static aliases = ['whatsnew'];
 
-  public static examples = messages.getMessage('examples', [Display.helpers.join('", "')]).split(os.EOL);
+  public static examples = messages.getMessage('examples', [Display.helpers.join(', ')]).split(os.EOL);
 
   protected static flagsConfig = {
     version: flags.string({

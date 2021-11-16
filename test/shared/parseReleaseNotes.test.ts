@@ -54,7 +54,7 @@ describe('parseReleaseNotes tests', () => {
       parseReleaseNotes(notes, '1.2.3', baseUrl);
     } catch (err) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      expect(err.message).to.equal(`Version '1.2.3' was not found. You can view release notes online at: ${baseUrl}`);
+      expect(err.message).to.equal(`Didn't find version '1.2.3'. View release notes online at: ${baseUrl}`);
     }
   });
 

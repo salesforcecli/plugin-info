@@ -10,8 +10,10 @@ import * as Sinon from 'sinon';
 import * as SinonChai from 'sinon-chai';
 import { fromStub, stubInterface, stubMethod, spyMethod } from '@salesforce/ts-sinon';
 import { IConfig } from '@oclif/config';
+import { shouldThrow } from '@salesforce/core/lib/testSetup';
 import { UX } from '@salesforce/command';
 import { marked } from 'marked';
+import { Env } from '@salesforce/kit';
 import * as getInfoConfig from '../../../../src/shared/getInfoConfig';
 import * as getReleaseNotes from '../../../../src/shared/getReleaseNotes';
 import * as getDistTagVersion from '../../../../src/shared/getDistTagVersion';
@@ -24,6 +26,7 @@ describe('info:releasenotes:display', () => {
   const sandbox = Sinon.createSandbox();
 
   let mockInfoConfig: getInfoConfig.InfoConfig;
+  let getBooleanStub: sinon.SinonStub;
   let uxLogStub: sinon.SinonStub;
   let uxWarnStub: sinon.SinonStub;
   let getInfoConfigStub: Sinon.SinonStub;
@@ -50,9 +53,6 @@ describe('info:releasenotes:display', () => {
     return cmd.runIt();
   };
 
-  let suppressEnvVarBackup;
-  let suppressFooterBackup;
-
   beforeEach(() => {
     mockInfoConfig = {
       releasenotes: {
@@ -65,8 +65,9 @@ describe('info:releasenotes:display', () => {
     oclifConfigStub.pjson.version = '3.3.3';
     oclifConfigStub.root = '/root/path';
 
-    suppressEnvVarBackup = process.env.PLUGIN_INFO_HIDE_RELEASE_NOTES;
-    suppressFooterBackup = process.env.PLUGIN_INFO_HIDE_FOOTER;
+    getBooleanStub = stubMethod(sandbox, Env.prototype, 'getBoolean');
+    getBooleanStub.withArgs('PLUGIN_INFO_HIDE_RELEASE_NOTES').returns(false);
+    getBooleanStub.withArgs('PLUGIN_INFO_HIDE_FOOTER').returns(false);
 
     getInfoConfigStub = stubMethod(sandbox, getInfoConfig, 'getInfoConfig').returns(mockInfoConfig);
     getReleaseNotesStub = stubMethod(sandbox, getReleaseNotes, 'getReleaseNotes').returns('## Release notes for 3.3.3');
@@ -77,13 +78,10 @@ describe('info:releasenotes:display', () => {
 
   afterEach(() => {
     sandbox.restore();
-
-    process.env.PLUGIN_INFO_HIDE_RELEASE_NOTES = suppressEnvVarBackup; // eslint-disable-line @typescript-eslint/no-unsafe-assignment
-    process.env.PLUGIN_INFO_HIDE_FOOTER = suppressFooterBackup; // eslint-disable-line @typescript-eslint/no-unsafe-assignment
   });
 
   it('allows you to suppress release notes output with env var', async () => {
-    process.env.PLUGIN_INFO_HIDE_RELEASE_NOTES = 'true';
+    getBooleanStub.withArgs('PLUGIN_INFO_HIDE_RELEASE_NOTES').returns(true);
 
     await runDisplayCmd([]);
 
@@ -101,7 +99,7 @@ describe('info:releasenotes:display', () => {
     getInfoConfigStub.throws(new Error('info config error'));
 
     try {
-      await runDisplayCmd([]);
+      await shouldThrow(runDisplayCmd([]));
     } catch (err) {
       expect((err as Error).message).to.contain('info config error');
     }
@@ -123,7 +121,7 @@ describe('info:releasenotes:display', () => {
     getDistTagVersionStub.throws(new Error('dist tag error'));
 
     try {
-      await runDisplayCmd(['-v', 'latest-rc']);
+      await shouldThrow(runDisplayCmd(['-v', 'latest-rc']));
     } catch (err) {
       expect((err as Error).message).to.contain('dist tag error');
     }
@@ -157,7 +155,7 @@ describe('info:releasenotes:display', () => {
     getReleaseNotesStub.throws(new Error('release notes error'));
 
     try {
-      await runDisplayCmd([]);
+      await shouldThrow(runDisplayCmd([]));
     } catch (err) {
       expect((err as Error).message).to.contain('release notes error');
     }
@@ -190,10 +188,10 @@ describe('info:releasenotes:display', () => {
 
   it('throws an error if parsing fails', async () => {
     try {
-      await runDisplayCmd(['-v', '4.5.6']);
+      await shouldThrow(runDisplayCmd(['-v', '4.5.6']));
     } catch (err) {
       expect((err as Error).message).to.contain(
-        `Version '4.5.6' was not found. You can view release notes online at: ${mockInfoConfig.releasenotes.releaseNotesPath}`
+        `Didn't find version '4.5.6'. View release notes online at: ${mockInfoConfig.releasenotes.releaseNotesPath}`
       );
     }
   });
@@ -209,11 +207,11 @@ describe('info:releasenotes:display', () => {
   it('renders a footer if --hook is set', async () => {
     await runDisplayCmd(['--hook']);
 
-    expect(uxLogStub.args[1][0]).to.contain('Release notes can be displayed at any point by running');
+    expect(uxLogStub.args[1][0]).to.contain('to manually view the current release notes');
   });
 
   it('hides footer if env var is set', async () => {
-    process.env.PLUGIN_INFO_HIDE_FOOTER = 'true';
+    getBooleanStub.withArgs('PLUGIN_INFO_HIDE_FOOTER').returns(true);
 
     await runDisplayCmd(['--hook']);
 
