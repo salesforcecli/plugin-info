@@ -14,14 +14,16 @@ import * as TerminalRenderer from 'marked-terminal';
 import { Env } from '@salesforce/kit';
 import { flags, SfdxCommand } from '@salesforce/command';
 import { Messages } from '@salesforce/core';
-
-import { getInfoConfig, InfoConfig } from '../../../shared/getInfoConfig';
+import { getInfoConfig } from '../../../shared/getInfoConfig';
 import { getReleaseNotes } from '../../../shared/getReleaseNotes';
 import { getDistTagVersion } from '../../../shared/getDistTagVersion';
 import { parseReleaseNotes } from '../../../shared/parseReleaseNotes';
 
 // Initialize Messages with the current plugin directory
 Messages.importMessagesDirectory(__dirname);
+
+const HIDE_NOTES = 'PLUGIN_INFO_HIDE_RELEASE_NOTES';
+const HIDE_FOOTER = 'PLUGIN_INFO_HIDE_FOOTER';
 
 // Load the specific messages for this file. Messages from @salesforce/command, @salesforce/core,
 // or any library that is using the messages framework can also be loaded this way.
@@ -41,57 +43,41 @@ export default class Display extends SfdxCommand {
       char: 'v',
       description: messages.getMessage('flags.version'),
     }),
+    hook: flags.boolean({
+      hidden: true,
+      description: messages.getMessage('flags.hook'),
+    }),
   };
 
   public async run(): Promise<void> {
-    if (new Env().getBoolean('PLUGIN_INFO_HIDE_RELEASE_NOTES')) {
-      // We don't ever want to exit the process for info:releasenotes:display
+    const env = new Env();
+
+    if (env.getBoolean(HIDE_NOTES)) {
+      // We don't ever want to exit the process for info:releasenotes:display (whatsnew)
       // In most cases we will log a message, but here we only trace log in case someone using stdout of the update command
-      this.logger.trace('release notes disabled via env var: PLUGIN_INFO_HIDE_RELEASE_NOTES_ENV');
+      this.logger.trace(`release notes disabled via env var: ${HIDE_NOTES}`);
       this.logger.trace('exiting');
 
       return;
     }
 
-    const warn = (msg: string, err: Error): void => {
-      this.logger.trace(err.stack);
-      this.ux.warn(`${msg}\n${err.message}`);
-    };
-
-    const installedVersion = this.config.pjson.version;
-
-    let infoConfig: InfoConfig;
+    const isHook = !!this.flags.hook;
 
     try {
-      infoConfig = await getInfoConfig(this.config.root);
-    } catch (err) {
-      warn('Loading plugin-info config from package.json failed with message:', err);
-      return;
-    }
+      const installedVersion = this.config.pjson.version;
 
-    const { distTagUrl, releaseNotesPath, releaseNotesFilename } = infoConfig.releasenotes;
+      const infoConfig = await getInfoConfig(this.config.root);
 
-    let version = (this.flags.version as string) ?? installedVersion;
+      const { distTagUrl, releaseNotesPath, releaseNotesFilename } = infoConfig.releasenotes;
 
-    if (Display.helpers.includes(version)) {
-      try {
+      let version = (this.flags.version as string) ?? installedVersion;
+
+      if (Display.helpers.includes(version)) {
         version = await getDistTagVersion(distTagUrl, version);
-      } catch (err) {
-        warn('Getting dist-tag info failed with message:', err);
-        return;
       }
-    }
 
-    let releaseNotes;
+      const releaseNotes = await getReleaseNotes(releaseNotesPath, releaseNotesFilename, version);
 
-    try {
-      releaseNotes = await getReleaseNotes(releaseNotesPath, releaseNotesFilename, version);
-    } catch (err) {
-      warn('getReleaseNotes() request failed with message:', err);
-      return;
-    }
-
-    try {
       const tokens = parseReleaseNotes(releaseNotes, version, releaseNotesPath);
 
       marked.setOptions({
@@ -99,8 +85,26 @@ export default class Display extends SfdxCommand {
       });
 
       this.ux.log(marked.parser(tokens));
+
+      if (isHook && !env.getBoolean(HIDE_FOOTER)) {
+        const footer = messages.getMessage('footer', [this.config.bin, releaseNotesPath, HIDE_NOTES, HIDE_FOOTER]);
+
+        this.ux.log(marked.parse(footer));
+      }
     } catch (err) {
-      warn('parseReleaseNotes() failed with message', err);
+      if (isHook) {
+        // Do not throw error if --hook is passed, just warn so we don't exit any processes.
+        // --hook is passed in the post install/update scripts
+        const { message, stack } = err as Error;
+
+        this.ux.warn(`${this.id} failed: ${message}`);
+
+        this.logger.trace(stack);
+
+        return;
+      }
+
+      throw err;
     }
   }
 }

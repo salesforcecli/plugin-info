@@ -51,6 +51,7 @@ describe('info:releasenotes:display', () => {
   };
 
   let suppressEnvVarBackup;
+  let suppressFooterBackup;
 
   beforeEach(() => {
     mockInfoConfig = {
@@ -65,6 +66,7 @@ describe('info:releasenotes:display', () => {
     oclifConfigStub.root = '/root/path';
 
     suppressEnvVarBackup = process.env.PLUGIN_INFO_HIDE_RELEASE_NOTES;
+    suppressFooterBackup = process.env.PLUGIN_INFO_HIDE_FOOTER;
 
     getInfoConfigStub = stubMethod(sandbox, getInfoConfig, 'getInfoConfig').returns(mockInfoConfig);
     getReleaseNotesStub = stubMethod(sandbox, getReleaseNotes, 'getReleaseNotes').returns('## Release notes for 3.3.3');
@@ -76,8 +78,8 @@ describe('info:releasenotes:display', () => {
   afterEach(() => {
     sandbox.restore();
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    process.env.PLUGIN_INFO_HIDE_RELEASE_NOTES = suppressEnvVarBackup;
+    process.env.PLUGIN_INFO_HIDE_RELEASE_NOTES = suppressEnvVarBackup; // eslint-disable-line @typescript-eslint/no-unsafe-assignment
+    process.env.PLUGIN_INFO_HIDE_FOOTER = suppressFooterBackup; // eslint-disable-line @typescript-eslint/no-unsafe-assignment
   });
 
   it('allows you to suppress release notes output with env var', async () => {
@@ -95,12 +97,14 @@ describe('info:releasenotes:display', () => {
     expect(getInfoConfigStub.args[0][0]).to.equal('/root/path');
   });
 
-  it('logs warning if info config lookup fails', async () => {
+  it('throws an error if info config lookup fails', async () => {
     getInfoConfigStub.throws(new Error('info config error'));
 
-    await runDisplayCmd([]);
-
-    expect(uxWarnStub.args[0][0]).to.contain('info config error');
+    try {
+      await runDisplayCmd([]);
+    } catch (err) {
+      expect((err as Error).message).to.contain('info config error');
+    }
   });
 
   it('does not call getDistTagVersion if helper is not passed', async () => {
@@ -110,21 +114,23 @@ describe('info:releasenotes:display', () => {
   });
 
   it('calls getDistTagVersion with correct are if helpers are used', async () => {
-    await runDisplayCmd(['-v', 'latest-rc']);
+    await runDisplayCmd(['-v', 'latest-rc', '--hook']);
 
     expect(getDistTagVersionStub.args[0]).to.deep.equal([mockInfoConfig.releasenotes.distTagUrl, 'latest-rc']);
   });
 
-  it('logs a warning if dist tag lookup fails', async () => {
+  it('throws an error if dist tag lookup fails', async () => {
     getDistTagVersionStub.throws(new Error('dist tag error'));
 
-    await runDisplayCmd(['-v', 'latest-rc']);
-
-    expect(uxWarnStub.args[0][0]).to.contain('dist tag error');
+    try {
+      await runDisplayCmd(['-v', 'latest-rc']);
+    } catch (err) {
+      expect((err as Error).message).to.contain('dist tag error');
+    }
   });
 
   it('calls getReleaseNotes with version returned from getDistTagVersion', async () => {
-    await runDisplayCmd(['-v', 'latest-rc']);
+    await runDisplayCmd(['-v', 'latest-rc', '--hook']);
 
     const expected = [
       mockInfoConfig.releasenotes.releaseNotesPath,
@@ -136,7 +142,7 @@ describe('info:releasenotes:display', () => {
   });
 
   it('calls getReleaseNotes with passed version', async () => {
-    await runDisplayCmd(['-v', '4.5.6']);
+    await runDisplayCmd(['-v', '4.5.6', '--hook']);
 
     expect(getReleaseNotesStub.args[0][2]).to.equal('4.5.6');
   });
@@ -147,12 +153,14 @@ describe('info:releasenotes:display', () => {
     expect(getReleaseNotesStub.args[0][2]).to.equal('3.3.3');
   });
 
-  it('logs a warning if getReleaseNotes lookup fails', async () => {
+  it('throws an error if getReleaseNotes lookup fails', async () => {
     getReleaseNotesStub.throws(new Error('release notes error'));
 
-    await runDisplayCmd([]);
-
-    expect(uxWarnStub.args[0][0]).to.contain('release notes error');
+    try {
+      await runDisplayCmd([]);
+    } catch (err) {
+      expect((err as Error).message).to.contain('release notes error');
+    }
   });
 
   it('parseReleaseNotes is called with the correct args', async () => {
@@ -180,11 +188,35 @@ describe('info:releasenotes:display', () => {
     expect(uxLogStub.args[0][0]).to.contain('## Release notes for 3.3.3');
   });
 
-  it('logs warning if parsing fails', async () => {
-    await runDisplayCmd(['-v', '4.5.6']);
+  it('throws an error if parsing fails', async () => {
+    try {
+      await runDisplayCmd(['-v', '4.5.6']);
+    } catch (err) {
+      expect((err as Error).message).to.contain(
+        `Version '4.5.6' was not found. You can view release notes online at: ${mockInfoConfig.releasenotes.releaseNotesPath}`
+      );
+    }
+  });
 
-    expect(uxWarnStub.args[0][0]).to.contain(
-      `Version '4.5.6' was not found. You can view release notes online at: ${mockInfoConfig.releasenotes.releaseNotesPath}`
-    );
+  it('does not throw an error if --hook is set', async () => {
+    getReleaseNotesStub.throws(new Error('release notes error'));
+
+    await runDisplayCmd(['--hook']);
+
+    expect(uxWarnStub.args[0][0]).to.contain('release notes error');
+  });
+
+  it('renders a footer if --hook is set', async () => {
+    await runDisplayCmd(['--hook']);
+
+    expect(uxLogStub.args[1][0]).to.contain('Release notes can be displayed at any point by running');
+  });
+
+  it('hides footer if env var is set', async () => {
+    process.env.PLUGIN_INFO_HIDE_FOOTER = 'true';
+
+    await runDisplayCmd(['--hook']);
+
+    expect(uxLogStub.args[1]).to.be.undefined;
   });
 });
