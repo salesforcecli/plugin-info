@@ -16,13 +16,9 @@ Display release notes for the CLI version that corresponds to a tag (%s):
   `,
   ],
   footer: `---
- Run \`%s whatsnew\` to manually view the current release notes.
-
- You can also view them on GitHub by visiting the [forcedotcom/cli](%s) repo.
-
- Silence notes by setting the \`%s\` env var to \`true\`.
-
- Hide this footer by setting the \`%s\` env var to \`true\`.
-
+- Run \`%s whatsnew\` to manually view the current release notes.
+- You can also view them on GitHub by visiting the [forcedotcom/cli](%s) repo.
+- Silence notes by setting the \`%s\` env var to \`true\`.
+- Hide this footer by setting the \`%s\` env var to \`true\`.
 ---`,
 };

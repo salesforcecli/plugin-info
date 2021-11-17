@@ -30,14 +30,14 @@ describe('parseReleaseNotes tests', () => {
     sandbox.restore();
   });
 
-  it('calls lexer with raw release notes', async () => {
+  it('calls lexer with raw release notes', () => {
     parseReleaseNotes(notes, '7.121.8', baseUrl);
 
     expect(lexerSpy.called).to.be.true;
     expect(lexerSpy.args[0][0]).to.deep.equal(notes);
   });
 
-  it('filters out correct version from tokens', async () => {
+  it('filters out correct version from tokens', () => {
     const tokens = parseReleaseNotes(notes, '7.121.8', baseUrl);
 
     const results = JSON.stringify(tokens, null, '  ');
@@ -49,7 +49,7 @@ describe('parseReleaseNotes tests', () => {
     expect(results).to.not.include('7.120.0');
   });
 
-  it('throws error if version is not found', async () => {
+  it('throws error if version is not found', () => {
     try {
       parseReleaseNotes(notes, '1.2.3', baseUrl);
     } catch (err) {
@@ -58,7 +58,24 @@ describe('parseReleaseNotes tests', () => {
     }
   });
 
-  it('fixes relative links in releasenotes', async () => {
+  it('matches entire version, not partial', () => {
+    const tokens = parseReleaseNotes(notes, '13.3.1', baseUrl);
+
+    const results = JSON.stringify(tokens, null, '  ');
+
+    expect(tokens[0].raw).to.include('13.3.1');
+    expect(results).to.include('- test for matching full version (`3.3.1 !== 13.3.1`)');
+
+    try {
+      // Won't find partial version (3.3.1 is part of 13.3.1)
+      parseReleaseNotes(notes, '3.3.1', baseUrl);
+    } catch (err) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      expect(err.message).to.equal(`Didn't find version '3.3.1'. View release notes online at: ${baseUrl}`);
+    }
+  });
+
+  it('fixes relative links in releasenotes', () => {
     const tokens = parseReleaseNotes(notes, '7.121.8', baseUrl);
 
     const results = JSON.stringify(tokens, null, '  ');

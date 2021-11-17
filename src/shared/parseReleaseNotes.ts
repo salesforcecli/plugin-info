@@ -12,10 +12,17 @@ const parseReleaseNotes = (notes: string, version: string, baseUrl: string): mar
 
   const parsed = marked.lexer(notes);
 
+  // https://stackoverflow.com/a/6969486
+  const escapeRegExp = (string: string): string => {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+  };
+
+  const regexp = new RegExp(`\\b${escapeRegExp(version)}\\b`);
+
   const tokens = parsed.filter((token) => {
     // TODO: Could make header depth (2) a setting in oclif.info.releasenotes
     if (token.type === 'heading' && token.depth === 2) {
-      if (token.text.includes(version)) {
+      if (regexp.exec(token.text)) {
         found = true;
 
         return token;
