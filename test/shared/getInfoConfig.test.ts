@@ -11,6 +11,7 @@ import * as Sinon from 'sinon';
 import * as SinonChai from 'sinon-chai';
 import { stubMethod, spyMethod } from '@salesforce/ts-sinon';
 import { fs } from '@salesforce/core';
+import { shouldThrow } from '@salesforce/core/lib/testSetup';
 import { getInfoConfig, PjsonWithInfo } from '../../src/shared/getInfoConfig';
 
 chaiUse(SinonChai);
@@ -33,7 +34,7 @@ describe('getInfoConfig tests', () => {
         info: {
           releasenotes: {
             distTagUrl: 'https://registry.npmjs.org/-/package/sfdx-cli/dist-tags',
-            releaseNotesPath: 'https://raw.githubusercontent.com/forcedotcom/cli/main/releasenotes/sfdx',
+            releaseNotesPath: 'https://github.com/forcedotcom/cli/tree/main/releasenotes/sfdx',
             releaseNotesFilename: 'README.md',
           },
         },
@@ -75,7 +76,7 @@ describe('getInfoConfig tests', () => {
     readJsonStub.returns({ oclif: {} });
 
     try {
-      await getInfoConfig(path);
+      await shouldThrow(getInfoConfig(path));
     } catch (err) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       expect(err.message).to.equal('getInfoConfig() failed to find pjson.oclif.info config');

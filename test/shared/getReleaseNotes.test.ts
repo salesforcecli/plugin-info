@@ -28,6 +28,7 @@ describe('getReleaseNotes tests', () => {
   let semverSpy: Sinon.SinonSpy;
 
   let path: string;
+  let rawPath: string;
   let version: string;
   let filename: string;
   let options;
@@ -35,7 +36,8 @@ describe('getReleaseNotes tests', () => {
   let readmeResponse: gotResponse;
 
   beforeEach(() => {
-    path = 'https://example.com';
+    path = 'https://github.com/forcedotcom/cli/tree/main/releasenotes/sfdx';
+    rawPath = 'https://raw.githubusercontent.com/forcedotcom/cli/main/releasenotes/sfdx';
     version = '1.2.3';
     filename = 'readme.md';
     options = {
@@ -69,10 +71,16 @@ describe('getReleaseNotes tests', () => {
     expect(semverSpy.returnValues[0]).to.equal(1);
   });
 
+  it('converts path from pjson.oclif.info to a raw github url', async () => {
+    await getReleaseNotes(path, filename, version);
+
+    expect(gotStub.args[0][0]).to.include(rawPath);
+  });
+
   it('makes versioned GET request with correct args', async () => {
     await getReleaseNotes(path, filename, version);
 
-    const expected = [`${path}/v1.md`, options];
+    const expected = [`${rawPath}/v1.md`, options];
 
     expect(gotStub.args[0]).to.deep.equal(expected);
   });
@@ -80,7 +88,7 @@ describe('getReleaseNotes tests', () => {
   it('makes readme GET request with correct args', async () => {
     await getReleaseNotes(path, filename, version);
 
-    const expected = [`${path}/${filename}`, { ...options, throwHttpErrors: true }];
+    const expected = [`${rawPath}/${filename}`, { ...options, throwHttpErrors: true }];
 
     expect(gotStub.args[1]).to.deep.equal(expected);
   });

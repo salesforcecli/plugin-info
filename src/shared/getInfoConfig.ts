@@ -32,7 +32,7 @@ Add to oclif object
 "info": {
   "releasenotes": {
     "distTagUrl": "https://registry.npmjs.org/-/package/sfdx-cli/dist-tags",
-    "releaseNotesPath": "https://raw.githubusercontent.com/forcedotcom/cli/main/releasenotes/sfdx",
+    "releaseNotesPath": "https://github.com/forcedotcom/cli/tree/main/releasenotes/sfdx",
     "releaseNotesFilename": "README.md"
   }
 }

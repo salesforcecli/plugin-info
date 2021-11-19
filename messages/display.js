@@ -1,16 +1,24 @@
 module.exports = {
-  commandDescription: 'display CLI release notes on the command line',
+  commandDescription: 'display Salesforce CLI release notes on the command line',
   flags: {
-    version: 'display release notes for this version',
+    version: 'CLI version or tag for which to display release notes',
+    hook: 'suppresses errors; this is a hidden parameter used after install or update',
   },
   examples: [
-    `<%= config.bin %> <%= command.id %>
-  display release notes for currently installed CLI
+    `Display release notes for the currently installed CLI version:
+  <%= config.bin %> <%= command.id %>
 
-<%= config.bin %> <%= command.id %> --version "1.2.3"
-  display release notes for CLI version 1.2.3
+Display release notes for CLI version 7.120.0:
+  <%= config.bin %> <%= command.id %> --version 7.120.0
 
-<%= config.bin %> <%= command.id %> --version "stable-rc"
-  can be called with tag "helpers", available options are: %s`,
+Display release notes for the CLI version that corresponds to a tag (%s):
+  <%= config.bin %> <%= command.id %> --version latest
+  `,
   ],
+  footer: `---
+- Run \`%s whatsnew\` to manually view the current release notes.
+- You can also view them on GitHub by visiting the [forcedotcom/cli](%s) repo.
+- Silence notes by setting the \`%s\` env var to \`true\`.
+- Hide this footer by setting the \`%s\` env var to \`true\`.
+---`,
 };

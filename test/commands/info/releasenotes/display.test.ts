@@ -8,12 +8,16 @@
 import { expect, use as chaiUse } from 'chai';
 import * as Sinon from 'sinon';
 import * as SinonChai from 'sinon-chai';
-import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
+import { fromStub, stubInterface, stubMethod, spyMethod } from '@salesforce/ts-sinon';
 import { IConfig } from '@oclif/config';
+import { shouldThrow } from '@salesforce/core/lib/testSetup';
 import { UX } from '@salesforce/command';
+import { marked } from 'marked';
+import { Env } from '@salesforce/kit';
 import * as getInfoConfig from '../../../../src/shared/getInfoConfig';
 import * as getReleaseNotes from '../../../../src/shared/getReleaseNotes';
 import * as getDistTagVersion from '../../../../src/shared/getDistTagVersion';
+import * as parseReleaseNotes from '../../../../src/shared/parseReleaseNotes';
 import Display from '../../../../src/commands/info/releasenotes/display';
 
 chaiUse(SinonChai);
@@ -22,11 +26,14 @@ describe('info:releasenotes:display', () => {
   const sandbox = Sinon.createSandbox();
 
   let mockInfoConfig: getInfoConfig.InfoConfig;
+  let getBooleanStub: sinon.SinonStub;
   let uxLogStub: sinon.SinonStub;
   let uxWarnStub: sinon.SinonStub;
   let getInfoConfigStub: Sinon.SinonStub;
   let getReleaseNotesStub: Sinon.SinonStub;
   let getDistTagVersionStub: Sinon.SinonStub;
+  let parseReleaseNotesSpy: Sinon.SinonSpy;
+  let markedParserSpy: Sinon.SinonSpy;
 
   const oclifConfigStub = fromStub(stubInterface<IConfig>(sandbox));
 
@@ -45,13 +52,12 @@ describe('info:releasenotes:display', () => {
 
     return cmd.runIt();
   };
-  let suppressEnvVarBackup;
 
   beforeEach(() => {
     mockInfoConfig = {
       releasenotes: {
         distTagUrl: 'https://registry.npmjs.org/-/package/sfdx-cli/dist-tags',
-        releaseNotesPath: 'https://raw.githubusercontent.com/forcedotcom/cli/main/releasenotes/sfdx',
+        releaseNotesPath: 'https://github.com/forcedotcom/cli/tree/main/releasenotes/sfdx',
         releaseNotesFilename: 'README.md',
       },
     };
@@ -59,31 +65,23 @@ describe('info:releasenotes:display', () => {
     oclifConfigStub.pjson.version = '3.3.3';
     oclifConfigStub.root = '/root/path';
 
-    suppressEnvVarBackup = process.env.PLUGIN_INFO_HIDE_RELEASE_NOTES;
+    getBooleanStub = stubMethod(sandbox, Env.prototype, 'getBoolean');
+    getBooleanStub.withArgs('PLUGIN_INFO_HIDE_RELEASE_NOTES').returns(false);
+    getBooleanStub.withArgs('PLUGIN_INFO_HIDE_FOOTER').returns(false);
 
     getInfoConfigStub = stubMethod(sandbox, getInfoConfig, 'getInfoConfig').returns(mockInfoConfig);
-    getReleaseNotesStub = stubMethod(sandbox, getReleaseNotes, 'getReleaseNotes').returns('release-notes');
+    getReleaseNotesStub = stubMethod(sandbox, getReleaseNotes, 'getReleaseNotes').returns('## Release notes for 3.3.3');
     getDistTagVersionStub = stubMethod(sandbox, getDistTagVersion, 'getDistTagVersion').returns('1.2.3');
+    parseReleaseNotesSpy = spyMethod(sandbox, parseReleaseNotes, 'parseReleaseNotes');
+    markedParserSpy = spyMethod(sandbox, marked, 'parser');
   });
 
   afterEach(() => {
-    getInfoConfigStub.restore();
-    getReleaseNotesStub.restore();
-    getDistTagVersionStub.restore();
     sandbox.restore();
-
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    process.env.PLUGIN_INFO_HIDE_RELEASE_NOTES = suppressEnvVarBackup;
-  });
-
-  it('logs release notes', async () => {
-    await runDisplayCmd([]);
-
-    expect(uxLogStub.args[0][0]).to.equal('release-notes');
   });
 
   it('allows you to suppress release notes output with env var', async () => {
-    process.env.PLUGIN_INFO_HIDE_RELEASE_NOTES = 'true';
+    getBooleanStub.withArgs('PLUGIN_INFO_HIDE_RELEASE_NOTES').returns(true);
 
     await runDisplayCmd([]);
 
@@ -97,12 +95,14 @@ describe('info:releasenotes:display', () => {
     expect(getInfoConfigStub.args[0][0]).to.equal('/root/path');
   });
 
-  it('logs warning if info config lookup fails', async () => {
+  it('throws an error if info config lookup fails', async () => {
     getInfoConfigStub.throws(new Error('info config error'));
 
-    await runDisplayCmd([]);
-
-    expect(uxWarnStub.args[0][0]).to.contain('info config error');
+    try {
+      await shouldThrow(runDisplayCmd([]));
+    } catch (err) {
+      expect((err as Error).message).to.contain('info config error');
+    }
   });
 
   it('does not call getDistTagVersion if helper is not passed', async () => {
@@ -112,21 +112,23 @@ describe('info:releasenotes:display', () => {
   });
 
   it('calls getDistTagVersion with correct are if helpers are used', async () => {
-    await runDisplayCmd(['-v', 'latest-rc']);
+    await runDisplayCmd(['-v', 'latest-rc', '--hook']);
 
     expect(getDistTagVersionStub.args[0]).to.deep.equal([mockInfoConfig.releasenotes.distTagUrl, 'latest-rc']);
   });
 
-  it('logs a warning if dist tag lookup fails', async () => {
+  it('throws an error if dist tag lookup fails', async () => {
     getDistTagVersionStub.throws(new Error('dist tag error'));
 
-    await runDisplayCmd(['-v', 'latest-rc']);
-
-    expect(uxWarnStub.args[0][0]).to.contain('dist tag error');
+    try {
+      await shouldThrow(runDisplayCmd(['-v', 'latest-rc']));
+    } catch (err) {
+      expect((err as Error).message).to.contain('dist tag error');
+    }
   });
 
   it('calls getReleaseNotes with version returned from getDistTagVersion', async () => {
-    await runDisplayCmd(['-v', 'latest-rc']);
+    await runDisplayCmd(['-v', 'latest-rc', '--hook']);
 
     const expected = [
       mockInfoConfig.releasenotes.releaseNotesPath,
@@ -138,7 +140,7 @@ describe('info:releasenotes:display', () => {
   });
 
   it('calls getReleaseNotes with passed version', async () => {
-    await runDisplayCmd(['-v', '4.5.6']);
+    await runDisplayCmd(['-v', '4.5.6', '--hook']);
 
     expect(getReleaseNotesStub.args[0][2]).to.equal('4.5.6');
   });
@@ -149,11 +151,70 @@ describe('info:releasenotes:display', () => {
     expect(getReleaseNotesStub.args[0][2]).to.equal('3.3.3');
   });
 
-  it('logs a warning if getReleaseNotes lookup fails', async () => {
+  it('throws an error if getReleaseNotes lookup fails', async () => {
     getReleaseNotesStub.throws(new Error('release notes error'));
 
+    try {
+      await shouldThrow(runDisplayCmd([]));
+    } catch (err) {
+      expect((err as Error).message).to.contain('release notes error');
+    }
+  });
+
+  it('parseReleaseNotes is called with the correct args', async () => {
     await runDisplayCmd([]);
 
+    expect(parseReleaseNotesSpy.args[0]).to.deep.equal([
+      '## Release notes for 3.3.3',
+      '3.3.3',
+      mockInfoConfig.releasenotes.releaseNotesPath,
+    ]);
+  });
+
+  it('parser is called with tokens', async () => {
+    await runDisplayCmd([]);
+
+    const tokens = parseReleaseNotesSpy.returnValues[0] as marked.Token;
+
+    expect(markedParserSpy.calledOnce).to.be.true;
+    expect(markedParserSpy.args[0][0]).to.deep.equal(tokens);
+  });
+
+  it('logs markdown on the command line', async () => {
+    await runDisplayCmd([]);
+
+    expect(uxLogStub.args[0][0]).to.contain('## Release notes for 3.3.3');
+  });
+
+  it('throws an error if parsing fails', async () => {
+    try {
+      await shouldThrow(runDisplayCmd(['-v', '4.5.6']));
+    } catch (err) {
+      expect((err as Error).message).to.contain(
+        `Didn't find version '4.5.6'. View release notes online at: ${mockInfoConfig.releasenotes.releaseNotesPath}`
+      );
+    }
+  });
+
+  it('does not throw an error if --hook is set', async () => {
+    getReleaseNotesStub.throws(new Error('release notes error'));
+
+    await runDisplayCmd(['--hook']);
+
     expect(uxWarnStub.args[0][0]).to.contain('release notes error');
+  });
+
+  it('renders a footer if --hook is set', async () => {
+    await runDisplayCmd(['--hook']);
+
+    expect(uxLogStub.args[1][0]).to.contain('to manually view the current release notes');
+  });
+
+  it('hides footer if env var is set', async () => {
+    getBooleanStub.withArgs('PLUGIN_INFO_HIDE_FOOTER').returns(true);
+
+    await runDisplayCmd(['--hook']);
+
+    expect(uxLogStub.args[1]).to.be.undefined;
   });
 });
