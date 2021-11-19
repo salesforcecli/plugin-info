@@ -7,7 +7,7 @@
   "dependencies": {
     "@oclif/config": "^1",
     "@salesforce/command": "^4.1.5",
-    "@salesforce/core": "^2.28.4",
+    "@salesforce/core": "^2.29.0",
     "@salesforce/kit": "^1.5.17",
     "got": "^11.8.2",
     "marked": "^4.0.1",
@@ -51,7 +51,7 @@
     "shx": "0.3.3",
     "sinon": "^11.1.1",
     "ts-node": "^10.4.0",
-    "typescript": "4.4.4"
+    "typescript": "^4.5.2"
   },
   "config": {
     "commitizen": {
