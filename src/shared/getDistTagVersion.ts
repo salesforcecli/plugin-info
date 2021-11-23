@@ -6,7 +6,7 @@
  */
 
 import got from 'got';
-import { PLUGIN_INFO_GET_TIMEOUT } from '../constants';
+import { SFDX_RELEASE_NOTES_TIMEOUT } from '../constants';
 
 export type DistTagJson = {
   latest: string;
@@ -16,7 +16,7 @@ export type DistTagJson = {
 const getDistTagVersion = async (url: string, distTag: string): Promise<string> => {
   // TODO: Could use npm instead here. That way private cli repos could auth with .npmrc
   // -- could utilize this: https://github.com/salesforcecli/plugin-trust/blob/0393b906a30e8858816625517eda5db69377c178/src/lib/npmCommand.ts
-  const options = { timeout: PLUGIN_INFO_GET_TIMEOUT };
+  const options = { timeout: SFDX_RELEASE_NOTES_TIMEOUT };
 
   const body = await got(url, options).json<DistTagJson>();
 

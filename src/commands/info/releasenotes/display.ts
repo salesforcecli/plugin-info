@@ -22,8 +22,8 @@ import { parseReleaseNotes } from '../../../shared/parseReleaseNotes';
 // Initialize Messages with the current plugin directory
 Messages.importMessagesDirectory(__dirname);
 
-const HIDE_NOTES = 'PLUGIN_INFO_HIDE_RELEASE_NOTES';
-const HIDE_FOOTER = 'PLUGIN_INFO_HIDE_FOOTER';
+const HIDE_NOTES = 'SFDX_HIDE_RELEASE_NOTES';
+const HIDE_FOOTER = 'SFDX_HIDE_RELEASE_NOTES_FOOTER';
 
 // Load the specific messages for this file. Messages from @salesforce/command, @salesforce/core,
 // or any library that is using the messages framework can also be loaded this way.

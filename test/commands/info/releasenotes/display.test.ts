@@ -66,8 +66,8 @@ describe('info:releasenotes:display', () => {
     oclifConfigStub.root = '/root/path';
 
     getBooleanStub = stubMethod(sandbox, Env.prototype, 'getBoolean');
-    getBooleanStub.withArgs('PLUGIN_INFO_HIDE_RELEASE_NOTES').returns(false);
-    getBooleanStub.withArgs('PLUGIN_INFO_HIDE_FOOTER').returns(false);
+    getBooleanStub.withArgs('SFDX_HIDE_RELEASE_NOTES').returns(false);
+    getBooleanStub.withArgs('SFDX_HIDE_RELEASE_NOTES_FOOTER').returns(false);
 
     getInfoConfigStub = stubMethod(sandbox, getInfoConfig, 'getInfoConfig').returns(mockInfoConfig);
     getReleaseNotesStub = stubMethod(sandbox, getReleaseNotes, 'getReleaseNotes').returns('## Release notes for 3.3.3');
@@ -81,7 +81,7 @@ describe('info:releasenotes:display', () => {
   });
 
   it('allows you to suppress release notes output with env var', async () => {
-    getBooleanStub.withArgs('PLUGIN_INFO_HIDE_RELEASE_NOTES').returns(true);
+    getBooleanStub.withArgs('SFDX_HIDE_RELEASE_NOTES').returns(true);
 
     await runDisplayCmd([]);
 
@@ -211,7 +211,7 @@ describe('info:releasenotes:display', () => {
   });
 
   it('hides footer if env var is set', async () => {
-    getBooleanStub.withArgs('PLUGIN_INFO_HIDE_FOOTER').returns(true);
+    getBooleanStub.withArgs('SFDX_HIDE_RELEASE_NOTES_FOOTER').returns(true);
 
     await runDisplayCmd(['--hook']);
 
