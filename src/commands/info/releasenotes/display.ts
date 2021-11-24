@@ -93,7 +93,7 @@ export default class Display extends SfdxCommand {
         this.ux.log(marked.parse(footer));
       } else {
         // footer hidden
-        await Lifecycle.getInstance().emitTelemetry({ eventName: 'HIDDEN_FOOTER' });
+        await Lifecycle.getInstance().emitTelemetry({ eventName: 'FOOTER_HIDDEN' });
       }
     } catch (err) {
       if (isHook) {
