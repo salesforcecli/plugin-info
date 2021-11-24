@@ -14,6 +14,7 @@ import { shouldThrow } from '@salesforce/core/lib/testSetup';
 import { UX } from '@salesforce/command';
 import { marked } from 'marked';
 import { Env } from '@salesforce/kit';
+import { Lifecycle } from '@salesforce/core';
 import * as getInfoConfig from '../../../../src/shared/getInfoConfig';
 import * as getReleaseNotes from '../../../../src/shared/getReleaseNotes';
 import * as getDistTagVersion from '../../../../src/shared/getDistTagVersion';
@@ -82,9 +83,11 @@ describe('info:releasenotes:display', () => {
 
   it('allows you to suppress release notes output with env var', async () => {
     getBooleanStub.withArgs('PLUGIN_INFO_HIDE_RELEASE_NOTES').returns(true);
+    const lifecycleStub = stubMethod(sandbox, Lifecycle.prototype, 'emitTelemetry');
 
     await runDisplayCmd([]);
 
+    expect(lifecycleStub.calledOnce).to.equal(true);
     expect(uxLogStub.called).to.be.false;
     expect(uxWarnStub.called).to.be.false;
   });
@@ -198,9 +201,10 @@ describe('info:releasenotes:display', () => {
 
   it('does not throw an error if --hook is set', async () => {
     getReleaseNotesStub.throws(new Error('release notes error'));
+    const lifecycleStub = stubMethod(sandbox, Lifecycle.prototype, 'emitTelemetry');
 
     await runDisplayCmd(['--hook']);
-
+    expect(lifecycleStub.calledOnce).to.be.true;
     expect(uxWarnStub.args[0][0]).to.contain('release notes error');
   });
 
@@ -212,9 +216,10 @@ describe('info:releasenotes:display', () => {
 
   it('hides footer if env var is set', async () => {
     getBooleanStub.withArgs('PLUGIN_INFO_HIDE_FOOTER').returns(true);
+    const lifecycleStub = stubMethod(sandbox, Lifecycle.prototype, 'emitTelemetry');
 
     await runDisplayCmd(['--hook']);
-
+    expect(lifecycleStub.calledOnce).to.be.true;
     expect(uxLogStub.args[1]).to.be.undefined;
   });
 });
