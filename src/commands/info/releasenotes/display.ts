@@ -57,7 +57,7 @@ export default class Display extends SfdxCommand {
       // In most cases we will log a message, but here we only trace log in case someone using stdout of the update command
       this.logger.trace(`release notes disabled via env var: ${HIDE_NOTES}`);
       this.logger.trace('exiting');
-      await Lifecycle.getInstance().emitTelemetry({ Event: 'NOTES_HIDDEN' });
+      await Lifecycle.getInstance().emitTelemetry({ eventName: 'NOTES_HIDDEN' });
 
       return;
     }
@@ -93,7 +93,7 @@ export default class Display extends SfdxCommand {
         this.ux.log(marked.parse(footer));
       } else {
         // footer hidden
-        await Lifecycle.getInstance().emitTelemetry({ Event: 'HIDDEN_FOOTER' });
+        await Lifecycle.getInstance().emitTelemetry({ eventName: 'HIDDEN_FOOTER' });
       }
     } catch (err) {
       if (isHook) {
@@ -104,7 +104,7 @@ export default class Display extends SfdxCommand {
         this.ux.warn(`${this.id} failed: ${message}`);
 
         this.logger.trace(stack);
-        await Lifecycle.getInstance().emitTelemetry({ Event: 'Error', Error: { message, stack } });
+        await Lifecycle.getInstance().emitTelemetry({ eventName: 'Error', Error: { message, stack } });
 
         return;
       }
