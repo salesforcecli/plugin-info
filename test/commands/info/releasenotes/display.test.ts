@@ -81,12 +81,22 @@ describe('info:releasenotes:display', () => {
   });
 
   it('allows you to suppress release notes output with env var', async () => {
+    // This env var is only honored when the --hook flag is passed.
+    // If someone is running the command directly, we show notes regardless.
+    getBooleanStub.withArgs('SFDX_HIDE_RELEASE_NOTES').returns(true);
+
+    await runDisplayCmd(['--hook']);
+
+    expect(uxLogStub.called).to.be.false;
+    expect(uxWarnStub.called).to.be.false;
+  });
+
+  it('ignores hide release notes env var if running command directly (without --hook)', async () => {
     getBooleanStub.withArgs('SFDX_HIDE_RELEASE_NOTES').returns(true);
 
     await runDisplayCmd([]);
 
-    expect(uxLogStub.called).to.be.false;
-    expect(uxWarnStub.called).to.be.false;
+    expect(uxLogStub.args[0][0]).to.contain('## Release notes for 3.3.3');
   });
 
   it('calls getInfoConfig with config root', async () => {
