@@ -14,6 +14,7 @@ import * as TerminalRenderer from 'marked-terminal';
 import { Env } from '@salesforce/kit';
 import { flags, SfdxCommand } from '@salesforce/command';
 import { Lifecycle, Messages } from '@salesforce/core';
+import { AnyJson, JsonMap } from '@salesforce/ts-types';
 import { getInfoConfig } from '../../../shared/getInfoConfig';
 import { getReleaseNotes } from '../../../shared/getReleaseNotes';
 import { getDistTagVersion } from '../../../shared/getDistTagVersion';
@@ -99,12 +100,25 @@ export default class Display extends SfdxCommand {
       if (isHook) {
         // Do not throw error if --hook is passed, just warn so we don't exit any processes.
         // --hook is passed in the post install/update scripts
-        const { message, stack } = err as Error;
+        const { message, stack, name } = err as Error;
 
         this.ux.warn(`${this.id} failed: ${message}`);
 
         this.logger.trace(stack);
-        await Lifecycle.getInstance().emitTelemetry({ eventName: 'Error', Error: { message, stack } });
+        await Lifecycle.getInstance().emitTelemetry({
+          eventName: 'COMMAND_ERROR',
+          type: 'EXCEPTION',
+          errorName: name,
+          errorMessage: message,
+          Error: Object.assign(
+            {
+              name,
+              message,
+              stack,
+            } as JsonMap,
+            err
+          ) as AnyJson,
+        });
 
         return;
       }
