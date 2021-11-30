@@ -88,13 +88,13 @@ export default class Display extends SfdxCommand {
 
       this.ux.log(marked.parser(tokens));
 
-      if (isHook && !env.getBoolean(HIDE_FOOTER)) {
-        const footer = messages.getMessage('footer', [this.config.bin, releaseNotesPath, HIDE_NOTES, HIDE_FOOTER]);
-
-        this.ux.log(marked.parse(footer));
-      } else {
-        // footer hidden
-        await Lifecycle.getInstance().emitTelemetry({ eventName: 'FOOTER_HIDDEN' });
+      if (isHook) {
+        if (env.getBoolean(HIDE_FOOTER)) {
+          await Lifecycle.getInstance().emitTelemetry({ eventName: 'FOOTER_HIDDEN' });
+        } else {
+          const footer = messages.getMessage('footer', [this.config.bin, releaseNotesPath, HIDE_NOTES, HIDE_FOOTER]);
+          this.ux.log(marked.parse(footer));
+        }
       }
     } catch (err) {
       if (isHook) {
