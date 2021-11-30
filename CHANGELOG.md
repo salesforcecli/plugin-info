@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.1](https://github.com/salesforcecli/plugin-info/compare/v1.1.0...v1.1.1) (2021-11-30)
+
+
+### Bug Fixes
+
+* add more telemetry ([b8af2d7](https://github.com/salesforcecli/plugin-info/commit/b8af2d7e516cd1f5347d379d1c29d6389299fab8))
+
 ## [1.1.0](https://github.com/salesforcecli/plugin-info/compare/v1.0.0...v1.1.0) (2021-11-22)
 
 
