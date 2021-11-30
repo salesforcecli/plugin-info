@@ -13,7 +13,8 @@ import { marked } from 'marked';
 import * as TerminalRenderer from 'marked-terminal';
 import { Env } from '@salesforce/kit';
 import { flags, SfdxCommand } from '@salesforce/command';
-import { Messages } from '@salesforce/core';
+import { Lifecycle, Messages } from '@salesforce/core';
+import { AnyJson, JsonMap } from '@salesforce/ts-types';
 import { getInfoConfig } from '../../../shared/getInfoConfig';
 import { getReleaseNotes } from '../../../shared/getReleaseNotes';
 import { getDistTagVersion } from '../../../shared/getDistTagVersion';
@@ -59,6 +60,7 @@ export default class Display extends SfdxCommand {
       // In most cases we will log a message, but here we only trace log in case someone using stdout of the update command
       this.logger.trace(`release notes disabled via env var: ${HIDE_NOTES}`);
       this.logger.trace('exiting');
+      await Lifecycle.getInstance().emitTelemetry({ eventName: 'NOTES_HIDDEN' });
 
       return;
     }
@@ -86,20 +88,37 @@ export default class Display extends SfdxCommand {
 
       this.ux.log(marked.parser(tokens));
 
-      if (isHook && !env.getBoolean(HIDE_FOOTER)) {
-        const footer = messages.getMessage('footer', [this.config.bin, releaseNotesPath, HIDE_NOTES, HIDE_FOOTER]);
-
-        this.ux.log(marked.parse(footer));
+      if (isHook) {
+        if (env.getBoolean(HIDE_FOOTER)) {
+          await Lifecycle.getInstance().emitTelemetry({ eventName: 'FOOTER_HIDDEN' });
+        } else {
+          const footer = messages.getMessage('footer', [this.config.bin, releaseNotesPath, HIDE_NOTES, HIDE_FOOTER]);
+          this.ux.log(marked.parse(footer));
+        }
       }
     } catch (err) {
       if (isHook) {
         // Do not throw error if --hook is passed, just warn so we don't exit any processes.
         // --hook is passed in the post install/update scripts
-        const { message, stack } = err as Error;
+        const { message, stack, name } = err as Error;
 
         this.ux.warn(`${this.id} failed: ${message}`);
 
         this.logger.trace(stack);
+        await Lifecycle.getInstance().emitTelemetry({
+          eventName: 'COMMAND_ERROR',
+          type: 'EXCEPTION',
+          errorName: name,
+          errorMessage: message,
+          Error: Object.assign(
+            {
+              name,
+              message,
+              stack,
+            } as JsonMap,
+            err
+          ) as AnyJson,
+        });
 
         return;
       }
