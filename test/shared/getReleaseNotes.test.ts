@@ -12,7 +12,7 @@ import * as SinonChai from 'sinon-chai';
 import * as semver from 'semver';
 import { stubMethod, spyMethod } from '@salesforce/ts-sinon';
 import { getReleaseNotes } from '../../src/shared/getReleaseNotes';
-import { PLUGIN_INFO_GET_TIMEOUT } from '../../src/constants';
+import { SFDX_RELEASE_NOTES_TIMEOUT } from '../../src/constants';
 
 chaiUse(SinonChai);
 
@@ -41,7 +41,7 @@ describe('getReleaseNotes tests', () => {
     version = '1.2.3';
     filename = 'readme.md';
     options = {
-      timeout: PLUGIN_INFO_GET_TIMEOUT,
+      timeout: SFDX_RELEASE_NOTES_TIMEOUT,
       throwHttpErrors: false,
     };
     versionedResponse = {

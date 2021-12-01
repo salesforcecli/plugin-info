@@ -23,8 +23,8 @@ import { parseReleaseNotes } from '../../../shared/parseReleaseNotes';
 // Initialize Messages with the current plugin directory
 Messages.importMessagesDirectory(__dirname);
 
-const HIDE_NOTES = 'PLUGIN_INFO_HIDE_RELEASE_NOTES';
-const HIDE_FOOTER = 'PLUGIN_INFO_HIDE_FOOTER';
+const HIDE_NOTES = 'SFDX_HIDE_RELEASE_NOTES';
+const HIDE_FOOTER = 'SFDX_HIDE_RELEASE_NOTES_FOOTER';
 
 // Load the specific messages for this file. Messages from @salesforce/command, @salesforce/core,
 // or any library that is using the messages framework can also be loaded this way.
@@ -53,7 +53,9 @@ export default class Display extends SfdxCommand {
   public async run(): Promise<void> {
     const env = new Env();
 
-    if (env.getBoolean(HIDE_NOTES)) {
+    const isHook = !!this.flags.hook;
+
+    if (env.getBoolean(HIDE_NOTES) && isHook) {
       // We don't ever want to exit the process for info:releasenotes:display (whatsnew)
       // In most cases we will log a message, but here we only trace log in case someone using stdout of the update command
       this.logger.trace(`release notes disabled via env var: ${HIDE_NOTES}`);
@@ -62,8 +64,6 @@ export default class Display extends SfdxCommand {
 
       return;
     }
-
-    const isHook = !!this.flags.hook;
 
     try {
       const installedVersion = this.config.pjson.version;

@@ -67,8 +67,8 @@ describe('info:releasenotes:display', () => {
     oclifConfigStub.root = '/root/path';
 
     getBooleanStub = stubMethod(sandbox, Env.prototype, 'getBoolean');
-    getBooleanStub.withArgs('PLUGIN_INFO_HIDE_RELEASE_NOTES').returns(false);
-    getBooleanStub.withArgs('PLUGIN_INFO_HIDE_FOOTER').returns(false);
+    getBooleanStub.withArgs('SFDX_HIDE_RELEASE_NOTES').returns(false);
+    getBooleanStub.withArgs('SFDX_HIDE_RELEASE_NOTES_FOOTER').returns(false);
 
     getInfoConfigStub = stubMethod(sandbox, getInfoConfig, 'getInfoConfig').returns(mockInfoConfig);
     getReleaseNotesStub = stubMethod(sandbox, getReleaseNotes, 'getReleaseNotes').returns('## Release notes for 3.3.3');
@@ -82,14 +82,25 @@ describe('info:releasenotes:display', () => {
   });
 
   it('allows you to suppress release notes output with env var', async () => {
-    getBooleanStub.withArgs('PLUGIN_INFO_HIDE_RELEASE_NOTES').returns(true);
+    // This env var is only honored when the --hook flag is passed.
+    // If someone is running the command directly, we show notes regardless.
+    getBooleanStub.withArgs('SFDX_HIDE_RELEASE_NOTES').returns(true);
+
     const lifecycleStub = stubMethod(sandbox, Lifecycle.prototype, 'emitTelemetry');
 
-    await runDisplayCmd([]);
+    await runDisplayCmd(['--hook']);
 
     expect(lifecycleStub.calledOnce).to.equal(true);
     expect(uxLogStub.called).to.be.false;
     expect(uxWarnStub.called).to.be.false;
+  });
+
+  it('ignores hide release notes env var if running command directly (without --hook)', async () => {
+    getBooleanStub.withArgs('SFDX_HIDE_RELEASE_NOTES').returns(true);
+
+    await runDisplayCmd([]);
+
+    expect(uxLogStub.args[0][0]).to.contain('## Release notes for 3.3.3');
   });
 
   it('calls getInfoConfig with config root', async () => {
@@ -215,7 +226,8 @@ describe('info:releasenotes:display', () => {
   });
 
   it('hides footer if env var is set', async () => {
-    getBooleanStub.withArgs('PLUGIN_INFO_HIDE_FOOTER').returns(true);
+    getBooleanStub.withArgs('SFDX_HIDE_RELEASE_NOTES_FOOTER').returns(true);
+
     const lifecycleStub = stubMethod(sandbox, Lifecycle.prototype, 'emitTelemetry');
 
     await runDisplayCmd(['--hook']);

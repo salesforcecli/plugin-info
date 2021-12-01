@@ -5,4 +5,4 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-export const PLUGIN_INFO_GET_TIMEOUT = (process.env.PLUGIN_INFO_GET_TIMEOUT || 3000) as number;
+export const SFDX_RELEASE_NOTES_TIMEOUT = (process.env.SFDX_RELEASE_NOTES_TIMEOUT ?? 3000) as number;
