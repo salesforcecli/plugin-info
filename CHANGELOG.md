@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.2](https://github.com/salesforcecli/plugin-info/compare/v1.1.1...v1.1.2) (2021-12-01)
+
+
+### Bug Fixes
+
+* always show notes when running directly ([a0cd11e](https://github.com/salesforcecli/plugin-info/commit/a0cd11ec3777eb91adcfcac180d85b442b34b52a))
+* merge conflict ([e4f7103](https://github.com/salesforcecli/plugin-info/commit/e4f7103b04f23cc9f66fa02f18286166be819812))
+* whitespace conflict ([605d782](https://github.com/salesforcecli/plugin-info/commit/605d782be93a060e0eda69441806fe0cb76193d5))
+
 ### [1.1.1](https://github.com/salesforcecli/plugin-info/compare/v1.1.0...v1.1.1) (2021-11-30)
 
 ### Bug Fixes
