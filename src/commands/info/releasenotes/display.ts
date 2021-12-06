@@ -48,10 +48,6 @@ export default class Display extends SfdxCommand {
       hidden: true,
       description: messages.getMessage('flags.hook'),
     }),
-    json: flags.boolean({
-      hidden: true,
-      description: 'Hide json flag.',
-    }),
   };
 
   public async run(): Promise<void> {
