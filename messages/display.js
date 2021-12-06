@@ -1,8 +1,8 @@
 module.exports = {
   commandDescription: 'Display Salesforce CLI release notes on the command line.',
   flags: {
-    version: 'CLI version or tag for which to display release notes',
-    hook: 'suppresses errors; this is a hidden parameter used after install or update',
+    version: 'CLI version or tag for which to display release notes.',
+    hook: 'This hidden parameter is used in post install or update hooks.',
   },
   examples: [
     `Display release notes for the currently installed CLI version:

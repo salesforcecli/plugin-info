@@ -46,6 +46,8 @@ describe('info:releasenotes:display', () => {
   }
 
   const runDisplayCmd = async (params: string[]) => {
+    oclifConfigStub.bin = 'sfdx';
+
     const cmd = new TestDisplay(params, oclifConfigStub);
 
     uxLogStub = stubMethod(sandbox, UX.prototype, 'log');
@@ -100,7 +102,7 @@ describe('info:releasenotes:display', () => {
 
     await runDisplayCmd([]);
 
-    expect(uxLogStub.args[0][0]).to.contain('## Release notes for 3.3.3');
+    expect(uxLogStub.args[1][0]).to.contain('## Release notes for 3.3.3');
   });
 
   it('calls getInfoConfig with config root', async () => {
@@ -153,6 +155,12 @@ describe('info:releasenotes:display', () => {
     expect(getReleaseNotesStub.args[0]).to.deep.equal(expected);
   });
 
+  it('logs logs a header with cli bin', async () => {
+    await runDisplayCmd([]);
+
+    expect(uxLogStub.args[0][0]).to.contain("# Release notes for 'sfdx':");
+  });
+
   it('calls getReleaseNotes with passed version', async () => {
     await runDisplayCmd(['-v', '4.5.6', '--hook']);
 
@@ -197,7 +205,7 @@ describe('info:releasenotes:display', () => {
   it('logs markdown on the command line', async () => {
     await runDisplayCmd([]);
 
-    expect(uxLogStub.args[0][0]).to.contain('## Release notes for 3.3.3');
+    expect(uxLogStub.args[1][0]).to.contain('## Release notes for 3.3.3');
   });
 
   it('throws an error if parsing fails', async () => {
@@ -222,7 +230,7 @@ describe('info:releasenotes:display', () => {
   it('renders a footer if --hook is set', async () => {
     await runDisplayCmd(['--hook']);
 
-    expect(uxLogStub.args[1][0]).to.contain('to manually view the current release notes');
+    expect(uxLogStub.args[2][0]).to.contain('to manually view the current release notes');
   });
 
   it('hides footer if env var is set', async () => {
@@ -232,6 +240,6 @@ describe('info:releasenotes:display', () => {
 
     await runDisplayCmd(['--hook']);
     expect(lifecycleStub.calledOnce).to.be.true;
-    expect(uxLogStub.args[1]).to.be.undefined;
+    expect(uxLogStub.args[2]).to.be.undefined;
   });
 });

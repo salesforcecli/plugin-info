@@ -48,6 +48,10 @@ export default class Display extends SfdxCommand {
       hidden: true,
       description: messages.getMessage('flags.hook'),
     }),
+    json: flags.boolean({
+      hidden: true,
+      description: 'Hide json flag.',
+    }),
   };
 
   public async run(): Promise<void> {
@@ -85,6 +89,8 @@ export default class Display extends SfdxCommand {
       marked.setOptions({
         renderer: new TerminalRenderer(),
       });
+
+      this.ux.log(marked.parse(`# Release notes for '${this.config.bin}':`));
 
       this.ux.log(marked.parser(tokens));
 
