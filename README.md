@@ -1,6 +1,7 @@
 # plugin-info
 
 [![NPM](https://img.shields.io/npm/v/@salesforce/plugin-info.svg?label=@salesforce/plugin-info)](https://www.npmjs.com/package/@salesforce/plugin-info) [![CircleCI](https://circleci.com/gh/salesforcecli/plugin-info/tree/main.svg?style=shield)](https://circleci.com/gh/salesforcecli/plugin-info/tree/main) [![Downloads/week](https://img.shields.io/npm/dw/@salesforce/plugin-info.svg)](https://npmjs.org/package/@salesforce/plugin-info) [![License](https://img.shields.io/badge/License-BSD%203--Clause-brightgreen.svg)](https://raw.githubusercontent.com/salesforcecli/plugin-info/main/LICENSE.txt)
+
 ## Learn about the plugin-info
 
 Salesforce CLI plugins are based on the [oclif plugin framework](<(https://oclif.io/docs/introduction.html)>). Read the [plugin developer guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_plugins.meta/sfdx_cli_plugins/cli_plugins_architecture_sf_cli.htm) to learn about Salesforce CLI plugin development.
@@ -74,20 +75,21 @@ sfdx plugins
 ## Commands
 
 <!-- commands -->
-* [`sfdx info:releasenotes:display [-v <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-inforeleasenotesdisplay--v-string---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
+
+- [`sfdx info:releasenotes:display [-v <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-inforeleasenotesdisplay--v-string---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
 
 ## `sfdx info:releasenotes:display [-v <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
-display Salesforce CLI release notes on the command line
+Display Salesforce CLI release notes on the command line.
 
 ```
 USAGE
-  $ sfdx info:releasenotes:display [-v <string>] [--json] [--loglevel 
+  $ sfdx info:releasenotes:display [-v <string>] [--json] [--loglevel
   trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
 
 OPTIONS
   -v, --version=version                                                             CLI version or tag for which to
-                                                                                    display release notes
+                                                                                    display release notes.
 
   --json                                                                            format output as json
 
@@ -99,14 +101,15 @@ ALIASES
 
 EXAMPLES
   Display release notes for the currently installed CLI version:
-     sfdx info:releasenotes:display
+    sfdx info:releasenotes:display
 
   Display release notes for CLI version 7.120.0:
-     sfdx info:releasenotes:display --version 7.120.0
+    sfdx info:releasenotes:display --version 7.120.0
 
   Display release notes for the CLI version that corresponds to a tag (stable, stable-rc, latest, latest-rc, rc):
-     sfdx info:releasenotes:display --version latest
+    sfdx info:releasenotes:display --version latest
 ```
 
-_See code: [src/commands/info/releasenotes/display.ts](https://github.com/salesforcecli/plugin-info/blob/v1.1.1/src/commands/info/releasenotes/display.ts)_
+_See code: [src/commands/info/releasenotes/display.ts](https://github.com/salesforcecli/plugin-info/blob/v1.1.2/src/commands/info/releasenotes/display.ts)_
+
 <!-- commandsstop -->
