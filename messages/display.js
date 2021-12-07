@@ -6,11 +6,11 @@ module.exports = {
   },
   examples: [
     `Display release notes for the currently installed CLI version:
-  sfdx info:releasenotes:display
+  <%= config.bin %> <%= command.id %>
 Display release notes for CLI version 7.120.0:
-  sfdx info:releasenotes:display --version 7.120.0
+  <%= config.bin %> <%= command.id %> --version 7.120.0
 Display release notes for the CLI version that corresponds to a tag (%s):
-  sfdx info:releasenotes:display --version latest
+  <%= config.bin %> <%= command.id %> --version latest
   `,
   ],
   footer: `---
