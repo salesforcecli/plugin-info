@@ -86,6 +86,8 @@ export default class Display extends SfdxCommand {
         renderer: new TerminalRenderer(),
       });
 
+      this.ux.log(marked.parse(`# Release notes for '${this.config.bin}':`));
+
       this.ux.log(marked.parser(tokens));
 
       if (isHook) {
