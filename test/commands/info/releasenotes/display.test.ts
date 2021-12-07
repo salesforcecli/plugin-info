@@ -111,6 +111,14 @@ describe('info:releasenotes:display', () => {
     expect(getInfoConfigStub.args[0][0]).to.equal('/root/path');
   });
 
+  it('does not render emoji', async () => {
+    getReleaseNotesStub.returns('## 3.3.3 :tada:');
+
+    await runDisplayCmd([]);
+
+    expect(uxLogStub.args[1][0]).to.contain('## 3.3.3 :tada:');
+  });
+
   it('throws an error if info config lookup fails', async () => {
     getInfoConfigStub.throws(new Error('info config error'));
 

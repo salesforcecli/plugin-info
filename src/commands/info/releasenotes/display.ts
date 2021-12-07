@@ -83,7 +83,7 @@ export default class Display extends SfdxCommand {
       const tokens = parseReleaseNotes(releaseNotes, version, releaseNotesPath);
 
       marked.setOptions({
-        renderer: new TerminalRenderer(),
+        renderer: new TerminalRenderer({ emoji: false }),
       });
 
       this.ux.log(marked.parse(`# Release notes for '${this.config.bin}':`));
