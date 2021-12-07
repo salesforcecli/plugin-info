@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.4](https://github.com/salesforcecli/plugin-info/compare/v1.1.3...v1.1.4) (2021-12-07)
+
+### Bug Fixes
+
+- update help message to make the CLI Command Ref work ([268a7b5](https://github.com/salesforcecli/plugin-info/commit/268a7b551fd05d3358691e98cb04ad70df2cef95))
+
 ### [1.1.3](https://github.com/salesforcecli/plugin-info/compare/v1.1.2...v1.1.3) (2021-12-07)
 
 ### Bug Fixes

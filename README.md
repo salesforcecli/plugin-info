@@ -102,14 +102,12 @@ ALIASES
 EXAMPLES
   Display release notes for the currently installed CLI version:
     sfdx info:releasenotes:display
-
   Display release notes for CLI version 7.120.0:
     sfdx info:releasenotes:display --version 7.120.0
-
   Display release notes for the CLI version that corresponds to a tag (stable, stable-rc, latest, latest-rc, rc):
     sfdx info:releasenotes:display --version latest
 ```
 
-_See code: [src/commands/info/releasenotes/display.ts](https://github.com/salesforcecli/plugin-info/blob/v1.1.2/src/commands/info/releasenotes/display.ts)_
+_See code: [src/commands/info/releasenotes/display.ts](https://github.com/salesforcecli/plugin-info/blob/v1.1.3/src/commands/info/releasenotes/display.ts)_
 
 <!-- commandsstop -->
