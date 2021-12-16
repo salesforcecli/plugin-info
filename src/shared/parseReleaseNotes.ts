@@ -6,37 +6,56 @@
  */
 
 import { marked } from 'marked';
+import * as semver from 'semver';
 
 const parseReleaseNotes = (notes: string, version: string, baseUrl: string): marked.Token[] => {
   let found = false;
+  let findClosest = false;
+  let closestVersion: string;
+  const versions = [];
 
   const parsed = marked.lexer(notes);
 
-  // https://stackoverflow.com/a/6969486
-  const escapeRegExp = (string: string): string => {
-    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
-  };
+  let tokens: marked.Token[];
 
-  const regexp = new RegExp(`\\b${escapeRegExp(version)}\\b`);
+  const findVersion = (desiredVersion: string): void => {
+    tokens = parsed.filter((token) => {
+      // TODO: Could make header depth (2) a setting in oclif.info.releasenotes
+      if (token.type === 'heading' && token.depth === 2) {
+        const coercedVerion = semver.coerce(token.text).version;
 
-  const tokens = parsed.filter((token) => {
-    // TODO: Could make header depth (2) a setting in oclif.info.releasenotes
-    if (token.type === 'heading' && token.depth === 2) {
-      if (regexp.exec(token.text)) {
-        found = true;
+        // First time through, build an array of versions
+        // We will use this to find the closest patch if passed version is not found
+        if (!findClosest) versions.push(coercedVerion);
 
+        if (coercedVerion === desiredVersion) {
+          found = true;
+
+          return token;
+        }
+
+        found = false;
+      } else if (found === true) {
         return token;
       }
+    });
 
-      found = false;
-    } else if (found === true) {
-      return token;
+    if (!tokens.length) {
+      if (findClosest === false) {
+        findClosest = true;
+
+        const semverRange = `${semver.major(version)}.${semver.minor(version)}.x`;
+        // Version was not found, try again with the closest patch version
+        closestVersion = semver.maxSatisfying(versions, semverRange) as string;
+
+        findVersion(closestVersion);
+      } else {
+        throw new Error(`Didn't find version '${version}'. View release notes online at: ${baseUrl}`);
+      }
     }
-  });
+  };
 
-  if (!tokens.length) {
-    throw new Error(`Didn't find version '${version}'. View release notes online at: ${baseUrl}`);
-  }
+  findVersion(version);
 
   const fixRelativeLinks = (token: marked.Token): void => {
     // If link is relative, add the baseurl. https://regex101.com/r/h802kJ/1
@@ -47,6 +66,14 @@ const parseReleaseNotes = (notes: string, version: string, baseUrl: string): mar
   };
 
   marked.walkTokens(tokens, fixRelativeLinks);
+
+  if (findClosest) {
+    const warning = marked.lexer(
+      `# ATTENTION: Version ${version} was not found. Showing notes for closest patch version ${closestVersion}.`
+    )[0];
+
+    tokens.unshift(warning);
+  }
 
   return tokens;
 };

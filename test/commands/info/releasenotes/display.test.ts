@@ -102,7 +102,7 @@ describe('info:releasenotes:display', () => {
 
     await runDisplayCmd([]);
 
-    expect(uxLogStub.args[1][0]).to.contain('## Release notes for 3.3.3');
+    expect(uxLogStub.args[0][0]).to.contain('## Release notes for 3.3.3');
   });
 
   it('calls getInfoConfig with config root', async () => {
@@ -116,7 +116,7 @@ describe('info:releasenotes:display', () => {
 
     await runDisplayCmd([]);
 
-    expect(uxLogStub.args[1][0]).to.contain('## 3.3.3 :tada:');
+    expect(uxLogStub.args[0][0]).to.contain('## 3.3.3 :tada:');
   });
 
   it('throws an error if info config lookup fails', async () => {
@@ -213,7 +213,7 @@ describe('info:releasenotes:display', () => {
   it('logs markdown on the command line', async () => {
     await runDisplayCmd([]);
 
-    expect(uxLogStub.args[1][0]).to.contain('## Release notes for 3.3.3');
+    expect(uxLogStub.args[0][0]).to.contain('## Release notes for 3.3.3');
   });
 
   it('throws an error if parsing fails', async () => {
@@ -238,7 +238,7 @@ describe('info:releasenotes:display', () => {
   it('renders a footer if --hook is set', async () => {
     await runDisplayCmd(['--hook']);
 
-    expect(uxLogStub.args[2][0]).to.contain('to manually view the current release notes');
+    expect(uxLogStub.args[1][0]).to.contain('to manually view the current release notes');
   });
 
   it('hides footer if env var is set', async () => {
