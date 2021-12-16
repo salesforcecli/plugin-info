@@ -81,4 +81,43 @@ describe('parseReleaseNotes tests', () => {
     const results = JSON.stringify(tokens, null, '  ');
     expect(results).to.include(`${baseUrl}/./test.md`);
   });
+
+  it('finds a version above what was asked for if not found', () => {
+    const tokens = parseReleaseNotes(notes, '63.17.0', baseUrl);
+
+    const results = JSON.stringify(tokens, null, '  ');
+
+    expect(tokens[1].raw).to.include('63.17.2');
+    expect(results).to.include('- test for finding nearby versions');
+  });
+
+  it('finds a version below what was asked for if not found', () => {
+    const tokens = parseReleaseNotes(notes, '63.17.5', baseUrl);
+
+    const results = JSON.stringify(tokens, null, '  ');
+
+    expect(tokens[1].raw).to.include('63.17.2');
+    expect(results).to.include('- test for finding nearby versions');
+  });
+
+  it('finds higest version if multiple minors exist', () => {
+    const tokens = parseReleaseNotes(notes, '63.18.0', baseUrl);
+
+    const results = JSON.stringify(tokens, null, '  ');
+
+    expect(tokens[1].raw).to.include('63.18.2'); // 63.18.1 exists in fixtures/notes
+    expect(results).to.include('- testing multiple minors (higher)');
+  });
+
+  it('shows warning if a different version is shown', () => {
+    const tokens = parseReleaseNotes(notes, '63.18.0', baseUrl);
+
+    const results = JSON.stringify(tokens, null, '  ');
+
+    expect(tokens[0].raw).to.include('63.18.0'); // version asked for
+    expect(tokens[0].raw).to.include('63.18.2'); // version found
+    expect(results).to.include(
+      'ATTENTION: Version 63.18.0 was not found. Showing notes for closest patch version 63.18.2.'
+    );
+  });
 });
