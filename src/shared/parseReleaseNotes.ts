@@ -12,21 +12,22 @@ const parseReleaseNotes = (notes: string, version: string, baseUrl: string): mar
   let found = false;
   let findClosest = false;
   let closestVersion: string;
-  const versions = [];
+  let versions: string[];
 
   const parsed = marked.lexer(notes);
 
   let tokens: marked.Token[];
 
   const findVersion = (desiredVersion: string): void => {
+    versions = [];
+
     tokens = parsed.filter((token) => {
       // TODO: Could make header depth (2) a setting in oclif.info.releasenotes
       if (token.type === 'heading' && token.depth === 2) {
         const coercedVersion = semver.coerce(token.text).version;
 
-        // First time through, build an array of versions
         // We will use this to find the closest patch if passed version is not found
-        if (!findClosest) versions.push(coercedVersion);
+        versions.push(coercedVersion);
 
         if (coercedVersion === desiredVersion) {
           found = true;
@@ -39,23 +40,24 @@ const parseReleaseNotes = (notes: string, version: string, baseUrl: string): mar
         return token;
       }
     });
-
-    if (!tokens.length) {
-      if (findClosest === false) {
-        findClosest = true;
-
-        const semverRange = `${semver.major(version)}.${semver.minor(version)}.x`;
-        // Version was not found, try again with the closest patch version
-        closestVersion = semver.maxSatisfying<string>(versions, semverRange);
-
-        findVersion(closestVersion);
-      } else {
-        throw new Error(`Didn't find version '${version}'. View release notes online at: ${baseUrl}`);
-      }
-    }
   };
 
   findVersion(version);
+
+  if (!tokens.length && findClosest === false) {
+    // If version was not found, try again with the closest patch version
+    findClosest = true;
+
+    const semverRange = `${semver.major(version)}.${semver.minor(version)}.x`;
+
+    closestVersion = semver.maxSatisfying<string>(versions, semverRange);
+
+    findVersion(closestVersion);
+
+    if (!tokens.length) {
+      throw new Error(`Didn't find version '${version}'. View release notes online at: ${baseUrl}`);
+    }
+  }
 
   const fixRelativeLinks = (token: marked.Token): void => {
     // If link is relative, add the baseurl. https://regex101.com/r/h802kJ/1
