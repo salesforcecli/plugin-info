@@ -100,7 +100,7 @@ describe('parseReleaseNotes tests', () => {
     expect(results).to.include('- test for finding nearby versions');
   });
 
-  it('finds higest version if multiple minors exist', () => {
+  it('finds highest version if multiple minors exist', () => {
     const tokens = parseReleaseNotes(notes, '63.18.0', baseUrl);
 
     const results = JSON.stringify(tokens, null, '  ');

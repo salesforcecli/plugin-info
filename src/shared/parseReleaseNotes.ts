@@ -22,13 +22,13 @@ const parseReleaseNotes = (notes: string, version: string, baseUrl: string): mar
     tokens = parsed.filter((token) => {
       // TODO: Could make header depth (2) a setting in oclif.info.releasenotes
       if (token.type === 'heading' && token.depth === 2) {
-        const coercedVerion = semver.coerce(token.text).version;
+        const coercedVersion = semver.coerce(token.text).version;
 
         // First time through, build an array of versions
         // We will use this to find the closest patch if passed version is not found
-        if (!findClosest) versions.push(coercedVerion);
+        if (!findClosest) versions.push(coercedVersion);
 
-        if (coercedVerion === desiredVersion) {
+        if (coercedVersion === desiredVersion) {
           found = true;
 
           return token;
@@ -46,7 +46,7 @@ const parseReleaseNotes = (notes: string, version: string, baseUrl: string): mar
 
         const semverRange = `${semver.major(version)}.${semver.minor(version)}.x`;
         // Version was not found, try again with the closest patch version
-        closestVersion = semver.maxSatisfying(versions, semverRange) as string;
+        closestVersion = semver.maxSatisfying<string>(versions, semverRange);
 
         findVersion(closestVersion);
       } else {
