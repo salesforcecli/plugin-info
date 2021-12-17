@@ -21,7 +21,7 @@ const parseReleaseNotes = (notes: string, version: string, baseUrl: string): mar
 
   const tokens = parsed.filter((token) => {
     // TODO: Could make header depth (2) a setting in oclif.info.releasenotes
-    if (token.type === 'heading' && token.depth === 2) {
+    if (token.type === 'heading' && token.depth <= 2) {
       if (regexp.exec(token.text)) {
         found = true;
 

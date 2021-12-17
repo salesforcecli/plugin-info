@@ -3,6 +3,7 @@ module.exports = {
   flags: {
     version: 'CLI version or tag for which to display release notes.',
     hook: 'This hidden parameter is used in post install or update hooks.',
+    plugin: 'Plugin name for which to display release notes.',
   },
   examples: [
     `Display release notes for the currently installed CLI version:
