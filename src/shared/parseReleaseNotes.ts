@@ -10,7 +10,6 @@ import * as semver from 'semver';
 
 const parseReleaseNotes = (notes: string, version: string, baseUrl: string): marked.Token[] => {
   let found = false;
-  let findClosest = false;
   let closestVersion: string;
   let versions: string[];
 
@@ -44,10 +43,8 @@ const parseReleaseNotes = (notes: string, version: string, baseUrl: string): mar
 
   findVersion(version);
 
-  if (!tokens.length && findClosest === false) {
+  if (!tokens.length) {
     // If version was not found, try again with the closest patch version
-    findClosest = true;
-
     const semverRange = `${semver.major(version)}.${semver.minor(version)}.x`;
 
     closestVersion = semver.maxSatisfying<string>(versions, semverRange);
@@ -69,7 +66,7 @@ const parseReleaseNotes = (notes: string, version: string, baseUrl: string): mar
 
   marked.walkTokens(tokens, fixRelativeLinks);
 
-  if (findClosest) {
+  if (closestVersion !== undefined) {
     const warning = marked.lexer(
       `# ATTENTION: Version ${version} was not found. Showing notes for closest patch version ${closestVersion}.`
     )[0];
