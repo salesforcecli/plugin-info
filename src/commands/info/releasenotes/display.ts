@@ -99,7 +99,7 @@ export default class Display extends SfdxCommand {
         renderer: new TerminalRenderer({ emoji: false }),
       });
 
-      tokens.unshift(marked.lexer(`# Release notes for '${this.config.bin}':`)[0]);
+      tokens.unshift(marked.lexer(`# Release notes for '${plugin.name}':`)[0]);
 
       this.ux.log(marked.parser(tokens));
 
