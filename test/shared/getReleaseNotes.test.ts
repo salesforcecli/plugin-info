@@ -41,6 +41,7 @@ describe('getReleaseNotes tests', () => {
     version = '1.2.3';
     filename = 'readme.md';
     options = {
+      agent: { https: {} },
       timeout: SFDX_RELEASE_NOTES_TIMEOUT,
       throwHttpErrors: false,
     };
@@ -82,7 +83,7 @@ describe('getReleaseNotes tests', () => {
 
     const expected = [`${rawPath}/v1.md`, options];
 
-    expect(gotStub.args[0]).to.deep.equal(expected);
+    expect(JSON.parse(JSON.stringify(gotStub.args[0]))).to.deep.equal(expected);
   });
 
   it('makes readme GET request with correct args', async () => {
@@ -90,7 +91,7 @@ describe('getReleaseNotes tests', () => {
 
     const expected = [`${rawPath}/${filename}`, { ...options, throwHttpErrors: true }];
 
-    expect(gotStub.args[1]).to.deep.equal(expected);
+    expect(JSON.parse(JSON.stringify(gotStub.args[1]))).to.deep.equal(expected);
   });
 
   it('returns versioned markdown if found', async () => {

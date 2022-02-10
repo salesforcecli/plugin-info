@@ -42,7 +42,11 @@ describe('getDistTagVersion tests', () => {
   it('calls got with correct args', async () => {
     await getDistTagVersion(url, 'latest');
 
-    expect(gotStub.args[0]).to.deep.equal([url, { timeout: 3000 }]);
+    expect(gotStub.args[0][0]).to.equal(url);
+    expect(JSON.parse(JSON.stringify(gotStub.args[0][1])), JSON.stringify(gotStub.args[0][1])).to.deep.equal({
+      agent: { https: {} },
+      timeout: 3000,
+    });
   });
 
   it('returns rc if version is "latest-rc"', async () => {

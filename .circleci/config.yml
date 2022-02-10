@@ -35,18 +35,18 @@ workflows:
           context:
             - CLI_CTC
             - AWS
-      # - release-management/test-nut:
-      #     matrix:
-      #       parameters:
-      #         os:
-      #           - linux
-      #           - windows
-      #         sfdx_version:
-      #           - latest
-      #         node_version:
-      #           - latest
-      #     requires:
-      #       - release-management/test-package
+      - release-management/test-nut:
+          matrix:
+            parameters:
+              os:
+                - linux
+                - windows
+              sfdx_version:
+                - latest
+              node_version:
+                - latest
+          requires:
+            - release-management/test-package
     when: << pipeline.parameters.run-auto-workflows >>
   test-ts-update:
     triggers:

@@ -7,6 +7,8 @@
 
 import got from 'got';
 import { major } from 'semver';
+import { getProxyForUrl } from 'proxy-from-env';
+import * as ProxyAgent from 'proxy-agent';
 import { SFDX_RELEASE_NOTES_TIMEOUT } from '../constants';
 
 const getReleaseNotes = async (base: string, filename: string, version: string): Promise<string> => {
@@ -17,6 +19,7 @@ const getReleaseNotes = async (base: string, filename: string, version: string):
   const options = {
     timeout: SFDX_RELEASE_NOTES_TIMEOUT,
     throwHttpErrors: false,
+    agent: { https: ProxyAgent(getProxyForUrl(rawBase)) },
   };
 
   const getPromises = [
