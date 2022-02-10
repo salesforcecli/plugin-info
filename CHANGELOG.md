@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.2.1](https://github.com/salesforcecli/plugin-info/compare/v1.2.0...v1.2.1) (2022-02-10)
+
+### Bug Fixes
+
+- proxy support for got ([#75](https://github.com/salesforcecli/plugin-info/issues/75)) ([2d9abef](https://github.com/salesforcecli/plugin-info/commit/2d9abefe045d9fcfde9c79df416e5b809b5461d6))
+
 ## [1.2.0](https://github.com/salesforcecli/plugin-info/compare/v1.1.4...v1.2.0) (2022-01-05)
 
 ### Features
