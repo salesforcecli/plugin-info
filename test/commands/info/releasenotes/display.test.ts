@@ -5,9 +5,10 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import { expect, use as chaiUse } from 'chai';
+import * as os from 'os';
 import * as Sinon from 'sinon';
 import * as SinonChai from 'sinon-chai';
+import { expect, use as chaiUse } from 'chai';
 import { fromStub, stubInterface, stubMethod, spyMethod } from '@salesforce/ts-sinon';
 import { IConfig } from '@oclif/config';
 import { shouldThrow } from '@salesforce/core/lib/testSetup';
@@ -249,5 +250,16 @@ describe('info:releasenotes:display', () => {
     await runDisplayCmd(['--hook']);
     expect(lifecycleStub.calledOnce).to.be.true;
     expect(uxLogStub.args[2]).to.be.undefined;
+  });
+
+  it('supports json output', async () => {
+    const json = await runDisplayCmd(['--json']);
+
+    const expected = {
+      body: `# Release notes for 'sfdx':${os.EOL}## Release notes for 3.3.3`,
+      url: mockInfoConfig.releasenotes.releaseNotesPath,
+    };
+
+    expect(json).to.deep.equal(expected);
   });
 });

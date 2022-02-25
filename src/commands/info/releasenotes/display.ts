@@ -50,7 +50,7 @@ export default class Display extends SfdxCommand {
     }),
   };
 
-  public async run(): Promise<void> {
+  public async run(): Promise<DisplayOutput> {
     const env = new Env();
 
     const isHook = !!this.flags.hook;
@@ -88,7 +88,13 @@ export default class Display extends SfdxCommand {
 
       tokens.unshift(marked.lexer(`# Release notes for '${this.config.bin}':`)[0]);
 
-      this.ux.log(marked.parser(tokens));
+      if (this.flags.json) {
+        const body = tokens.map((token) => token.raw).join(os.EOL);
+
+        return { body, url: releaseNotesPath };
+      } else {
+        this.ux.log(marked.parser(tokens));
+      }
 
       if (isHook) {
         if (env.getBoolean(HIDE_FOOTER)) {
@@ -128,4 +134,9 @@ export default class Display extends SfdxCommand {
       throw err;
     }
   }
+}
+
+interface DisplayOutput {
+  body: string;
+  url: string;
 }
