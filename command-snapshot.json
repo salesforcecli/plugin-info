@@ -1,5 +1,10 @@
 [
   {
+    "command": "force",
+    "plugin": "@salesforce/plugin-info",
+    "flags": ["json", "loglevel"]
+  },
+  {
     "command": "info:releasenotes:display",
     "plugin": "@salesforce/plugin-info",
     "flags": ["hook", "json", "loglevel", "version"]
