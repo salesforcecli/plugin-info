@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.3.0](https://github.com/salesforcecli/plugin-info/compare/v1.2.1...v1.3.0) (2022-02-28)
+
+### Features
+
+- json output ([edd0b99](https://github.com/salesforcecli/plugin-info/commit/edd0b991edc0383dc6d6fb20a9e4daa15eb82a55))
+- migrate force command from toolbelt ([68ecc16](https://github.com/salesforcecli/plugin-info/commit/68ecc1643a672e72fd34ea9e224e30a917aa840b))
+- support api from config ([25ac49d](https://github.com/salesforcecli/plugin-info/commit/25ac49d8d4f0ff10dcdf740f4e6cdd4eb1c3d8db))
+
 ### [1.2.1](https://github.com/salesforcecli/plugin-info/compare/v1.2.0...v1.2.1) (2022-02-10)
 
 ### Bug Fixes
