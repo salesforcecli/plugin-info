@@ -13,6 +13,7 @@ import got from 'got';
 import { Help } from '@oclif/plugin-help';
 import * as ProxyAgent from 'proxy-agent';
 import { getProxyForUrl } from 'proxy-from-env';
+import { ConfigAggregator } from '@salesforce/core';
 
 const getAsciiSignature = (apiVersion: string): string => `
                  DX DX DX
@@ -51,6 +52,10 @@ DX DX                                                                   DX DX
 `;
 
 const getCurrentApiVersion = async (): Promise<string> => {
+  const apiFromConfig = ConfigAggregator.getValue('apiVersion').value as string;
+  if (apiFromConfig) {
+    return apiFromConfig;
+  }
   const url = 'https://mdcoverage.secure.force.com/services/apexrest/report';
   return `${(
     JSON.parse(
