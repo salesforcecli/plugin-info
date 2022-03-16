@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.3.1](https://github.com/salesforcecli/plugin-info/compare/v1.3.0...v1.3.1) (2022-03-16)
+
+### Bug Fixes
+
+- remove force.ts ([c663604](https://github.com/salesforcecli/plugin-info/commit/c6636048571b198f7ae23c1fb014ebc180075bb9))
+
 ## [1.3.0](https://github.com/salesforcecli/plugin-info/compare/v1.2.1...v1.3.0) (2022-02-28)
 
 ### Features
