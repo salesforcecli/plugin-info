@@ -5,11 +5,11 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
+import * as fs from 'fs';
 import { expect, use as chaiUse } from 'chai';
 import * as Sinon from 'sinon';
 import * as SinonChai from 'sinon-chai';
 import { spyMethod } from '@salesforce/ts-sinon';
-import { fs } from '@salesforce/core';
 import { marked } from 'marked';
 import { parseReleaseNotes } from '../../src/shared/parseReleaseNotes';
 

@@ -6,11 +6,11 @@
  */
 
 import * as pathPkg from 'path';
+import * as fs from 'fs';
 import { expect, use as chaiUse } from 'chai';
 import * as Sinon from 'sinon';
 import * as SinonChai from 'sinon-chai';
 import { stubMethod, spyMethod } from '@salesforce/ts-sinon';
-import { fs } from '@salesforce/core';
 import { shouldThrow } from '@salesforce/core/lib/testSetup';
 import { getInfoConfig, PjsonWithInfo } from '../../src/shared/getInfoConfig';
 
@@ -19,7 +19,7 @@ chaiUse(SinonChai);
 describe('getInfoConfig tests', () => {
   const sandbox = Sinon.createSandbox();
 
-  let readJsonStub: Sinon.SinonStub;
+  let readFileStub: Sinon.SinonStub;
   let joinSpy: Sinon.SinonSpy;
 
   let pjsonMock: PjsonWithInfo;
@@ -41,7 +41,8 @@ describe('getInfoConfig tests', () => {
       },
     };
 
-    readJsonStub = stubMethod(sandbox, fs, 'readJson').returns(pjsonMock);
+    // keep pjsonMock as JSON to access values in tests
+    readFileStub = stubMethod(sandbox, fs.promises, 'readFile').resolves(JSON.stringify(pjsonMock));
     joinSpy = spyMethod(sandbox, pathPkg, 'join');
   });
 
@@ -63,7 +64,7 @@ describe('getInfoConfig tests', () => {
 
     const expected = pathPkg.join(path, 'package.json');
 
-    expect(readJsonStub.args[0][0]).to.deep.equal(expected);
+    expect(readFileStub.args[0][0]).to.deep.equal(expected);
   });
 
   it('info config is extracted from package.json', async () => {
@@ -73,7 +74,7 @@ describe('getInfoConfig tests', () => {
   });
 
   it('throws an error if info config does not exist', async () => {
-    readJsonStub.returns({ oclif: {} });
+    readFileStub.returns(JSON.stringify({ oclif: {} }));
 
     try {
       await shouldThrow(getInfoConfig(path));

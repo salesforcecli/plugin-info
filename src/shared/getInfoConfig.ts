@@ -6,7 +6,7 @@
  */
 
 import { join } from 'path';
-import { fs } from '@salesforce/core';
+import * as fs from 'fs';
 import { PJSON } from '@oclif/config';
 
 export interface PjsonWithInfo extends PJSON {
@@ -42,7 +42,7 @@ const getInfoConfig = async (path: string): Promise<InfoConfig> => {
   // TODO: could add env var support for these values
   const fullPath = join(path, 'package.json');
 
-  const json = (await fs.readJson(fullPath)) as PjsonWithInfo;
+  const json = JSON.parse(await fs.promises.readFile(fullPath, 'utf8')) as PjsonWithInfo;
 
   const { info } = json.oclif;
 
