@@ -108,6 +108,6 @@ EXAMPLES
     sfdx info:releasenotes:display --version latest
 ```
 
-_See code: [src/commands/info/releasenotes/display.ts](https://github.com/salesforcecli/plugin-info/blob/v1.3.0/src/commands/info/releasenotes/display.ts)_
+_See code: [src/commands/info/releasenotes/display.ts](https://github.com/salesforcecli/plugin-info/blob/v2.0.0/src/commands/info/releasenotes/display.ts)_
 
 <!-- commandsstop -->

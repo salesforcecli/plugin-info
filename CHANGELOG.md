@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.0.0](https://github.com/salesforcecli/plugin-info/compare/v1.3.1...v2.0.0) (2022-04-01)
+
+### Bug Fixes
+
+- parking orbit plugin-info ([f18721f](https://github.com/salesforcecli/plugin-info/commit/f18721ff411cb4720d6d297d3250206129eb620b))
+
 ### [1.3.1](https://github.com/salesforcecli/plugin-info/compare/v1.3.0...v1.3.1) (2022-03-16)
 
 ### Bug Fixes
