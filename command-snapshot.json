@@ -2,6 +2,7 @@
   {
     "command": "info:releasenotes:display",
     "plugin": "@salesforce/plugin-info",
-    "flags": ["hook", "json", "loglevel", "version"]
+    "flags": ["hook", "json", "loglevel", "version"],
+    "alias": ["whatsnew"]
   }
 ]
