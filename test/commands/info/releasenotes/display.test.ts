@@ -136,7 +136,7 @@ describe('info:releasenotes:display', () => {
     expect(getDistTagVersionStub.called).to.be.false;
   });
 
-  it('calls getDistTagVersion with correct are if helpers are used', async () => {
+  it('calls getDistTagVersion with correct arg if tagHelpers are used', async () => {
     await runDisplayCmd(['-v', 'latest-rc', '--hook']);
 
     expect(getDistTagVersionStub.args[0]).to.deep.equal([mockInfoConfig.releasenotes.distTagUrl, 'latest-rc']);
