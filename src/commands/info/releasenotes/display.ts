@@ -5,9 +5,6 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-// Needed this to ensure the "helpers" were declared before read in examples
-/* eslint-disable @typescript-eslint/member-ordering */
-
 import * as os from 'os';
 import { marked } from 'marked';
 import * as TerminalRenderer from 'marked-terminal';
@@ -31,13 +28,11 @@ const HIDE_FOOTER = 'SFDX_HIDE_RELEASE_NOTES_FOOTER';
 const messages = Messages.loadMessages('@salesforce/plugin-info', 'display');
 
 export default class Display extends SfdxCommand {
-  private static helpers = ['stable', 'stable-rc', 'latest', 'latest-rc', 'rc'];
-
   public static description = messages.getMessage('commandDescription');
 
   public static aliases = ['whatsnew'];
 
-  public static examples = messages.getMessage('examples', [Display.helpers.join(', ')]).split(os.EOL);
+  public static examples = messages.getMessage('examples').split(os.EOL);
 
   protected static flagsConfig = {
     version: flags.string({
@@ -66,6 +61,9 @@ export default class Display extends SfdxCommand {
     }
 
     try {
+      // Note: If you modify these, also update in messages/display.js
+      const tagHelpers = ['stable', 'stable-rc', 'latest', 'latest-rc', 'rc'];
+
       const installedVersion = this.config.pjson.version;
 
       const infoConfig = await getInfoConfig(this.config.root);
@@ -74,7 +72,7 @@ export default class Display extends SfdxCommand {
 
       let version = (this.flags.version as string) ?? installedVersion;
 
-      if (Display.helpers.includes(version)) {
+      if (tagHelpers.includes(version)) {
         version = await getDistTagVersion(distTagUrl, version);
       }
 
