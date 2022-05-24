@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.0.1](https://github.com/salesforcecli/plugin-info/compare/v2.0.0...v2.0.1) (2022-05-24)
+
+### Bug Fixes
+
+- add prompt to examples ([981c3d3](https://github.com/salesforcecli/plugin-info/commit/981c3d3ac38659d537fb641d1501d4d85c31e37e))
+
 ## [2.0.0](https://github.com/salesforcecli/plugin-info/compare/v1.3.1...v2.0.0) (2022-04-01)
 
 ### Bug Fixes
