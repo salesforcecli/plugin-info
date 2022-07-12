@@ -39,6 +39,13 @@ export default class Display extends SfdxCommand {
 
   public static examples = messages.getMessage('examples', [Display.helpers.join(', ')]).split(os.EOL);
 
+  public static args = [
+    {
+      name: 'plugin',
+      description: messages.getMessage('flags.plugin'),
+    },
+  ];
+
   protected static flagsConfig = {
     version: flags.string({
       char: 'v',
@@ -66,9 +73,15 @@ export default class Display extends SfdxCommand {
     }
 
     try {
-      const installedVersion = this.config.pjson.version;
+      const plugin = (this.args.plugin as string)
+        ? this.config.plugins.filter((p) => p.name === (this.args.plugin as string))[0]
+        : this.config;
 
-      const infoConfig = await getInfoConfig(this.config.root);
+      if (!plugin) throw new Error(`No plugin '${this.args.plugin as string}' found`);
+
+      const installedVersion = plugin.pjson.version;
+
+      const infoConfig = await getInfoConfig(plugin.root);
 
       const { distTagUrl, releaseNotesPath, releaseNotesFilename } = infoConfig.releasenotes;
 
@@ -86,7 +99,7 @@ export default class Display extends SfdxCommand {
         renderer: new TerminalRenderer({ emoji: false }),
       });
 
-      tokens.unshift(marked.lexer(`# Release notes for '${this.config.bin}':`)[0]);
+      tokens.unshift(marked.lexer(`# Release notes for '${plugin.name}':`)[0]);
 
       if (this.flags.json) {
         const body = tokens.map((token) => token.raw).join(os.EOL);
@@ -100,7 +113,7 @@ export default class Display extends SfdxCommand {
         if (env.getBoolean(HIDE_FOOTER)) {
           await Lifecycle.getInstance().emitTelemetry({ eventName: 'FOOTER_HIDDEN' });
         } else {
-          const footer = messages.getMessage('footer', [this.config.bin, releaseNotesPath, HIDE_NOTES, HIDE_FOOTER]);
+          const footer = messages.getMessage('footer', [plugin.name, releaseNotesPath, HIDE_NOTES, HIDE_FOOTER]);
           this.ux.log(marked.parse(footer));
         }
       }

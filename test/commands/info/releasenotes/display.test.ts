@@ -47,7 +47,7 @@ describe('info:releasenotes:display', () => {
   }
 
   const runDisplayCmd = async (params: string[]) => {
-    oclifConfigStub.bin = 'sfdx';
+    oclifConfigStub.name = 'sfdx-cli';
 
     const cmd = new TestDisplay(params, oclifConfigStub);
 
@@ -167,7 +167,7 @@ describe('info:releasenotes:display', () => {
   it('logs logs a header with cli bin', async () => {
     await runDisplayCmd([]);
 
-    expect(uxLogStub.args[0][0]).to.contain("# Release notes for 'sfdx':");
+    expect(uxLogStub.args[0][0]).to.contain("# Release notes for 'sfdx-cli':");
   });
 
   it('calls getReleaseNotes with passed version', async () => {
