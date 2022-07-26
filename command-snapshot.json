@@ -4,5 +4,10 @@
     "plugin": "@salesforce/plugin-info",
     "flags": ["hook", "json", "loglevel", "version"],
     "alias": ["whatsnew"]
+  },
+  {
+    "command": "doctor",
+    "plugin": "@salesforce/plugin-info",
+    "flags": ["command", "newissue", "plugin", "json", "loglevel"]
   }
 ]
