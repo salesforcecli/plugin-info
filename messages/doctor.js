@@ -15,13 +15,10 @@ Plugin providers can also implement their own doctor diagnostic tests by listeni
   examples: [
     `Run CLI doctor diagnostics:
     $ <%= config.bin %> doctor
-
 Run CLI doctor diagnostics and the specified command, writing debug output to a file:
     $ <%= config.bin %> doctor --command "force:org:list --all"
-
 Run CLI doctor diagnostics for a specific plugin:
     $ <%= config.bin %> doctor --plugin @salesforce/plugin-source
-
 Run CLI doctor diagnostics and create a new CLI GitHub issue, attaching all doctor diagnostics:
     $ <%= config.bin %> doctor --newissue
   `,

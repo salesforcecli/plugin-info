@@ -6,11 +6,9 @@
  */
 
 import { exec } from 'child_process';
-import { IConfig } from '@oclif/config';
+import { Config } from '@oclif/core';
+import { Lifecycle, Messages } from '@salesforce/core';
 import { SfDoctor, SfDoctorDiagnosis } from './doctor';
-
-// @fixme: remove this when we can get better typing of VersionDetail from sfdx-cli
-/* eslint-disable */
 
 // const SUPPORTED_SHELLS = [
 //   'bash',
@@ -18,6 +16,14 @@ import { SfDoctor, SfDoctorDiagnosis } from './doctor';
 //   'powershell'
 //   'cmd.exe'
 // ];
+
+export interface DiagnosticStatus {
+  testName: string;
+  status: 'pass' | 'fail' | 'warn' | 'unknown';
+}
+
+Messages.importMessagesDirectory(__dirname);
+const messages = Messages.loadMessages('@salesforce/plugin-info', 'diagnostics');
 
 /**
  * Diagnostics are all the tests that ensure a known, clean CLI configuration
@@ -27,7 +33,7 @@ import { SfDoctor, SfDoctorDiagnosis } from './doctor';
 export class Diagnostics {
   private diagnosis: SfDoctorDiagnosis;
 
-  public constructor(private readonly doctor: SfDoctor, private config: IConfig) {
+  public constructor(private readonly doctor: SfDoctor, private config: Config) {
     this.diagnosis = doctor.getDiagnosis();
   }
 
@@ -48,44 +54,67 @@ export class Diagnostics {
   //
   // **********************************************************
 
+  /**
+   * Checks to see if the running version of the CLI is the latest.
+   */
   public async outdatedCliVersionCheck(): Promise<void> {
     const cliVersionArray = this.diagnosis.versionDetail.cliVersion.split('/');
     const cliName = cliVersionArray[0];
     const cliVersion = cliVersionArray[1];
 
     return new Promise<void>((resolve) => {
-      exec(`npm view ${cliName} --json`, {}, (error, stdout, stderr) => {
-        const code = error?.code || 0;
+      const testName = 'using latest CLI version';
+      let status: DiagnosticStatus['status'] = 'unknown';
+
+      exec(`npm view ${cliName} --json`, {}, async (error, stdout, stderr) => {
+        const code = error?.code ?? 0;
         if (code === 0) {
-          const latestVersion = JSON.parse(stdout)['dist-tags'].latest;
+          const latestVersion = JSON.parse(stdout)['dist-tags'].latest as string;
           if (cliVersion < latestVersion) {
-            this.doctor.addSuggestion(
-              `Update your CLI version from ${cliVersion} to the latest version: ${latestVersion}`
-            );
+            status = 'fail';
+            this.doctor.addSuggestion(messages.getMessage('updateCliVersion', [cliVersion, latestVersion]));
+          } else {
+            status = 'pass';
           }
         } else {
-          this.doctor.addSuggestion('Could not determine latest CLI version');
+          this.doctor.addSuggestion(messages.getMessage('latestCliVersionError', [stderr]));
         }
+        await Lifecycle.getInstance().emit('Doctor:diagnostic', { testName, status });
         resolve();
       });
     });
   }
 
+  /**
+   * Checks if the salesforcedx plugin is installed and suggests
+   * to uninstall it if there.
+   */
   public async salesforceDxPluginCheck(): Promise<void> {
+    const testName = 'salesforcedx plugin not installed';
+    let status: DiagnosticStatus['status'] = 'pass';
+
     const plugins = this.diagnosis.versionDetail.pluginVersions;
     if (plugins?.some((p) => p.split(' ')[0] === 'salesforcedx')) {
+      status = 'fail';
       const bin = this.diagnosis.cliConfig.bin;
-      this.doctor.addSuggestion(
-        `The salesforcedx plugin is deprecated. Please uninstall by running \`${bin} plugins:uninstall salesforcedx\``
-      );
+      this.doctor.addSuggestion(messages.getMessage('salesforceDxPluginDetected', [bin]));
     }
+    await Lifecycle.getInstance().emit('Doctor:diagnostic', { testName, status });
   }
 
+  /**
+   * Checks and warns if any plugins are linked.
+   */
   public async linkedPluginCheck(): Promise<void> {
+    const testName = 'no linked plugins';
+    let status: DiagnosticStatus['status'] = 'pass';
+
     const plugins = this.config.plugins;
     const linkedPlugins = plugins.filter((p) => p.name.includes('(link)'));
     linkedPlugins.forEach((lp) => {
-      this.doctor.addSuggestion(`Warning: the [${lp.name}] plugin is linked.`);
+      status = 'fail';
+      this.doctor.addSuggestion(messages.getMessage('linkedPluginWarning', [lp.name]));
     });
+    await Lifecycle.getInstance().emit('Doctor:diagnostic', { testName, status });
   }
 }

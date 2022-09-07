@@ -3,11 +3,8 @@
   "compilerOptions": {
     "outDir": "lib",
     "rootDir": "src",
-    "allowSyntheticDefaultImports": true,
-    "baseUrl": ".",
-    "paths": {
-      "@oclif/config": ["node_modules/@oclif/config"]
-    }
+    "skipLibCheck": true,
+    "allowSyntheticDefaultImports": true
   },
   "include": ["./src/**/*.ts"]
 }

@@ -10,12 +10,9 @@ import * as path from 'path';
 import { Env, omit } from '@salesforce/kit';
 import { AnyJson, KeyValue } from '@salesforce/ts-types';
 import { Global } from '@salesforce/core';
-import { IConfig } from '@oclif/config';
-// import { VersionDetail } from 'sfdx-cli';
+import { Config } from '@oclif/core';
+import { VersionDetail } from '@oclif/plugin-version';
 import { Diagnostics } from './diagnostics';
-
-// @fixme: remove this when we can get better typing of VersionDetail from sfdx-cli
-/* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-assignment */
 
 export interface SfDoctor {
   addCommandName(commandName: string): void;
@@ -26,11 +23,10 @@ export interface SfDoctor {
   writeFileSync(name: string, contents: string): string;
 }
 
-type CliConfig = Partial<IConfig> & { nodeEngine: string };
+type CliConfig = Partial<Config> & { nodeEngine: string };
 
 export interface SfDoctorDiagnosis {
-  // versionDetail: VersionDetail;
-  versionDetail: any;
+  versionDetail: VersionDetail;
   sfdxEnvVars: Array<KeyValue<string>>;
   sfEnvVars: Array<KeyValue<string>>;
   commandName?: string;
@@ -54,14 +50,13 @@ export class Doctor implements SfDoctor {
   // Contains all gathered data and results of diagnostics.
   private diagnosis: SfDoctorDiagnosis;
 
-  // private constructor(private readonly config: IConfig, versionDetail: VersionDetail) {
-  private constructor(private readonly config: IConfig, versionDetail: any) {
+  private constructor(private readonly config: Config, versionDetail: VersionDetail) {
     this.id = Date.now();
     const sfdxEnvVars = new Env().entries().filter((e) => e[0].startsWith('SFDX_'));
     const sfEnvVars = new Env().entries().filter((e) => e[0].startsWith('SF_'));
     const cliConfig = omit(config, ['plugins', 'pjson', 'userPJSON', 'options']) as CliConfig;
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    cliConfig.nodeEngine = config.pjson.engines.node;
+    cliConfig.nodeEngine = config.pjson.engines.node as string;
 
     this.diagnosis = {
       versionDetail,
@@ -95,8 +90,7 @@ export class Doctor implements SfDoctor {
    * @param versionDetail The result of running a verbose version command
    * @returns An instance of SfDoctor
    */
-  // public static init(config: IConfig, versionDetail: VersionDetail): SfDoctor {
-  public static init(config: IConfig, versionDetail: any): SfDoctor {
+  public static init(config: Config, versionDetail: VersionDetail): SfDoctor {
     if (Doctor.instance) {
       throw Error('SfDoctor has already been initialized');
     }
@@ -125,6 +119,7 @@ export class Doctor implements SfDoctor {
   }
 
   /**
+   * Add diagnostic data that is specific to the passed plugin name.
    *
    * @param pluginName The name in the plugin's package.json
    * @param data Any data to add to the doctor diagnosis that is specific
@@ -157,7 +152,7 @@ export class Doctor implements SfDoctor {
    * Returns all the data gathered, paths to doctor files, and recommendations.
    */
   public getDiagnosis(): SfDoctorDiagnosis {
-    return Object.assign({}, this.diagnosis);
+    return { ...this.diagnosis };
   }
 
   /**
