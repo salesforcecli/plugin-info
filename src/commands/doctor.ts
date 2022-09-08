@@ -28,10 +28,6 @@ export default class Doctor extends SfdxCommand {
       char: 'c',
       description: messages.getMessage('flags.command'),
     }),
-    newissue: flags.boolean({
-      char: 'i',
-      description: messages.getMessage('flags.newissue'),
-    }),
     plugin: flags.string({
       char: 'p',
       description: messages.getMessage('flags.plugin'),
@@ -55,7 +51,6 @@ export default class Doctor extends SfdxCommand {
 
     const pluginFlag = this.flags.plugin as string;
     const commandFlag = this.flags.command as string;
-    const newissueFlag = this.flags.newissue as boolean;
     const outputdirFlag = this.flags.outputdir as string;
     this.outputDir = path.resolve(outputdirFlag ?? process.cwd());
 
@@ -103,10 +98,6 @@ export default class Doctor extends SfdxCommand {
     this.ux.log();
     this.ux.styledHeader('Suggestions');
     diagnosis.suggestions.forEach((s) => this.ux.log(`  * ${s}`));
-
-    if (newissueFlag) {
-      this.createNewIssue();
-    }
 
     return diagnosis;
   }
@@ -156,26 +147,5 @@ export default class Doctor extends SfdxCommand {
       });
     });
     this.tasks.push(execPromise);
-  }
-
-  private createNewIssue(): void {
-    // create a new issue via prompts (Inquirer)
-
-    // See https://docs.github.com/en/enterprise-server@3.1/issues/tracking-your-work-with-issues/creating-an-issue#creating-an-issue-from-a-url-query
-    // Example: https://github.com/forcedotcom/cli/issues/new?title=PLEASE+UPDATE&body=Autofill+info+collected+by+doctor...&labels=doctor
-
-    this.ux.warn('New GitHub issue creation is not yet implemented. Coming soon!');
-    // this.ux.log('\nCreating a new GitHub issue for the CLI...\n');
-    // const isItNew = await this.ux.prompt(
-    //   'Have you first checked the list of GitHub issues to ensure it has not already been posted? (y/n)'
-    // );
-
-    // if (isItNew.toLowerCase() === 'y') {
-    //   const title = await this.ux.prompt('What is the subject of the issue?');
-    //   this.ux.log('Encoded title=', encodeURI(title));
-    //   this.ux.log("I'll create an issue for you with that title and attach the doctor diagnostics.");
-    // } else {
-    //   this.ux.log('Please check https://github.com/forcedotcom/cli/issues first');
-    // }
   }
 }

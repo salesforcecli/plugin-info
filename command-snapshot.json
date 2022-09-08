@@ -8,6 +8,6 @@
   {
     "command": "doctor",
     "plugin": "@salesforce/plugin-info",
-    "flags": ["command", "newissue", "plugin", "outputdir", "json", "loglevel"]
+    "flags": ["command", "plugin", "outputdir", "json", "loglevel"]
   }
 ]
