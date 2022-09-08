@@ -8,9 +8,10 @@ The doctor can create a new GitHub issue for the Salesforce CLI, attaching all d
 Plugin providers can also implement their own doctor diagnostic tests by listening to the "sf-doctor" event and running plugin specific tests that will be included in the doctor diagnostics log.
 `,
   flags: {
-    command: 'Run the specified command in debug mode and write results to a file.',
-    newissue: 'Create a new GitHub issue for the CLI, attaching doctor diagnostic results.',
-    plugin: 'Run doctor command diagnostics for a specific plugin.',
+    command: 'run the specified command in debug mode and write results to a file.',
+    newissue: 'create a new GitHub issue for the CLI, attaching doctor diagnostic results.',
+    plugin: 'run doctor command diagnostics for a specific plugin.',
+    outputdir: 'directory to save all created files rather than the current working directory',
   },
   examples: [
     `Run CLI doctor diagnostics:
@@ -23,4 +24,12 @@ Run CLI doctor diagnostics and create a new CLI GitHub issue, attaching all doct
     $ <%= config.bin %> doctor --newissue
   `,
   ],
+  pinnedSuggestions: {
+    checkGitHubIssues: 'check https://github.com/forcedotcom/cli/issues for community posted CLI issues',
+    checkSfdcStatus: 'check http://status.salesforce.com for any Salesforce announced problems',
+  },
+  doctorNotInitializedError: 'Must first initialize a new SfDoctor',
+  doctorAlreadyInitializedError: 'SfDoctor has already been initialized',
+  pluginNotInstalledError:
+    'Specified plugin [%s] is not installed. Please install it, correct the name, or choose another plugin.',
 };

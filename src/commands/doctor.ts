@@ -6,9 +6,10 @@
  */
 
 import * as os from 'os';
+import * as path from 'path';
 import { exec } from 'child_process';
 import { flags, SfdxCommand } from '@salesforce/command';
-import { Messages, Lifecycle } from '@salesforce/core';
+import { Messages, Lifecycle, SfError } from '@salesforce/core';
 import { Doctor as SFDoctor, SfDoctor, SfDoctorDiagnosis } from '../doctor';
 import { DiagnosticStatus } from '../diagnostics';
 
@@ -17,7 +18,6 @@ const messages = Messages.loadMessages('@salesforce/plugin-info', 'doctor');
 
 export default class Doctor extends SfdxCommand {
   public static description = messages.getMessage('commandDescription');
-
   public static examples = messages.getMessage('examples').split(os.EOL);
 
   // Hide for now
@@ -36,49 +36,47 @@ export default class Doctor extends SfdxCommand {
       char: 'p',
       description: messages.getMessage('flags.plugin'),
     }),
+    outputdir: flags.directory({
+      char: 'o',
+      description: messages.getMessage('flags.outputdir'),
+    }),
   };
 
   // Array of promises that are various doctor tasks to perform
   // such as running a command and running diagnostics.
   private tasks: Array<Promise<void>> = [];
-
   private doctor: SfDoctor;
-
+  private outputDir: string;
   private filesWrittenMsgs: string[] = [];
 
   public async run(): Promise<SfDoctorDiagnosis> {
-    SFDoctor.init(this.config, {
-      cliVersion: 'sfdx-cli/7.165.1',
-      pluginVersions: ['foo', 'bar (link)', 'salesforcedx'],
-      nodeVersion: 'node-v16.17.0',
-      architecture: 'darwin-x64'
-    });
     this.doctor = SFDoctor.getInstance();
     const lifecycle = Lifecycle.getInstance();
 
-    const plugin = this.flags.plugin as string;
-    const command = this.flags.command as string;
-    const newissue = this.flags.newissue as boolean;
+    const pluginFlag = this.flags.plugin as string;
+    const commandFlag = this.flags.command as string;
+    const newissueFlag = this.flags.newissue as boolean;
+    const outputdirFlag = this.flags.outputdir as string;
+    this.outputDir = path.resolve(outputdirFlag ?? process.cwd());
 
     // eslint-disable-next-line @typescript-eslint/require-await
     lifecycle.on<DiagnosticStatus>('Doctor:diagnostic', async (data) => {
       this.ux.log(`${data.status} - ${data.testName}`);
     });
 
-    if (command) {
-      this.setupCommandExecution(command);
+    if (commandFlag) {
+      this.setupCommandExecution(commandFlag);
     }
 
-    if (plugin) {
+    if (pluginFlag) {
       // verify the plugin flag matches an installed plugin
-      if (!this.config.plugins.some((p) => p.name === plugin)) {
-        const errMsg = `Specified plugin [${plugin}] is not installed. Please install it or choose another plugin.`;
-        throw Error(errMsg);
+      if (!this.config.plugins.some((p) => p.name === pluginFlag)) {
+        throw new SfError(messages.getMessage('pluginNotInstalledError', [pluginFlag]));
       }
 
       // run the diagnostics for a specific plugin
-      this.ux.styledHeader(`Running diagnostics for plugin: ${plugin}`);
-      this.tasks.push(lifecycle.emit(`sf-doctor-${plugin}`, this.doctor));
+      this.ux.styledHeader(`Running diagnostics for plugin: ${pluginFlag}`);
+      this.tasks.push(lifecycle.emit(`sf-doctor-${pluginFlag}`, this.doctor));
     } else {
       this.ux.styledHeader('Running all diagnostics');
       // run all diagnostics
@@ -93,7 +91,10 @@ export default class Doctor extends SfdxCommand {
     await Promise.all(this.tasks);
 
     const diagnosis = this.doctor.getDiagnosis();
-    const diagnosisLocation = this.doctor.writeFileSync('diagnosis.json', JSON.stringify(diagnosis, null, 2));
+    const diagnosisLocation = this.doctor.writeFileSync(
+      path.join(this.outputDir, 'diagnosis.json'),
+      JSON.stringify(diagnosis, null, 2)
+    );
     this.filesWrittenMsgs.push(`Wrote doctor diagnosis to: ${diagnosisLocation}`);
 
     this.ux.log();
@@ -101,9 +102,9 @@ export default class Doctor extends SfdxCommand {
 
     this.ux.log();
     this.ux.styledHeader('Suggestions');
-    diagnosis.suggestions.forEach(s => this.ux.log(`  * ${s}`));
+    diagnosis.suggestions.forEach((s) => this.ux.log(`  * ${s}`));
 
-    if (newissue) {
+    if (newissueFlag) {
       this.createNewIssue();
     }
 
@@ -132,9 +133,9 @@ export default class Doctor extends SfdxCommand {
   // in the doctor directory.
   private setupCommandExecution(command: string): void {
     const cmdString = this.parseCommand(command);
-    this.ux.log(`Running Command: "${cmdString}"\n`);
-    const cmdName = cmdString.split(' ')[1];
-    this.doctor.addCommandName(cmdName);
+    this.ux.styledHeader('Running command with debugging');
+    this.ux.log(`${cmdString}\n`);
+    this.doctor.addCommandName(cmdString);
 
     const execPromise = new Promise<void>((resolve) => {
       const execOptions = {
@@ -144,10 +145,11 @@ export default class Doctor extends SfdxCommand {
       exec(cmdString, execOptions, (error, stdout, stderr) => {
         const code = error?.code || 0;
         const stdoutWithCode = `Command exit code: ${code}\n\n${stdout}`;
-        const stdoutFileName = `${cmdName}-stdout.log`;
-        const stderrFileName = `${cmdName}-stderr.log`;
-        const stdoutLogLocation = this.doctor.writeFileSync(stdoutFileName, stdoutWithCode);
-        const debugLogLocation = this.doctor.writeFileSync(stderrFileName, stderr);
+        const stdoutLogLocation = this.doctor.writeFileSync(
+          path.join(this.outputDir, 'command-stdout.log'),
+          stdoutWithCode
+        );
+        const debugLogLocation = this.doctor.writeFileSync(path.join(this.outputDir, 'command-debug.log'), stderr);
         this.filesWrittenMsgs.push(`Wrote command stdout log to: ${stdoutLogLocation}`);
         this.filesWrittenMsgs.push(`Wrote command debug log to: ${debugLogLocation}`);
         resolve();

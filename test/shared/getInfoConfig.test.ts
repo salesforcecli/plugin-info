@@ -14,6 +14,7 @@ import { stubMethod, spyMethod } from '@salesforce/ts-sinon';
 import { shouldThrow } from '@salesforce/core/lib/testSetup';
 import { getInfoConfig, PjsonWithInfo } from '../../src/shared/getInfoConfig';
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 chaiUse(SinonChai);
 
 describe('getInfoConfig tests', () => {

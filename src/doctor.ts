@@ -7,9 +7,9 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
+import { Messages, SfError } from '@salesforce/core';
 import { Env, omit } from '@salesforce/kit';
 import { AnyJson, KeyValue } from '@salesforce/ts-types';
-import { Global } from '@salesforce/core';
 import { Config } from '@oclif/core';
 import { VersionDetail } from '@oclif/plugin-version';
 import { Diagnostics } from './diagnostics';
@@ -35,16 +35,18 @@ export interface SfDoctorDiagnosis {
   suggestions: string[];
 }
 
+Messages.importMessagesDirectory(__dirname);
+const messages = Messages.loadMessages('@salesforce/plugin-info', 'doctor');
+
 const PINNED_SUGGESTIONS = [
-  'check https://github.com/forcedotcom/cli/issues for community posted CLI issues',
-  'check http://status.salesforce.com for any Salesforce announced problems',
+  messages.getMessage('pinnedSuggestions.checkGitHubIssues'),
+  messages.getMessage('pinnedSuggestions.checkSfdcStatus'),
 ];
 
 export class Doctor implements SfDoctor {
   // singleton instance
   private static instance: SfDoctor;
 
-  public readonly dir: string;
   public readonly id: number;
 
   // Contains all gathered data and results of diagnostics.
@@ -66,11 +68,6 @@ export class Doctor implements SfDoctor {
       pluginSpecificData: {},
       suggestions: [...PINNED_SUGGESTIONS],
     };
-    const globalDir = config.bin === 'sfdx' ? Global.SFDX_DIR : Global.SF_DIR;
-    this.dir = path.join(globalDir, 'sf-doctor');
-    if (!fs.existsSync(this.dir)) {
-      fs.mkdirSync(this.dir, { recursive: true });
-    }
   }
 
   /**
@@ -78,7 +75,7 @@ export class Doctor implements SfDoctor {
    */
   public static getInstance(): SfDoctor {
     if (!Doctor.instance) {
-      throw Error('Must first initialize a new SfDoctor');
+      throw new SfError(messages.getMessage('doctorNotInitializedError'), 'SfDoctorInitError');
     }
     return Doctor.instance;
   }
@@ -92,7 +89,7 @@ export class Doctor implements SfDoctor {
    */
   public static init(config: Config, versionDetail: VersionDetail): SfDoctor {
     if (Doctor.instance) {
-      throw Error('SfDoctor has already been initialized');
+      throw new SfError(messages.getMessage('doctorAlreadyInitializedError'), 'SfDoctorInitError');
     }
 
     Doctor.instance = new this(config, versionDetail);
@@ -156,18 +153,23 @@ export class Doctor implements SfDoctor {
   }
 
   /**
-   * Write a file to the doctor directory. The file name will be prepended
+   * Write a file with the provided path. The file name will be prepended
    * with this doctor's id.
    *
    * E.g., `name = myContent.json` will write `1658350735579-myContent.json`
    *
-   * @param name The name of the file to write within the SfDocter directory.
+   * @param path The path of the file to write.
    * @param contents The string contents to write.
    * @return The full path to the file.
    */
-  public writeFileSync(name: string, content: string): string {
-    const filePath = path.join(this.dir, `${this.id}-${name}`);
-    fs.writeFileSync(filePath, content);
-    return filePath;
+  public writeFileSync(filePath: string, content: string): string {
+    const dir = path.dirname(filePath);
+    const fileName = `${this.id}-${path.basename(filePath)}`;
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    const fullPath = path.join(dir, fileName);
+    fs.writeFileSync(fullPath, content);
+    return fullPath;
   }
 }

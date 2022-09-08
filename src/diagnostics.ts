@@ -29,6 +29,10 @@ const messages = Messages.loadMessages('@salesforce/plugin-info', 'diagnostics')
  * Diagnostics are all the tests that ensure a known, clean CLI configuration
  * and a way to run them asynchronously. Typically this is used only by the
  * Doctor class.
+ *
+ * Create a new diagnostic test by adding a method to the `Diagnostics` class,
+ * appending "Check" to the name. Emit a "Doctor:diagnostic" event with a
+ * `DiagnosticStatus` payload so the CLI can report on the diagnostic result.
  */
 export class Diagnostics {
   private diagnosis: SfDoctorDiagnosis;
@@ -49,7 +53,7 @@ export class Diagnostics {
   // **********************************************************
   //                 D I A G N O S T I C S
   //
-  // NOTE: All diagnostic function names must end with "Check"
+  // NOTE: Diagnostic function names must end with "Check"
   //       or they will not be run with all diagnostics.
   //
   // **********************************************************
@@ -63,24 +67,25 @@ export class Diagnostics {
     const cliVersion = cliVersionArray[1];
 
     return new Promise<void>((resolve) => {
-      const testName = 'using latest CLI version';
+      const testName = 'using latest or latest-rc CLI version';
       let status: DiagnosticStatus['status'] = 'unknown';
 
-      exec(`npm view ${cliName} --json`, {}, async (error, stdout, stderr) => {
+      exec(`npm view ${cliName} dist-tags.latest`, {}, (error, stdout, stderr) => {
         const code = error?.code ?? 0;
         if (code === 0) {
-          const latestVersion = JSON.parse(stdout)['dist-tags'].latest as string;
-          if (cliVersion < latestVersion) {
+          const latest = stdout.trim();
+          if (cliVersion < latest) {
             status = 'fail';
-            this.doctor.addSuggestion(messages.getMessage('updateCliVersion', [cliVersion, latestVersion]));
+            this.doctor.addSuggestion(messages.getMessage('updateCliVersion', [cliVersion, latest]));
           } else {
             status = 'pass';
           }
         } else {
           this.doctor.addSuggestion(messages.getMessage('latestCliVersionError', [stderr]));
         }
-        await Lifecycle.getInstance().emit('Doctor:diagnostic', { testName, status });
-        resolve();
+        void Lifecycle.getInstance()
+          .emit('Doctor:diagnostic', { testName, status })
+          .then(() => resolve());
       });
     });
   }

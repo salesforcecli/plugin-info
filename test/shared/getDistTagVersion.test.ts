@@ -12,6 +12,7 @@ import * as SinonChai from 'sinon-chai';
 import { stubMethod } from '@salesforce/ts-sinon';
 import { getDistTagVersion, DistTagJson } from '../../src/shared/getDistTagVersion';
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 chaiUse(SinonChai);
 
 describe('getDistTagVersion tests', () => {
@@ -19,7 +20,7 @@ describe('getDistTagVersion tests', () => {
 
   let gotStub: sinon.SinonStub;
 
-  let url;
+  let url: string;
   let gotResponse: DistTagJson;
 
   beforeEach(() => {
