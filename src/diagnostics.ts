@@ -5,7 +5,7 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import { exec } from 'child_process';
+import * as childProcess from 'child_process';
 import { Config } from '@oclif/core';
 import { Lifecycle, Messages } from '@salesforce/core';
 import { SfDoctor, SfDoctorDiagnosis } from './doctor';
@@ -70,7 +70,7 @@ export class Diagnostics {
       const testName = 'using latest or latest-rc CLI version';
       let status: DiagnosticStatus['status'] = 'unknown';
 
-      exec(`npm view ${cliName} dist-tags.latest`, {}, (error, stdout, stderr) => {
+      childProcess.exec(`npm view ${cliName} dist-tags.latest`, {}, (error, stdout, stderr) => {
         const code = error?.code ?? 0;
         if (code === 0) {
           const latest = stdout.trim();

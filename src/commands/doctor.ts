@@ -57,6 +57,7 @@ export default class Doctor extends SfdxCommand {
     // eslint-disable-next-line @typescript-eslint/require-await
     lifecycle.on<DiagnosticStatus>('Doctor:diagnostic', async (data) => {
       this.ux.log(`${data.status} - ${data.testName}`);
+      this.doctor.addDiagnosticStatus(data);
     });
 
     if (commandFlag) {
@@ -66,7 +67,7 @@ export default class Doctor extends SfdxCommand {
     if (pluginFlag) {
       // verify the plugin flag matches an installed plugin
       if (!this.config.plugins.some((p) => p.name === pluginFlag)) {
-        throw new SfError(messages.getMessage('pluginNotInstalledError', [pluginFlag]));
+        throw new SfError(messages.getMessage('pluginNotInstalledError', [pluginFlag]), 'UnknownPluginError');
       }
 
       // run the diagnostics for a specific plugin
@@ -121,7 +122,7 @@ export default class Doctor extends SfdxCommand {
 
   // Adds a promise to execute the provided command and all
   // parameters in debug mode, writing stdout and stderr to files
-  // in the doctor directory.
+  // in the current or specified directory.
   private setupCommandExecution(command: string): void {
     const cmdString = this.parseCommand(command);
     this.ux.styledHeader('Running command with debugging');

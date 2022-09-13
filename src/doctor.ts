@@ -12,15 +12,16 @@ import { Env, omit } from '@salesforce/kit';
 import { AnyJson, KeyValue } from '@salesforce/ts-types';
 import { Config } from '@oclif/core';
 import { VersionDetail } from '@oclif/plugin-version';
-import { Diagnostics } from './diagnostics';
+import { Diagnostics, DiagnosticStatus } from './diagnostics';
 
 export interface SfDoctor {
   addCommandName(commandName: string): void;
   addSuggestion(suggestion: string): void;
+  addDiagnosticStatus(status: DiagnosticStatus): void;
   addPluginData(pluginName: string, data: AnyJson): void;
   diagnose(): void;
   getDiagnosis(): SfDoctorDiagnosis;
-  writeFileSync(name: string, contents: string): string;
+  writeFileSync(filePath: string, contents: string): string;
 }
 
 type CliConfig = Partial<Config> & { nodeEngine: string };
@@ -29,10 +30,12 @@ export interface SfDoctorDiagnosis {
   versionDetail: VersionDetail;
   sfdxEnvVars: Array<KeyValue<string>>;
   sfEnvVars: Array<KeyValue<string>>;
-  commandName?: string;
   cliConfig: CliConfig;
-  pluginSpecificData: { [pluginName: string]: AnyJson };
+  pluginSpecificData: { [pluginName: string]: AnyJson[] };
+  diagnosticResults: DiagnosticStatus[];
   suggestions: string[];
+  commandName?: string;
+  logFilePaths: string[];
 }
 
 Messages.importMessagesDirectory(__dirname);
@@ -66,7 +69,9 @@ export class Doctor implements SfDoctor {
       sfEnvVars,
       cliConfig,
       pluginSpecificData: {},
+      diagnosticResults: [],
       suggestions: [...PINNED_SUGGESTIONS],
+      logFilePaths: [],
     };
   }
 
@@ -116,6 +121,15 @@ export class Doctor implements SfDoctor {
   }
 
   /**
+   * Add a diagnostic test status.
+   *
+   * @param status a diagnostic test status
+   */
+  public addDiagnosticStatus(status: DiagnosticStatus): void {
+    this.diagnosis.diagnosticResults.push(status);
+  }
+
+  /**
    * Add diagnostic data that is specific to the passed plugin name.
    *
    * @param pluginName The name in the plugin's package.json
@@ -125,13 +139,9 @@ export class Doctor implements SfDoctor {
   public addPluginData(pluginName: string, data: AnyJson): void {
     const pluginEntry = this.diagnosis.pluginSpecificData[pluginName];
     if (pluginEntry) {
-      if (Array.isArray(pluginEntry)) {
-        pluginEntry.push(data);
-      } else {
-        this.diagnosis.pluginSpecificData[pluginName] = [pluginEntry, data];
-      }
+      pluginEntry.push(data);
     } else {
-      this.diagnosis.pluginSpecificData[pluginName] = data;
+      this.diagnosis.pluginSpecificData[pluginName] = [data];
     }
   }
 
@@ -158,18 +168,19 @@ export class Doctor implements SfDoctor {
    *
    * E.g., `name = myContent.json` will write `1658350735579-myContent.json`
    *
-   * @param path The path of the file to write.
+   * @param filePath The path of the file to write.
    * @param contents The string contents to write.
    * @return The full path to the file.
    */
-  public writeFileSync(filePath: string, content: string): string {
+  public writeFileSync(filePath: string, contents: string): string {
     const dir = path.dirname(filePath);
     const fileName = `${this.id}-${path.basename(filePath)}`;
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
     }
     const fullPath = path.join(dir, fileName);
-    fs.writeFileSync(fullPath, content);
+    this.diagnosis.logFilePaths.push(fullPath);
+    fs.writeFileSync(fullPath, contents);
     return fullPath;
   }
 }
