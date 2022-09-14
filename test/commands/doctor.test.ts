@@ -311,6 +311,29 @@ describe('Doctor Command', () => {
     expect(lifecycleEmitSpy.args[0][1]).to.equal(Doctor.getInstance());
   });
 
+  it('runs doctor command with plugin flag (no plugin tests)', async () => {
+    fsExistsSyncStub.returns(true);
+    const versionDetail = getVersionDetailStub();
+    Doctor.init(oclifConfigStub, versionDetail);
+    diagnosticsRunStub.callsFake(() => [Promise.resolve()]);
+
+    const result = await runDoctorCmd(['--plugin', '@salesforce/plugin-source']);
+
+    expect(uxLogStub.called).to.be.true;
+    expect(uxStyledHeaderStub.called).to.be.true;
+    expect(result).to.have.property('versionDetail', versionDetail);
+    expect(result).to.have.property('cliConfig');
+    verifyPluginSpecificData(result, {});
+    expect(result.diagnosticResults).to.deep.equal([]);
+    verifyEnvVars(result);
+    verifySuggestions(result);
+    verifyLogFiles(result);
+    expect(fsExistsSyncStub.args[0][0]).to.equal(process.cwd());
+    expect(fsMkdirSyncStub.called).to.be.false;
+    expect(fsWriteFileSyncStub.calledOnce).to.be.true;
+    expect(lifecycleEmitSpy.called).to.be.false;
+  });
+
   it('throws with uninstalled plugin flag', async () => {
     fsExistsSyncStub.returns(true);
     const versionDetail = getVersionDetailStub();
@@ -324,7 +347,7 @@ describe('Doctor Command', () => {
       const error = err as Error;
       expect(error.name).to.equal('UnknownPluginError');
       expect(error.message).to.include(
-        'Specified plugin [not-installed] is not installed. Please install it, correct the name, or choose another plugin.'
+        "Specified plugin [not-installed] isn't installed. Install it, correct the name, or choose another plugin."
       );
     }
   });

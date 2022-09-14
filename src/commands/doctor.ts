@@ -70,9 +70,14 @@ export default class Doctor extends SfdxCommand {
         throw new SfError(messages.getMessage('pluginNotInstalledError', [pluginFlag]), 'UnknownPluginError');
       }
 
-      // run the diagnostics for a specific plugin
       this.ux.styledHeader(`Running diagnostics for plugin: ${pluginFlag}`);
-      this.tasks.push(lifecycle.emit(`sf-doctor-${pluginFlag}`, this.doctor));
+      const listeners = lifecycle.getListeners(`sf-doctor-${pluginFlag}`);
+      if (listeners.length) {
+        // run the diagnostics for a specific plugin
+        this.tasks.push(lifecycle.emit(`sf-doctor-${pluginFlag}`, this.doctor));
+      } else {
+        this.ux.log("Plugin doesn't have diagnostic tests to run.");
+      }
     } else {
       this.ux.styledHeader('Running all diagnostics');
       // run all diagnostics
