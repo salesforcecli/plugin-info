@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.1.0](https://github.com/salesforcecli/plugin-info/compare/v2.0.1...v2.1.0) (2022-09-14)
+
+### Features
+
+- add initial doctor command ([d482d03](https://github.com/salesforcecli/plugin-info/commit/d482d032f7f31d89028327f24dabcbd090490491))
+- initial doctor command ([4b16424](https://github.com/salesforcecli/plugin-info/commit/4b1642417ec41415173f863d95e268c9277d7ccb))
+
+### Bug Fixes
+
+- add message when no plugin has diagnostic tests ([975a509](https://github.com/salesforcecli/plugin-info/commit/975a509dead671d29967924599dd9c32060591fb))
+- doctor command updates ([5c5c444](https://github.com/salesforcecli/plugin-info/commit/5c5c444bfeddd825473c85fc7d162ebc84b333e0))
+- edit doctor --help ([02a7cae](https://github.com/salesforcecli/plugin-info/commit/02a7caee5c98c9876553de3c1dcace0bdd305c9c))
+- edit doctor messages ([c3bdd08](https://github.com/salesforcecli/plugin-info/commit/c3bdd08651c25b143726fa751afc306da1756935))
+- remove newissue flag ([353bee1](https://github.com/salesforcecli/plugin-info/commit/353bee10445be615d6a3c99b1aabb5251143df31))
+- update yarn.lock after merge ([dc86014](https://github.com/salesforcecli/plugin-info/commit/dc86014e28c776b6ce950521f468e1bccd2229c0))
+
 ### [2.0.1](https://github.com/salesforcecli/plugin-info/compare/v2.0.0...v2.0.1) (2022-05-24)
 
 ### Bug Fixes
