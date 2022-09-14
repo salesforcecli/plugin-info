@@ -22,6 +22,7 @@ import * as getDistTagVersion from '../../../../src/shared/getDistTagVersion';
 import * as parseReleaseNotes from '../../../../src/shared/parseReleaseNotes';
 import Display from '../../../../src/commands/info/releasenotes/display';
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 chaiUse(SinonChai);
 
 describe('info:releasenotes:display', () => {

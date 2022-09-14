@@ -13,6 +13,7 @@ import { spyMethod } from '@salesforce/ts-sinon';
 import { marked } from 'marked';
 import { parseReleaseNotes } from '../../src/shared/parseReleaseNotes';
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 chaiUse(SinonChai);
 
 describe('parseReleaseNotes tests', () => {
