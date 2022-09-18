@@ -1272,14 +1272,14 @@
     mv "~2"
     safe-json-stringify "~1"
 
-"@salesforce/cli-plugins-testkit@^2.3.13":
-  version "2.3.13"
-  resolved "https://registry.yarnpkg.com/@salesforce/cli-plugins-testkit/-/cli-plugins-testkit-2.3.13.tgz#d3179403f1264b8c11bc021768ae1a8b70cc8eb8"
-  integrity sha512-vyz+1E7sPBD+BubvOF6OJYIV4e6J5PB/v9V77GQjGXx3FI0J09OLjvGe2rjIW+Vm1rbjLBVjtIAZvKlpGYx/Uw==
+"@salesforce/cli-plugins-testkit@^2.4.0":
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/@salesforce/cli-plugins-testkit/-/cli-plugins-testkit-2.4.0.tgz#dcf62c5f62591ea331d046348516849e03f4f73e"
+  integrity sha512-RlK5HxwGOfHd+mNYtE5kz5DHrS/VLfnMrQn7r2/Ppdtv4vOVY4VHPp6SH/ox9zS/8DII3RL7DTDJFOcOxlor7A==
   dependencies:
-    "@salesforce/core" "^3.20.1"
+    "@salesforce/core" "^3.30.2"
     "@salesforce/kit" "^1.5.42"
-    "@salesforce/ts-types" "^1.5.17"
+    "@salesforce/ts-types" "^1.5.21"
     "@types/shelljs" "^0.8.11"
     archiver "^5.2.0"
     debug "^4.3.1"
@@ -1300,7 +1300,7 @@
     "@salesforce/ts-types" "^1.5.21"
     chalk "^2.4.2"
 
-"@salesforce/core@^3.10.1", "@salesforce/core@^3.15.5", "@salesforce/core@^3.16.0", "@salesforce/core@^3.19.0", "@salesforce/core@^3.19.3", "@salesforce/core@^3.19.4", "@salesforce/core@^3.19.5", "@salesforce/core@^3.20.1", "@salesforce/core@^3.21.5", "@salesforce/core@^3.23.3", "@salesforce/core@^3.24.0", "@salesforce/core@^3.24.1", "@salesforce/core@^3.25.1", "@salesforce/core@^3.26.1", "@salesforce/core@^3.26.2", "@salesforce/core@^3.30.1", "@salesforce/core@^3.30.2":
+"@salesforce/core@^3.10.1", "@salesforce/core@^3.15.5", "@salesforce/core@^3.16.0", "@salesforce/core@^3.19.0", "@salesforce/core@^3.19.3", "@salesforce/core@^3.19.4", "@salesforce/core@^3.19.5", "@salesforce/core@^3.21.5", "@salesforce/core@^3.23.3", "@salesforce/core@^3.24.0", "@salesforce/core@^3.24.1", "@salesforce/core@^3.25.1", "@salesforce/core@^3.26.1", "@salesforce/core@^3.26.2", "@salesforce/core@^3.30.1", "@salesforce/core@^3.30.2":
   version "3.30.2"
   resolved "https://registry.yarnpkg.com/@salesforce/core/-/core-3.30.2.tgz#fe7bd430e98b358003cf8892a753aaee88e3fd7f"
   integrity sha512-MSDCbml/HOF8ZIMnYBQLnilXRTxOLnE8EJdCnO9XjIwMG8x9mVvn7EQEMxAS4G+e5oqXfpMtgxEN1fFJY/dbcA==
