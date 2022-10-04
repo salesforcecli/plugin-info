@@ -12,6 +12,7 @@ Plugin providers can also implement their own doctor diagnostic tests by listeni
     newissue: 'create a new GitHub issue and attach all diagnostic results',
     plugin: 'specific plugin on which to run diagnostics ',
     outputdir: 'directory to save all created files rather than the current working directory',
+    createissue: 'create a new issue on our GitHub repo and attach all diagnostic results',
   },
   examples: [
     `Run CLI doctor diagnostics:
@@ -28,5 +29,5 @@ Run CLI doctor diagnostics for a specific plugin:
   doctorNotInitializedError: 'Must first initialize a new SfDoctor.',
   doctorAlreadyInitializedError: 'SfDoctor has already been initialized.',
   pluginNotInstalledError:
-    'Specified plugin [%s] isn\'t installed. Install it, correct the name, or choose another plugin.',
+    "Specified plugin [%s] isn't installed. Install it, correct the name, or choose another plugin.",
 };

@@ -10,6 +10,7 @@ import * as path from 'path';
 import { exec } from 'child_process';
 import { flags, SfdxCommand } from '@salesforce/command';
 import { Messages, Lifecycle, SfError } from '@salesforce/core';
+import * as open from 'open';
 import { Doctor as SFDoctor, SfDoctor, SfDoctorDiagnosis } from '../doctor';
 import { DiagnosticStatus } from '../diagnostics';
 
@@ -36,6 +37,11 @@ export default class Doctor extends SfdxCommand {
       char: 'o',
       description: messages.getMessage('flags.outputdir'),
     }),
+    createissue: flags.boolean({
+      char: 'i',
+      description: messages.getMessage('flags.createissue'),
+      default: false,
+    }),
   };
 
   // Array of promises that are various doctor tasks to perform
@@ -45,6 +51,15 @@ export default class Doctor extends SfdxCommand {
   private outputDir: string;
   private filesWrittenMsgs: string[] = [];
 
+  /**
+   * Only made into its own method for unit testing purposes
+   *
+   * @param url: url string to open
+   */
+  public static async openUrl(url: string): Promise<void> {
+    await open(url);
+  }
+
   public async run(): Promise<SfDoctorDiagnosis> {
     this.doctor = SFDoctor.getInstance();
     const lifecycle = Lifecycle.getInstance();
@@ -52,7 +67,12 @@ export default class Doctor extends SfdxCommand {
     const pluginFlag = this.flags.plugin as string;
     const commandFlag = this.flags.command as string;
     const outputdirFlag = this.flags.outputdir as string;
+    const createissueFlag = this.flags.createissue as boolean;
     this.outputDir = path.resolve(outputdirFlag ?? process.cwd());
+
+    if (createissueFlag) {
+      this.ux.log('===== TO HERE =====');
+    }
 
     // eslint-disable-next-line @typescript-eslint/require-await
     lifecycle.on<DiagnosticStatus>('Doctor:diagnostic', async (data) => {
@@ -104,6 +124,31 @@ export default class Doctor extends SfdxCommand {
     this.ux.log();
     this.ux.styledHeader('Suggestions');
     diagnosis.suggestions.forEach((s) => this.ux.log(`  * ${s}`));
+
+    if (createissueFlag) {
+      this.ux.log();
+      this.ux.log(diagnosis.cliConfig.userAgent);
+      this.ux.log(diagnosis.versionDetail.pluginVersions.join(os.EOL));
+      this.ux.log('SFDX ENV. VARS.');
+      this.ux.log(diagnosis.sfdxEnvVars.join(os.EOL));
+      this.ux.log('SF ENV. VARS.');
+      this.ux.log(diagnosis.sfEnvVars.join(os.EOL));
+      this.ux.log(`Windows: ${diagnosis.cliConfig.windows}`);
+      this.ux.log(`Shell: ${diagnosis.cliConfig.shell}`);
+      this.ux.log(`Channel: ${diagnosis.cliConfig.channel}`);
+      this.ux.log(diagnosis.cliConfig.userAgent);
+      this.ux.log('===== COPY FROM HERE ABOVE =====');
+      this.ux.log();
+      this.ux.log("Hi, let's create a new github issue for you!");
+
+      const title = await this.ux.prompt('Please enter a title for the issue');
+      const url = encodeURI(
+        `https://github.com/forcedotcom/cli/issues/new?title=${title}&template=bug_report.md&labels=doctor,investigating,${this.config.bin}`
+      );
+      this.ux.log("now please copy the above terminal output and place in the 'System Information' section in github");
+      await this.ux.prompt("press 'Enter' to continue", { required: false });
+      await Doctor.openUrl(url);
+    }
 
     return diagnosis;
   }

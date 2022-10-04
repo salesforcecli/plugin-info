@@ -13,6 +13,7 @@
     "got": "^11.8.2",
     "marked": "^4.1.1",
     "marked-terminal": "^4.2.0",
+    "open": "^8.4.0",
     "proxy-agent": "^5.0.0",
     "proxy-from-env": "^1.1.0",
     "semver": "^7.3.5",

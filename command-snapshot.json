@@ -1,13 +1,14 @@
 [
   {
+    "command": "doctor",
+    "plugin": "@salesforce/plugin-info",
+    "flags": ["command", "createissue", "json", "loglevel", "outputdir", "plugin"],
+    "alias": []
+  },
+  {
     "command": "info:releasenotes:display",
     "plugin": "@salesforce/plugin-info",
     "flags": ["hook", "json", "loglevel", "version"],
     "alias": ["whatsnew"]
-  },
-  {
-    "command": "doctor",
-    "plugin": "@salesforce/plugin-info",
-    "flags": ["command", "plugin", "outputdir", "json", "loglevel"]
   }
 ]
