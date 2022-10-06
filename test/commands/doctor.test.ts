@@ -338,14 +338,16 @@ describe('Doctor Command', () => {
 
   it('runs doctor command with createissue flag', async () => {
     fsExistsSyncStub.returns(true);
+    const openStub = sandbox.stub(DoctorCmd, 'openUrl').resolves();
 
-    sandbox.stub(DoctorCmd, 'openUrl').resolves();
     const versionDetail = getVersionDetailStub();
     Doctor.init(oclifConfigStub, versionDetail);
     diagnosticsRunStub.callsFake(() => [Promise.resolve()]);
 
     const result = await runDoctorCmd(['--createissue']);
 
+    expect(openStub.firstCall.args[0]).to.not.include('name: Bug report');
+    expect(openStub.firstCall.args[0]).to.not.include('Which shell/terminal are you using?');
     expect(uxLogStub.called).to.be.true;
     expect(promptStub.callCount).to.equal(1);
     expect(uxStyledHeaderStub.called).to.be.true;
