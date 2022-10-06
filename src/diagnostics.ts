@@ -62,9 +62,8 @@ export class Diagnostics {
    * Checks to see if the running version of the CLI is the latest.
    */
   public async outdatedCliVersionCheck(): Promise<void> {
-    const cliVersionArray = this.diagnosis.versionDetail.cliVersion.split('/');
-    const cliName = cliVersionArray[0];
-    const cliVersion = cliVersionArray[1];
+    const cliName = this.config.name;
+    const cliVersion = this.config.version;
 
     return new Promise<void>((resolve) => {
       const testName = 'using latest or latest-rc CLI version';
