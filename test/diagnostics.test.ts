@@ -46,6 +46,8 @@ describe('Diagnostics', () => {
     lifecycleEmitSpy = spyMethod(sandbox, lifecycle, 'emit');
     oclifConfigStub = fromStub(
       stubInterface<Config>(sandbox, {
+        name: 'sfdx-cli',
+        version: '7.160.0',
         pjson: {
           engines: {
             node: 'node-v16.17.0',
