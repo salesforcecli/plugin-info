@@ -347,7 +347,7 @@ describe('Doctor Command', () => {
     const result = await runDoctorCmd(['--createissue']);
 
     expect(uxLogStub.called).to.be.true;
-    expect(promptStub.callCount).to.equal(2);
+    expect(promptStub.callCount).to.equal(1);
     expect(uxStyledHeaderStub.called).to.be.true;
     expect(result).to.have.property('versionDetail', versionDetail);
     expect(result).to.have.property('cliConfig');

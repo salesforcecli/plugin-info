@@ -11,6 +11,9 @@ import { exec } from 'child_process';
 import { flags, SfdxCommand } from '@salesforce/command';
 import { Messages, Lifecycle, SfError } from '@salesforce/core';
 import * as open from 'open';
+import got from 'got';
+import * as ProxyAgent from 'proxy-agent';
+import { getProxyForUrl } from 'proxy-from-env';
 import { Doctor as SFDoctor, SfDoctor, SfDoctorDiagnosis } from '../doctor';
 import { DiagnosticStatus } from '../diagnostics';
 
@@ -70,10 +73,6 @@ export default class Doctor extends SfdxCommand {
     const createissueFlag = this.flags.createissue as boolean;
     this.outputDir = path.resolve(outputdirFlag ?? process.cwd());
 
-    if (createissueFlag) {
-      this.ux.log('===== TO HERE =====');
-    }
-
     // eslint-disable-next-line @typescript-eslint/require-await
     lifecycle.on<DiagnosticStatus>('Doctor:diagnostic', async (data) => {
       this.ux.log(`${data.status} - ${data.testName}`);
@@ -103,10 +102,7 @@ export default class Doctor extends SfdxCommand {
       // run all diagnostics
       this.tasks.push(lifecycle.emit('sf-doctor', this.doctor));
 
-      /* eslint-disable @typescript-eslint/ban-ts-comment,@typescript-eslint/no-unsafe-assignment */
-      // @ts-ignore Seems like a TypeScript bug. Compiler thinks doctor.diagnose() returns `void`.
       this.tasks = [...this.tasks, ...this.doctor.diagnose()];
-      /* eslint-enable @typescript-eslint/ban-ts-comment,@typescript-eslint/no-unsafe-assignment */
     }
 
     await Promise.all(this.tasks);
@@ -126,71 +122,70 @@ export default class Doctor extends SfdxCommand {
     diagnosis.suggestions.forEach((s) => this.ux.log(`  * ${s}`));
 
     if (createissueFlag) {
-      this.ux.log();
-      this.ux.log(diagnosis.cliConfig.userAgent);
-      this.ux.log(diagnosis.versionDetail.pluginVersions.join(os.EOL));
-      this.ux.log('SFDX ENV. VARS.');
-      this.ux.log(diagnosis.sfdxEnvVars.join(os.EOL));
-      this.ux.log('SF ENV. VARS.');
-      this.ux.log(diagnosis.sfEnvVars.join(os.EOL));
-      this.ux.log(`Windows: ${diagnosis.cliConfig.windows}`);
-      this.ux.log(`Shell: ${diagnosis.cliConfig.shell}`);
-      this.ux.log(`Channel: ${diagnosis.cliConfig.channel}`);
-      this.ux.log(diagnosis.cliConfig.userAgent);
-      this.ux.log('===== COPY FROM HERE ABOVE =====');
-      this.ux.log();
-      this.ux.log("Hi, let's create a new github issue for you!");
+      const raw = 'https://raw.githubusercontent.com/forcedotcom/cli/main/.github/ISSUE_TEMPLATE/bug_report.md';
+      const ghIssue = await got(raw, {
+        throwHttpErrors: false,
+        agent: { https: ProxyAgent(getProxyForUrl(raw)) },
+      });
 
       const title = await this.ux.prompt('Please enter a title for the issue');
       const url = encodeURI(
-        `https://github.com/forcedotcom/cli/issues/new?title=${title}&body=
-<!--
-NOTICE: GitHub is not a mechanism for receiving support under any agreement or SLA. If you require immediate assistance, please use official support channels.
--->
-
-### Summary
-
-_Short summary of what is going on or to provide context_.
-
-### Steps To Reproduce:
-
-**Repository to reproduce:** [dreamhouse-lwc](https://github.com/dreamhouseapp/dreamhouse-lwc)
-
-***NOTE:** If your issue is not reproducable by dreamhouse-lwc, i.e. requires specific metadata or files, we **require** a link to a simple Salesforce project repository with a script to setup a scratch org that reproduces your problem.*
-
-1.  This is step 1.
-1.  This is step 2. All steps should start with '1.'
-
-### Expected result
-
-_Describe what should have happened_.
-
-### Actual result
-
-_Describe what actually happened_.
-
-### System Information
-
-${diagnosis.cliConfig.userAgent}
-${diagnosis.versionDetail.pluginVersions.join(os.EOL)}
-SFDX ENV. VARS.
-${diagnosis.sfdxEnvVars.join(os.EOL)}
-SF ENV. VARS.
-${diagnosis.sfEnvVars.join(os.EOL)}
-Windows: ${diagnosis.cliConfig.windows}
-Shell: ${diagnosis.cliConfig.shell}
-Channel: ${diagnosis.cliConfig.channel}
-${diagnosis.cliConfig.userAgent}
-### Additional information
-
-_Feel free to attach a screenshot_.&labels=doctor,investigating,${this.config.bin}`
+        `https://github.com/forcedotcom/cli/issues/new?title=${title}&body=${this.generateIssueMarkdown(
+          ghIssue.body,
+          diagnosis
+        )}&labels=doctor,investigating,${this.config.bin}`
       );
-      this.ux.log("now please copy the above terminal output and place in the 'System Information' section in github");
-      await this.ux.prompt("press 'Enter' to continue", { required: false });
       await Doctor.openUrl(url);
     }
 
     return diagnosis;
+  }
+
+  private generateIssueMarkdown(body: string, diagnosis: SfDoctorDiagnosis): string {
+    const info = `
+\`\`\`
+${diagnosis.cliConfig.userAgent}
+${diagnosis.versionDetail.pluginVersions.join(os.EOL)}
+\`\`\`
+${
+  diagnosis.sfdxEnvVars.length
+    ? `
+\`\`\`
+SFDX ENV. VARS.
+${diagnosis.sfdxEnvVars.join(os.EOL)}
+\`\`\`
+`
+    : ''
+}
+
+${
+  diagnosis.sfEnvVars.length
+    ? `
+\`\`\`
+SF ENV. VARS.
+${diagnosis.sfEnvVars.join(os.EOL)}
+\`\`\`
+`
+    : ''
+}
+\`\`\`
+Windows: ${diagnosis.cliConfig.windows}
+Shell: ${diagnosis.cliConfig.shell}
+Channel: ${diagnosis.cliConfig.channel}
+${diagnosis.cliConfig.userAgent}
+\`\`\`
+---
+### Diagnostics
+${this.doctor
+  .getDiagnosis()
+  .diagnosticResults.map(
+    (res) => `${res.status === 'pass' ? ':white_check_mark:' : ':x:'} ${res.status} - ${res.testName}`
+  )
+  .join(os.EOL)}
+`;
+    return body
+      .replace(new RegExp(`---(.|${os.EOL})*---${os.EOL}${os.EOL}`), '')
+      .replace(new RegExp(`${os.EOL}- Which shell/terminal (.|${os.EOL})*- Paste the output here`), info);
   }
 
   // Takes the command flag and:
