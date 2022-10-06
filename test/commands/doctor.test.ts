@@ -59,6 +59,7 @@ describe('Doctor Command', () => {
   let diagnosticsRunStub: sinon.SinonStub;
   let childProcessExecStub: sinon.SinonStub;
   let promptStub: sinon.SinonStub;
+  let openStub: sinon.SinonStub;
   let lifecycleEmitSpy: sinon.SinonSpy;
 
   oclifConfigStub = fromStub(
@@ -85,6 +86,9 @@ describe('Doctor Command', () => {
     const cmd = new TestDoctor(params, oclifConfigStub);
     uxLogStub = stubMethod(sandbox, UX.prototype, 'log');
     promptStub = stubMethod(sandbox, UX.prototype, 'prompt').resolves('my new and crazy issue');
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    openStub = sandbox.stub(cmd, 'openUrl').resolves();
 
     uxStyledHeaderStub = stubMethod(sandbox, UX.prototype, 'styledHeader');
 
@@ -338,8 +342,6 @@ describe('Doctor Command', () => {
 
   it('runs doctor command with createissue flag', async () => {
     fsExistsSyncStub.returns(true);
-    const openStub = sandbox.stub(DoctorCmd, 'openUrl').resolves();
-
     const versionDetail = getVersionDetailStub();
     Doctor.init(oclifConfigStub, versionDetail);
     diagnosticsRunStub.callsFake(() => [Promise.resolve()]);

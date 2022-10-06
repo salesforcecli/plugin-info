@@ -54,15 +54,6 @@ export default class Doctor extends SfdxCommand {
   private outputDir: string;
   private filesWrittenMsgs: string[] = [];
 
-  /**
-   * Only made into its own method for unit testing purposes
-   *
-   * @param url: url string to open
-   */
-  public static async openUrl(url: string): Promise<void> {
-    await open(url);
-  }
-
   public async run(): Promise<SfDoctorDiagnosis> {
     this.doctor = SFDoctor.getInstance();
     const lifecycle = Lifecycle.getInstance();
@@ -128,17 +119,27 @@ export default class Doctor extends SfdxCommand {
         agent: { https: ProxyAgent(getProxyForUrl(raw)) },
       });
 
-      const title = await this.ux.prompt('Please enter a title for the issue');
+      const title = await this.ux.prompt('Enter a title for your new issue');
       const url = encodeURI(
         `https://github.com/forcedotcom/cli/issues/new?title=${title}&body=${this.generateIssueMarkdown(
           ghIssue.body,
           diagnosis
         )}&labels=doctor,investigating,${this.config.bin}`
       );
-      await Doctor.openUrl(url);
+      await this.openUrl(url);
     }
 
     return diagnosis;
+  }
+
+  /**
+   * Only made into its own method for unit testing purposes
+   *
+   * @param url: url string to open
+   */
+  // eslint-disable-next-line class-methods-use-this
+  private async openUrl(url: string): Promise<void> {
+    await open(url);
   }
 
   private generateIssueMarkdown(body: string, diagnosis: SfDoctorDiagnosis): string {
