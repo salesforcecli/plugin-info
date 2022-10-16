@@ -1,7 +1,7 @@
 {
   "name": "@salesforce/plugin-info",
   "description": "Plugin for accessing cli info from the command line",
-  "version": "2.1.11",
+  "version": "2.1.12",
   "author": "Salesforce",
   "bugs": "https://github.com/forcedotcom/cli/issues",
   "main": "lib/index.js",
