@@ -19,7 +19,7 @@ export interface SfDoctor {
   addSuggestion(suggestion: string): void;
   addDiagnosticStatus(status: DiagnosticStatus): void;
   addPluginData(pluginName: string, data: AnyJson): void;
-  diagnose(): void;
+  diagnose(): Array<Promise<void>>;
   getDiagnosis(): SfDoctorDiagnosis;
   writeFileSync(filePath: string, contents: string): string;
 }

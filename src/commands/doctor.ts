@@ -10,6 +10,10 @@ import * as path from 'path';
 import { exec } from 'child_process';
 import { flags, SfdxCommand } from '@salesforce/command';
 import { Messages, Lifecycle, SfError } from '@salesforce/core';
+import * as open from 'open';
+import got from 'got';
+import * as ProxyAgent from 'proxy-agent';
+import { getProxyForUrl } from 'proxy-from-env';
 import { Doctor as SFDoctor, SfDoctor, SfDoctorDiagnosis } from '../doctor';
 import { DiagnosticStatus } from '../diagnostics';
 
@@ -36,6 +40,11 @@ export default class Doctor extends SfdxCommand {
       char: 'o',
       description: messages.getMessage('flags.outputdir'),
     }),
+    createissue: flags.boolean({
+      char: 'i',
+      description: messages.getMessage('flags.createissue'),
+      default: false,
+    }),
   };
 
   // Array of promises that are various doctor tasks to perform
@@ -52,6 +61,7 @@ export default class Doctor extends SfdxCommand {
     const pluginFlag = this.flags.plugin as string;
     const commandFlag = this.flags.command as string;
     const outputdirFlag = this.flags.outputdir as string;
+    const createissueFlag = this.flags.createissue as boolean;
     this.outputDir = path.resolve(outputdirFlag ?? process.cwd());
 
     // eslint-disable-next-line @typescript-eslint/require-await
@@ -83,10 +93,7 @@ export default class Doctor extends SfdxCommand {
       // run all diagnostics
       this.tasks.push(lifecycle.emit('sf-doctor', this.doctor));
 
-      /* eslint-disable @typescript-eslint/ban-ts-comment,@typescript-eslint/no-unsafe-assignment */
-      // @ts-ignore Seems like a TypeScript bug. Compiler thinks doctor.diagnose() returns `void`.
       this.tasks = [...this.tasks, ...this.doctor.diagnose()];
-      /* eslint-enable @typescript-eslint/ban-ts-comment,@typescript-eslint/no-unsafe-assignment */
     }
 
     await Promise.all(this.tasks);
@@ -105,7 +112,81 @@ export default class Doctor extends SfdxCommand {
     this.ux.styledHeader('Suggestions');
     diagnosis.suggestions.forEach((s) => this.ux.log(`  * ${s}`));
 
+    if (createissueFlag) {
+      const raw = 'https://raw.githubusercontent.com/forcedotcom/cli/main/.github/ISSUE_TEMPLATE/bug_report.md';
+      const ghIssue = await got(raw, {
+        throwHttpErrors: false,
+        agent: { https: ProxyAgent(getProxyForUrl(raw)) },
+      });
+
+      const title = await this.ux.prompt('Enter a title for your new issue');
+      const url = encodeURI(
+        `https://github.com/forcedotcom/cli/issues/new?title=${title}&body=${this.generateIssueMarkdown(
+          ghIssue.body,
+          diagnosis
+        )}&labels=doctor,investigating,${this.config.bin}`
+      );
+      await this.openUrl(url);
+    }
+
     return diagnosis;
+  }
+
+  /**
+   * Only made into its own method for unit testing purposes
+   *
+   * @param url: url string to open
+   */
+  // eslint-disable-next-line class-methods-use-this
+  private async openUrl(url: string): Promise<void> {
+    await open(url);
+  }
+
+  private generateIssueMarkdown(body: string, diagnosis: SfDoctorDiagnosis): string {
+    const info = `
+\`\`\`
+${diagnosis.cliConfig.userAgent}
+${diagnosis.versionDetail.pluginVersions.join(os.EOL)}
+\`\`\`
+${
+  diagnosis.sfdxEnvVars.length
+    ? `
+\`\`\`
+SFDX ENV. VARS.
+${diagnosis.sfdxEnvVars.join(os.EOL)}
+\`\`\`
+`
+    : ''
+}
+
+${
+  diagnosis.sfEnvVars.length
+    ? `
+\`\`\`
+SF ENV. VARS.
+${diagnosis.sfEnvVars.join(os.EOL)}
+\`\`\`
+`
+    : ''
+}
+\`\`\`
+Windows: ${diagnosis.cliConfig.windows}
+Shell: ${diagnosis.cliConfig.shell}
+Channel: ${diagnosis.cliConfig.channel}
+${diagnosis.cliConfig.userAgent}
+\`\`\`
+---
+### Diagnostics
+${this.doctor
+  .getDiagnosis()
+  .diagnosticResults.map(
+    (res) => `${res.status === 'pass' ? ':white_check_mark:' : ':x:'} ${res.status} - ${res.testName}`
+  )
+  .join(os.EOL)}
+`;
+    return body
+      .replace(new RegExp(`---(.|${os.EOL})*---${os.EOL}${os.EOL}`), '')
+      .replace(new RegExp(`${os.EOL}- Which shell/terminal (.|${os.EOL})*- Paste the output here`), info);
   }
 
   // Takes the command flag and:

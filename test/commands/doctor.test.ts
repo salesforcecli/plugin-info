@@ -17,8 +17,7 @@ import { Lifecycle, Messages } from '@salesforce/core';
 import { Config } from '@oclif/core';
 import { VersionDetail } from '@oclif/plugin-version';
 import DoctorCmd from '../../src/commands/doctor';
-import { Doctor, SfDoctor, SfDoctorDiagnosis } from '../../src/doctor';
-import { Diagnostics, DiagnosticStatus } from '../../src/diagnostics';
+import { Doctor, SfDoctor, SfDoctorDiagnosis, Diagnostics, DiagnosticStatus } from '../../src';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-info', 'doctor');
@@ -59,6 +58,8 @@ describe('Doctor Command', () => {
   let fsWriteFileSyncStub: sinon.SinonStub;
   let diagnosticsRunStub: sinon.SinonStub;
   let childProcessExecStub: sinon.SinonStub;
+  let promptStub: sinon.SinonStub;
+  let openStub: sinon.SinonStub;
   let lifecycleEmitSpy: sinon.SinonSpy;
 
   oclifConfigStub = fromStub(
@@ -84,6 +85,11 @@ describe('Doctor Command', () => {
     // oclifConfigStub.bin = 'sfdx';
     const cmd = new TestDoctor(params, oclifConfigStub);
     uxLogStub = stubMethod(sandbox, UX.prototype, 'log');
+    promptStub = stubMethod(sandbox, UX.prototype, 'prompt').resolves('my new and crazy issue');
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    openStub = sandbox.stub(cmd, 'openUrl').resolves();
+
     uxStyledHeaderStub = stubMethod(sandbox, UX.prototype, 'styledHeader');
 
     return cmd.runIt();
@@ -332,6 +338,30 @@ describe('Doctor Command', () => {
     expect(fsMkdirSyncStub.called).to.be.false;
     expect(fsWriteFileSyncStub.calledOnce).to.be.true;
     expect(lifecycleEmitSpy.called).to.be.false;
+  });
+
+  it('runs doctor command with createissue flag', async () => {
+    fsExistsSyncStub.returns(true);
+    const versionDetail = getVersionDetailStub();
+    Doctor.init(oclifConfigStub, versionDetail);
+    diagnosticsRunStub.callsFake(() => [Promise.resolve()]);
+
+    const result = await runDoctorCmd(['--createissue']);
+
+    expect(openStub.firstCall.args[0]).to.not.include('name: Bug report');
+    expect(openStub.firstCall.args[0]).to.not.include('Which shell/terminal are you using?');
+    expect(uxLogStub.called).to.be.true;
+    expect(promptStub.callCount).to.equal(1);
+    expect(uxStyledHeaderStub.called).to.be.true;
+    expect(result).to.have.property('versionDetail', versionDetail);
+    expect(result).to.have.property('cliConfig');
+    expect(result.diagnosticResults).to.deep.equal([]);
+    verifyEnvVars(result);
+    verifySuggestions(result);
+    verifyLogFiles(result);
+    expect(fsExistsSyncStub.args[0][0]).to.equal(process.cwd());
+    expect(fsMkdirSyncStub.called).to.be.false;
+    expect(fsWriteFileSyncStub.calledOnce).to.be.true;
   });
 
   it('throws with uninstalled plugin flag', async () => {

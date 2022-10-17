@@ -114,7 +114,7 @@ export class Diagnostics {
     let status: DiagnosticStatus['status'] = 'pass';
 
     const plugins = this.config.plugins;
-    const linkedPlugins = plugins.filter((p) => p.name.includes('(link)'));
+    const linkedPlugins = plugins.filter((p) => p.type === 'link');
     linkedPlugins.forEach((lp) => {
       status = 'fail';
       this.doctor.addSuggestion(messages.getMessage('linkedPluginWarning', [lp.name]));
