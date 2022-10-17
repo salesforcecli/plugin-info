@@ -1432,13 +1432,13 @@
     open "^8.2.1"
     tslib "^2"
 
-"@salesforce/plugin-command-reference@^1.4.3":
-  version "1.4.3"
-  resolved "https://registry.yarnpkg.com/@salesforce/plugin-command-reference/-/plugin-command-reference-1.4.3.tgz#39b49156e761f1e0a271dee8df3de1b926b5b487"
-  integrity sha512-QaHfKbNHSa7rQNjLic3q844FhfTqvuORLKsQY3clQ9lDawyaTmGoPdMqb9U5SGsGBAh4SsffP9o2fxioXIOe4w==
+"@salesforce/plugin-command-reference@^1.4.4":
+  version "1.4.4"
+  resolved "https://registry.yarnpkg.com/@salesforce/plugin-command-reference/-/plugin-command-reference-1.4.4.tgz#3eb7dcdfab6ce8f76c33288bfc2e1ab367a58337"
+  integrity sha512-PjLhN8UulLTGfWJY7koTerZU7Azi1PQ3ne0gLLouWJdysbBh4Vxzzg0qVaGjbl4icdlWO1Ltle4txA1N1rKQbg==
   dependencies:
     "@salesforce/command" "^5.2.11"
-    "@salesforce/core" "^3.30.10"
+    "@salesforce/core" "^3.30.12"
     "@types/lodash.uniqby" "^4.7.7"
     chalk "^3.0.0"
     handlebars "4.7.7"
