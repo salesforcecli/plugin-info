@@ -24,9 +24,6 @@ export default class Doctor extends SfdxCommand {
   public static description = messages.getMessage('commandDescription');
   public static examples = messages.getMessage('examples').split(os.EOL);
 
-  // Hide for now
-  public static hidden = true;
-
   protected static flagsConfig = {
     command: flags.string({
       char: 'c',
@@ -49,7 +46,8 @@ export default class Doctor extends SfdxCommand {
 
   // Array of promises that are various doctor tasks to perform
   // such as running a command and running diagnostics.
-  private tasks: Array<Promise<void>> = [];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private tasks: Array<Promise<any>> = [];
   private doctor: SfDoctor;
   private outputDir: string;
   private filesWrittenMsgs: string[] = [];
@@ -76,23 +74,28 @@ export default class Doctor extends SfdxCommand {
 
     if (pluginFlag) {
       // verify the plugin flag matches an installed plugin
-      if (!this.config.plugins.some((p) => p.name === pluginFlag)) {
-        throw new SfError(messages.getMessage('pluginNotInstalledError', [pluginFlag]), 'UnknownPluginError');
-      }
-
-      this.ux.styledHeader(`Running diagnostics for plugin: ${pluginFlag}`);
-      const listeners = lifecycle.getListeners(`sf-doctor-${pluginFlag}`);
-      if (listeners.length) {
-        // run the diagnostics for a specific plugin
-        this.tasks.push(lifecycle.emit(`sf-doctor-${pluginFlag}`, this.doctor));
+      const plugin = this.config.plugins.find((p) => p.name === pluginFlag);
+      if (plugin) {
+        const eventName = `sf-doctor-${pluginFlag}`;
+        const hasDoctorHook = Object.keys(plugin.hooks).some((hook) => hook === eventName);
+        if (hasDoctorHook) {
+          this.ux.styledHeader(`Running diagnostics for plugin: ${pluginFlag}`);
+          this.tasks.push(this.config.runHook(eventName, { doctor: this.doctor }));
+        } else {
+          this.ux.log(`${pluginFlag} doesn't have diagnostic tests to run.`);
+        }
       } else {
-        this.ux.log("Plugin doesn't have diagnostic tests to run.");
+        throw new SfError(messages.getMessage('pluginNotInstalledError', [pluginFlag]), 'UnknownPluginError');
       }
     } else {
       this.ux.styledHeader('Running all diagnostics');
-      // run all diagnostics
-      this.tasks.push(lifecycle.emit('sf-doctor', this.doctor));
-
+      // Fire events for plugins that have sf-doctor hooks
+      this.config.plugins.forEach((plugin) => {
+        const eventName = `sf-doctor-${plugin.name}`;
+        if (Object.keys(plugin.hooks).find((hook) => hook === eventName)) {
+          this.tasks.push(this.config.runHook(eventName, { doctor: this.doctor }));
+        }
+      });
       this.tasks = [...this.tasks, ...this.doctor.diagnose()];
     }
 
