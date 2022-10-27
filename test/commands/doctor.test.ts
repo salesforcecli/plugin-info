@@ -10,14 +10,13 @@ import * as path from 'path';
 import * as childProcess from 'child_process';
 import * as Sinon from 'sinon';
 import { expect } from 'chai';
-import { fromStub, stubInterface, stubMethod, spyMethod } from '@salesforce/ts-sinon';
-import { AnyJson } from '@salesforce/ts-types';
+import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
 import { UX } from '@salesforce/command';
 import { Lifecycle, Messages } from '@salesforce/core';
 import { Config } from '@oclif/core';
 import { VersionDetail } from '@oclif/plugin-version';
 import DoctorCmd from '../../src/commands/doctor';
-import { Doctor, SfDoctor, SfDoctorDiagnosis, Diagnostics, DiagnosticStatus } from '../../src';
+import { Doctor, SfDoctorDiagnosis, Diagnostics, DiagnosticStatus } from '../../src';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-info', 'doctor');
@@ -37,17 +36,6 @@ const getVersionDetailStub = (overrides?: Partial<VersionDetail>): VersionDetail
   return { ...defaults, ...overrides };
 };
 
-// Lifecycle handler to emulate plugin hook handling of Doctor events
-Lifecycle.getInstance().on('sf-doctor', async (dr: SfDoctor) => {
-  expect(dr).to.be.instanceof(Doctor);
-  dr.addPluginData('@salesforce/plugin-source', { apiVersion: '56.0' });
-});
-// Lifecycle handler to emulate plugin hook handling of Doctor events
-Lifecycle.getInstance().on('sf-doctor-@salesforce/plugin-org', async (dr: SfDoctor) => {
-  expect(dr).to.be.instanceof(Doctor);
-  dr.addPluginData('@salesforce/plugin-org', { preview: true });
-});
-
 describe('Doctor Command', () => {
   const sandbox = Sinon.createSandbox();
 
@@ -60,7 +48,6 @@ describe('Doctor Command', () => {
   let childProcessExecStub: sinon.SinonStub;
   let promptStub: sinon.SinonStub;
   let openStub: sinon.SinonStub;
-  let lifecycleEmitSpy: sinon.SinonSpy;
 
   oclifConfigStub = fromStub(
     stubInterface<Config>(sandbox, {
@@ -69,10 +56,28 @@ describe('Doctor Command', () => {
           node: 'node-v16.17.0',
         },
       },
-      plugins: [{ name: '@salesforce/plugin-org' }, { name: '@salesforce/plugin-source' }, { name: 'salesforce-alm' }],
+      plugins: [
+        {
+          name: '@salesforce/plugin-org',
+          hooks: { 'sf-doctor-@salesforce/plugin-org': './lib/hooks/diagnostics' },
+        },
+        {
+          name: '@salesforce/plugin-source',
+          hooks: { 'sf-doctor-@salesforce/plugin-source': './lib/hooks/diagnostics' },
+        },
+        {
+          name: 'salesforce-alm',
+        },
+        {
+          name: '@salesforce/plugin-data',
+        },
+      ],
       bin: 'sfdx',
     })
   );
+
+  // eslint-disable-next-line @typescript-eslint/unbound-method
+  const runHookStub = oclifConfigStub.runHook as sinon.SinonStub;
 
   class TestDoctor extends DoctorCmd {
     public async runIt() {
@@ -82,7 +87,6 @@ describe('Doctor Command', () => {
   }
 
   const runDoctorCmd = async (params: string[]) => {
-    // oclifConfigStub.bin = 'sfdx';
     const cmd = new TestDoctor(params, oclifConfigStub);
     uxLogStub = stubMethod(sandbox, UX.prototype, 'log');
     promptStub = stubMethod(sandbox, UX.prototype, 'prompt').resolves('my new and crazy issue');
@@ -101,7 +105,7 @@ describe('Doctor Command', () => {
     fsWriteFileSyncStub = stubMethod(sandbox, fs, 'writeFileSync');
     diagnosticsRunStub = stubMethod(sandbox, Diagnostics.prototype, 'run');
     childProcessExecStub = stubMethod(sandbox, childProcess, 'exec');
-    lifecycleEmitSpy = spyMethod(sandbox, Lifecycle.prototype, 'emit');
+    runHookStub.reset();
   });
 
   afterEach(() => {
@@ -138,11 +142,6 @@ describe('Doctor Command', () => {
     });
   };
 
-  const verifyPluginSpecificData = (result: SfDoctorDiagnosis, entry?: AnyJson) => {
-    const data = entry ?? { '@salesforce/plugin-source': [{ apiVersion: '56.0' }] };
-    expect(result.pluginSpecificData).to.deep.equal(data);
-  };
-
   it('runs doctor command with no flags', async () => {
     const suggestion = 'work smarter, not faster';
     fsExistsSyncStub.returns(true);
@@ -162,7 +161,6 @@ describe('Doctor Command', () => {
     expect(uxStyledHeaderStub.called).to.be.true;
     expect(result).to.have.property('versionDetail', versionDetail);
     expect(result).to.have.property('cliConfig');
-    verifyPluginSpecificData(result);
     expect(result.diagnosticResults).to.deep.equal([diagnosticStatus]);
     verifyEnvVars(result);
     verifySuggestions(result, [suggestion]);
@@ -170,9 +168,11 @@ describe('Doctor Command', () => {
     expect(fsExistsSyncStub.args[0][0]).to.equal(process.cwd());
     expect(fsMkdirSyncStub.called).to.be.false;
     expect(fsWriteFileSyncStub.calledOnce).to.be.true;
-    expect(lifecycleEmitSpy.called).to.be.true;
-    expect(lifecycleEmitSpy.args[0][0]).to.equal('sf-doctor');
-    expect(lifecycleEmitSpy.args[0][1]).to.equal(Doctor.getInstance());
+    expect(runHookStub.calledTwice).to.be.true;
+    expect(runHookStub.args[0][0]).to.equal('sf-doctor-@salesforce/plugin-org');
+    expect(runHookStub.args[0][1]).to.deep.equal({ doctor: Doctor.getInstance() });
+    expect(runHookStub.args[1][0]).to.equal('sf-doctor-@salesforce/plugin-source');
+    expect(runHookStub.args[1][1]).to.deep.equal({ doctor: Doctor.getInstance() });
   });
 
   it('runs doctor command with outputdir flag (existing dir)', async () => {
@@ -188,7 +188,6 @@ describe('Doctor Command', () => {
     expect(uxStyledHeaderStub.called).to.be.true;
     expect(result).to.have.property('versionDetail', versionDetail);
     expect(result).to.have.property('cliConfig');
-    verifyPluginSpecificData(result);
     expect(result.diagnosticResults).to.deep.equal([]);
     verifyEnvVars(result);
     verifySuggestions(result);
@@ -196,9 +195,11 @@ describe('Doctor Command', () => {
     expect(fsExistsSyncStub.args[0][0]).to.equal(outputdir);
     expect(fsMkdirSyncStub.called).to.be.false;
     expect(fsWriteFileSyncStub.calledOnce).to.be.true;
-    expect(lifecycleEmitSpy.called).to.be.true;
-    expect(lifecycleEmitSpy.args[0][0]).to.equal('sf-doctor');
-    expect(lifecycleEmitSpy.args[0][1]).to.equal(Doctor.getInstance());
+    expect(runHookStub.callCount, 'Expected runHooks to be called twice').to.equal(2);
+    expect(runHookStub.args[0][0]).to.equal('sf-doctor-@salesforce/plugin-org');
+    expect(runHookStub.args[0][1]).to.deep.equal({ doctor: Doctor.getInstance() });
+    expect(runHookStub.args[1][0]).to.equal('sf-doctor-@salesforce/plugin-source');
+    expect(runHookStub.args[1][1]).to.deep.equal({ doctor: Doctor.getInstance() });
   });
 
   it('runs doctor command with outputdir flag (non-existing dir)', async () => {
@@ -214,7 +215,6 @@ describe('Doctor Command', () => {
     expect(uxStyledHeaderStub.called).to.be.true;
     expect(result).to.have.property('versionDetail', versionDetail);
     expect(result).to.have.property('cliConfig');
-    verifyPluginSpecificData(result);
     expect(result.diagnosticResults).to.deep.equal([]);
     verifyEnvVars(result);
     verifySuggestions(result);
@@ -222,9 +222,11 @@ describe('Doctor Command', () => {
     expect(fsExistsSyncStub.args[0][0]).to.equal(outputdir);
     expect(fsMkdirSyncStub.called).to.be.true;
     expect(fsWriteFileSyncStub.calledOnce).to.be.true;
-    expect(lifecycleEmitSpy.called).to.be.true;
-    expect(lifecycleEmitSpy.args[0][0]).to.equal('sf-doctor');
-    expect(lifecycleEmitSpy.args[0][1]).to.equal(Doctor.getInstance());
+    expect(runHookStub.calledTwice).to.be.true;
+    expect(runHookStub.args[0][0]).to.equal('sf-doctor-@salesforce/plugin-org');
+    expect(runHookStub.args[0][1]).to.deep.equal({ doctor: Doctor.getInstance() });
+    expect(runHookStub.args[1][0]).to.equal('sf-doctor-@salesforce/plugin-source');
+    expect(runHookStub.args[1][1]).to.deep.equal({ doctor: Doctor.getInstance() });
   });
 
   it('runs doctor command with command flag (minimal)', async () => {
@@ -246,7 +248,6 @@ describe('Doctor Command', () => {
     expect(uxStyledHeaderStub.called).to.be.true;
     expect(result).to.have.property('versionDetail', versionDetail);
     expect(result).to.have.property('cliConfig');
-    verifyPluginSpecificData(result);
     expect(result.diagnosticResults).to.deep.equal([]);
     verifyEnvVars(result);
     verifySuggestions(result);
@@ -254,9 +255,11 @@ describe('Doctor Command', () => {
     expect(fsExistsSyncStub.args[0][0]).to.equal(process.cwd());
     expect(fsMkdirSyncStub.called).to.be.false;
     expect(fsWriteFileSyncStub.calledThrice).to.be.true;
-    expect(lifecycleEmitSpy.called).to.be.true;
-    expect(lifecycleEmitSpy.args[0][0]).to.equal('sf-doctor');
-    expect(lifecycleEmitSpy.args[0][1]).to.equal(Doctor.getInstance());
+    expect(runHookStub.calledTwice).to.be.true;
+    expect(runHookStub.args[0][0]).to.equal('sf-doctor-@salesforce/plugin-org');
+    expect(runHookStub.args[0][1]).to.deep.equal({ doctor: Doctor.getInstance() });
+    expect(runHookStub.args[1][0]).to.equal('sf-doctor-@salesforce/plugin-source');
+    expect(runHookStub.args[1][1]).to.deep.equal({ doctor: Doctor.getInstance() });
     expect(result).to.have.property('commandName', expectedCmd);
   });
 
@@ -278,7 +281,6 @@ describe('Doctor Command', () => {
     expect(uxStyledHeaderStub.called).to.be.true;
     expect(result).to.have.property('versionDetail', versionDetail);
     expect(result).to.have.property('cliConfig');
-    verifyPluginSpecificData(result);
     expect(result.diagnosticResults).to.deep.equal([]);
     verifyEnvVars(result);
     verifySuggestions(result);
@@ -286,9 +288,11 @@ describe('Doctor Command', () => {
     expect(fsExistsSyncStub.args[0][0]).to.equal(process.cwd());
     expect(fsMkdirSyncStub.called).to.be.false;
     expect(fsWriteFileSyncStub.calledThrice).to.be.true;
-    expect(lifecycleEmitSpy.called).to.be.true;
-    expect(lifecycleEmitSpy.args[0][0]).to.equal('sf-doctor');
-    expect(lifecycleEmitSpy.args[0][1]).to.equal(Doctor.getInstance());
+    expect(runHookStub.calledTwice).to.be.true;
+    expect(runHookStub.args[0][0]).to.equal('sf-doctor-@salesforce/plugin-org');
+    expect(runHookStub.args[0][1]).to.deep.equal({ doctor: Doctor.getInstance() });
+    expect(runHookStub.args[1][0]).to.equal('sf-doctor-@salesforce/plugin-source');
+    expect(runHookStub.args[1][1]).to.deep.equal({ doctor: Doctor.getInstance() });
     expect(result).to.have.property('commandName', cmd);
   });
 
@@ -304,7 +308,6 @@ describe('Doctor Command', () => {
     expect(uxStyledHeaderStub.called).to.be.true;
     expect(result).to.have.property('versionDetail', versionDetail);
     expect(result).to.have.property('cliConfig');
-    verifyPluginSpecificData(result, { '@salesforce/plugin-org': [{ preview: true }] });
     expect(result.diagnosticResults).to.deep.equal([]);
     verifyEnvVars(result);
     verifySuggestions(result);
@@ -312,9 +315,9 @@ describe('Doctor Command', () => {
     expect(fsExistsSyncStub.args[0][0]).to.equal(process.cwd());
     expect(fsMkdirSyncStub.called).to.be.false;
     expect(fsWriteFileSyncStub.calledOnce).to.be.true;
-    expect(lifecycleEmitSpy.called).to.be.true;
-    expect(lifecycleEmitSpy.args[0][0]).to.equal('sf-doctor-@salesforce/plugin-org');
-    expect(lifecycleEmitSpy.args[0][1]).to.equal(Doctor.getInstance());
+    expect(runHookStub.calledOnce).to.be.true;
+    expect(runHookStub.args[0][0]).to.equal('sf-doctor-@salesforce/plugin-org');
+    expect(runHookStub.args[0][1]).to.deep.equal({ doctor: Doctor.getInstance() });
   });
 
   it('runs doctor command with plugin flag (no plugin tests)', async () => {
@@ -323,13 +326,12 @@ describe('Doctor Command', () => {
     Doctor.init(oclifConfigStub, versionDetail);
     diagnosticsRunStub.callsFake(() => [Promise.resolve()]);
 
-    const result = await runDoctorCmd(['--plugin', '@salesforce/plugin-source']);
+    const result = await runDoctorCmd(['--plugin', '@salesforce/plugin-data']);
 
     expect(uxLogStub.called).to.be.true;
     expect(uxStyledHeaderStub.called).to.be.true;
     expect(result).to.have.property('versionDetail', versionDetail);
     expect(result).to.have.property('cliConfig');
-    verifyPluginSpecificData(result, {});
     expect(result.diagnosticResults).to.deep.equal([]);
     verifyEnvVars(result);
     verifySuggestions(result);
@@ -337,7 +339,7 @@ describe('Doctor Command', () => {
     expect(fsExistsSyncStub.args[0][0]).to.equal(process.cwd());
     expect(fsMkdirSyncStub.called).to.be.false;
     expect(fsWriteFileSyncStub.calledOnce).to.be.true;
-    expect(lifecycleEmitSpy.called).to.be.false;
+    expect(runHookStub.called).to.be.false;
   });
 
   it('runs doctor command with createissue flag', async () => {

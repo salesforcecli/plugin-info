@@ -77,7 +77,7 @@ export default class Doctor extends SfdxCommand {
       const plugin = this.config.plugins.find((p) => p.name === pluginFlag);
       if (plugin) {
         const eventName = `sf-doctor-${pluginFlag}`;
-        const hasDoctorHook = Object.keys(plugin.hooks).some((hook) => hook === eventName);
+        const hasDoctorHook = plugin.hooks && Object.keys(plugin.hooks).some((hook) => hook === eventName);
         if (hasDoctorHook) {
           this.ux.styledHeader(`Running diagnostics for plugin: ${pluginFlag}`);
           this.tasks.push(this.config.runHook(eventName, { doctor: this.doctor }));
@@ -92,7 +92,7 @@ export default class Doctor extends SfdxCommand {
       // Fire events for plugins that have sf-doctor hooks
       this.config.plugins.forEach((plugin) => {
         const eventName = `sf-doctor-${plugin.name}`;
-        if (Object.keys(plugin.hooks).find((hook) => hook === eventName)) {
+        if (plugin.hooks && Object.keys(plugin.hooks).find((hook) => hook === eventName)) {
           this.tasks.push(this.config.runHook(eventName, { doctor: this.doctor }));
         }
       });
