@@ -46,6 +46,10 @@ const PINNED_SUGGESTIONS = [
   messages.getMessage('pinnedSuggestions.checkSfdcStatus'),
 ];
 
+// private config from the CLI
+// eslint-disable-next-line no-underscore-dangle
+let __cliConfig: Config;
+
 export class Doctor implements SfDoctor {
   // singleton instance
   private static instance: SfDoctor;
@@ -55,8 +59,9 @@ export class Doctor implements SfDoctor {
   // Contains all gathered data and results of diagnostics.
   private diagnosis: SfDoctorDiagnosis;
 
-  private constructor(private readonly config: Config, versionDetail: VersionDetail) {
+  private constructor(config: Config, versionDetail: VersionDetail) {
     this.id = Date.now();
+    __cliConfig = config;
     const sfdxEnvVars = new Env().entries().filter((e) => e[0].startsWith('SFDX_'));
     const sfEnvVars = new Env().entries().filter((e) => e[0].startsWith('SF_'));
     const cliConfig = omit(config, ['plugins', 'pjson', 'userPJSON', 'options']) as CliConfig;
@@ -107,7 +112,7 @@ export class Doctor implements SfDoctor {
    * @returns An array of diagnostic promises.
    */
   public diagnose(): Array<Promise<void>> {
-    return new Diagnostics(this, this.config).run();
+    return new Diagnostics(this, __cliConfig).run();
   }
 
   /**
