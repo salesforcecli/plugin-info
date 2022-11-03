@@ -93,6 +93,9 @@
             "description": "commands related to cli release notes"
           }
         }
+      },
+      "doctor": {
+        "description": "diagnostic tools"
       }
     }
   },
