@@ -95,7 +95,7 @@
         }
       },
       "doctor": {
-        "description": "diagnostic tests"
+        "description": "diagnostic tools"
       }
     }
   },
