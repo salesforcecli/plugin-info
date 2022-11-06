@@ -11,7 +11,7 @@
     "@salesforce/core": "^3.30.12",
     "@salesforce/kit": "^1.6.1",
     "got": "^11.8.2",
-    "marked": "^4.1.1",
+    "marked": "^4.2.2",
     "marked-terminal": "^4.2.0",
     "open": "^8.4.0",
     "proxy-agent": "^5.0.0",
