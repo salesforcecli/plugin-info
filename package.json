@@ -10,7 +10,7 @@
     "@salesforce/command": "^5.2.27",
     "@salesforce/core": "^3.30.12",
     "@salesforce/kit": "^1.6.1",
-    "got": "^11.8.2",
+    "got": "^11.8.6",
     "marked": "^4.2.4",
     "marked-terminal": "^4.2.0",
     "open": "^8.4.0",
