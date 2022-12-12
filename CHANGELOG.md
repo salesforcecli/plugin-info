@@ -1,3 +1,12 @@
+## [2.2.13](https://github.com/salesforcecli/plugin-info/compare/2.2.12...2.2.13) (2022-12-12)
+
+
+### Bug Fixes
+
+* **deps:** bump got from 11.8.5 to 11.8.6 ([bb44d25](https://github.com/salesforcecli/plugin-info/commit/bb44d25448f7c04d7c431207ec0ea6a84d2d106a))
+
+
+
 ## [2.2.12](https://github.com/salesforcecli/plugin-info/compare/2.2.11...2.2.12) (2022-12-11)
 
 
