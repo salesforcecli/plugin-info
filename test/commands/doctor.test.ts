@@ -11,10 +11,10 @@ import * as childProcess from 'child_process';
 import * as Sinon from 'sinon';
 import { expect } from 'chai';
 import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
-import { UX } from '@salesforce/command';
 import { Lifecycle, Messages } from '@salesforce/core';
 import { Config } from '@oclif/core';
 import { VersionDetail } from '@oclif/plugin-version';
+import { SfCommand } from '@salesforce/sf-plugins-core';
 import DoctorCmd from '../../src/commands/doctor';
 import { Doctor, SfDoctorDiagnosis, Diagnostics, DiagnosticStatus } from '../../src';
 
@@ -88,13 +88,13 @@ describe('Doctor Command', () => {
 
   const runDoctorCmd = async (params: string[]) => {
     const cmd = new TestDoctor(params, oclifConfigStub);
-    uxLogStub = stubMethod(sandbox, UX.prototype, 'log');
-    promptStub = stubMethod(sandbox, UX.prototype, 'prompt').resolves('my new and crazy issue');
+    uxLogStub = stubMethod(sandbox, SfCommand.prototype, 'log');
+    promptStub = stubMethod(sandbox, SfCommand.prototype, 'prompt').resolves({ title: 'my new and crazy issue' });
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     openStub = sandbox.stub(cmd, 'openUrl').resolves();
 
-    uxStyledHeaderStub = stubMethod(sandbox, UX.prototype, 'styledHeader');
+    uxStyledHeaderStub = stubMethod(sandbox, SfCommand.prototype, 'styledHeader');
 
     return cmd.runIt();
   };

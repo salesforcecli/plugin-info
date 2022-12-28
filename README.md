@@ -76,31 +76,64 @@ sfdx plugins
 
 <!-- commands -->
 
-- [`sfdx info:releasenotes:display [-v <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-inforeleasenotesdisplay--v-string---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
+- [`sfdx doctor`](#sfdx-doctor)
+- [`sfdx info:releasenotes:display`](#sfdx-inforeleasenotesdisplay)
 
-## `sfdx info:releasenotes:display [-v <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
+## `sfdx doctor`
+
+Gather CLI configuration data and run diagnostic tests to discover and report potential problems in your environment.
+
+```
+USAGE
+  $ sfdx doctor
+
+OPTIONS
+  -c, --command=command
+  -d, --output-dir=output-dir
+  -i, --create-issue
+  -p, --plugin=plugin
+  --json                       Format output as json.
+
+DESCRIPTION
+  When you run the doctor command without parameters, it first displays a diagnostic overview of your environment. It
+  then writes a detailed diagnosis to a JSON file in the current directory. Use the --outputdir to specify a different
+  directory. To run diagnostic tests on a specific plugin, use the --plugin parameter. If the plugin isn't listening to
+  the doctor, then you get a warning.
+
+  Use the --command parameter to run a specific command in debug mode; the doctor writes both stdout and stderr to *.log
+   files that you can provide to Salesforce Customer Support or attach to a GitHub issue.
+
+  Plugin providers can also implement their own doctor diagnostic tests by listening to the "sf-doctor" event and
+  running plugin specific tests that are then included in the doctor diagnostics log.
+
+EXAMPLES
+  - Run CLI doctor diagnostics:
+      $ sfdx doctor
+  Run CLI doctor diagnostics and the specified command, and write the debug output to a file:
+      $ sfdx doctor --command "force:org:list --all"
+  Run CLI doctor diagnostics for a specific plugin:
+      $ sfdx doctor --plugin @salesforce/plugin-source
+```
+
+_See code: [src/commands/doctor.ts](https://github.com/salesforcecli/plugin-info/blob/v2.2.14-t.0/src/commands/doctor.ts)_
+
+## `sfdx info:releasenotes:display`
 
 Display Salesforce CLI release notes on the command line.
 
 ```
 USAGE
-  $ sfdx info:releasenotes:display [-v <string>] [--json] [--loglevel
-  trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
+  $ sfdx info:releasenotes:display
 
 OPTIONS
-  -v, --version=version                                                             CLI version or tag for which to
-                                                                                    display release notes.
-
-  --json                                                                            format output as json
-
-  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)  [default: warn] logging level for
-                                                                                    this command invocation
+  -v, --version=version  CLI version or tag for which to display release notes.
+  --json                 Format output as json.
 
 ALIASES
   $ sfdx whatsnew
 
 EXAMPLES
-  Display release notes for the currently installed CLI version:
+  - Display release notes for the currently installed CLI version:
   $ sfdx info:releasenotes:display
   Display release notes for CLI version 7.120.0:
   $ sfdx info:releasenotes:display --version 7.120.0
@@ -108,6 +141,6 @@ EXAMPLES
   $ sfdx info:releasenotes:display --version latest
 ```
 
-_See code: [src/commands/info/releasenotes/display.ts](https://github.com/salesforcecli/plugin-info/blob/v2.0.1/src/commands/info/releasenotes/display.ts)_
+_See code: [src/commands/info/releasenotes/display.ts](https://github.com/salesforcecli/plugin-info/blob/v2.2.14-t.0/src/commands/info/releasenotes/display.ts)_
 
 <!-- commandsstop -->
