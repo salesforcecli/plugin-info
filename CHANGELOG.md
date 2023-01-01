@@ -1,3 +1,12 @@
+## [2.2.15](https://github.com/salesforcecli/plugin-info/compare/2.2.14...2.2.15) (2023-01-01)
+
+
+### Bug Fixes
+
+* **deps:** bump marked from 4.2.4 to 4.2.5 ([8231c6a](https://github.com/salesforcecli/plugin-info/commit/8231c6a9191ff95ba83a13f5049153c3658125e2))
+
+
+
 ## [2.2.14](https://github.com/salesforcecli/plugin-info/compare/2.2.13...2.2.14) (2023-01-01)
 
 
