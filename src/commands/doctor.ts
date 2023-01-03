@@ -21,8 +21,8 @@ Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-info', 'doctor');
 
 export default class Doctor extends SfCommand<SfDoctorDiagnosis> {
-  public static readonly summary = messages.getMessage('commandDescription');
-  public static readonly description = messages.getMessage('commandDescription');
+  public static readonly summary = messages.getMessage('summary');
+  public static readonly description = messages.getMessage('description');
   public static readonly examples = messages.getMessage('examples').split(os.EOL);
 
   public static readonly flags = {
@@ -61,11 +61,7 @@ export default class Doctor extends SfCommand<SfDoctorDiagnosis> {
     this.doctor = SFDoctor.getInstance();
     const lifecycle = Lifecycle.getInstance();
 
-    const pluginFlag = flags.plugin;
-    const commandFlag = flags.command;
-    const outputdirFlag = flags['output-dir'];
-    const createissueFlag = flags['create-issue'];
-    this.outputDir = path.resolve(outputdirFlag ?? process.cwd());
+    this.outputDir = path.resolve(flags['output-dir'] ?? process.cwd());
 
     // eslint-disable-next-line @typescript-eslint/require-await
     lifecycle.on<DiagnosticStatus>('Doctor:diagnostic', async (data) => {
@@ -73,24 +69,24 @@ export default class Doctor extends SfCommand<SfDoctorDiagnosis> {
       this.doctor.addDiagnosticStatus(data);
     });
 
-    if (commandFlag) {
-      this.setupCommandExecution(commandFlag);
+    if (flags.command) {
+      this.setupCommandExecution(flags.command);
     }
 
-    if (pluginFlag) {
+    if (flags.plugin) {
       // verify the plugin flag matches an installed plugin
-      const plugin = this.config.plugins.find((p) => p.name === pluginFlag);
+      const plugin = this.config.plugins.find((p) => p.name === flags.plugin);
       if (plugin) {
-        const eventName = `sf-doctor-${pluginFlag}`;
+        const eventName = `sf-doctor-${flags.plugin}`;
         const hasDoctorHook = plugin.hooks && Object.keys(plugin.hooks).some((hook) => hook === eventName);
         if (hasDoctorHook) {
-          this.styledHeader(`Running diagnostics for plugin: ${pluginFlag}`);
+          this.styledHeader(`Running diagnostics for plugin: ${flags.plugin}`);
           this.tasks.push(this.config.runHook(eventName, { doctor: this.doctor }));
         } else {
-          this.log(`${pluginFlag} doesn't have diagnostic tests to run.`);
+          this.log(`${flags.plugin} doesn't have diagnostic tests to run.`);
         }
       } else {
-        throw new SfError(messages.getMessage('pluginNotInstalledError', [pluginFlag]), 'UnknownPluginError');
+        throw new SfError(messages.getMessage('pluginNotInstalledError', [flags.plugin]), 'UnknownPluginError');
       }
     } else {
       this.styledHeader('Running all diagnostics');
@@ -120,20 +116,23 @@ export default class Doctor extends SfCommand<SfDoctorDiagnosis> {
     this.styledHeader('Suggestions');
     diagnosis.suggestions.forEach((s) => this.log(`  * ${s}`));
 
-    if (createissueFlag) {
+    if (flags['create-issue']) {
       const raw = 'https://raw.githubusercontent.com/forcedotcom/cli/main/.github/ISSUE_TEMPLATE/bug_report.md';
       const ghIssue = await got(raw, {
         throwHttpErrors: false,
         agent: { https: ProxyAgent(getProxyForUrl(raw)) },
       });
 
-      const title: Record<string, string> = await this.prompt({
-        type: 'input',
-        name: 'title',
-        message: 'Enter a title for your new issue',
-      });
+      const title = (
+        await this.prompt({
+          type: 'input',
+          name: 'title',
+          message: 'Enter a title for your new issue',
+        })
+      ).title as string;
+
       const url = encodeURI(
-        `https://github.com/forcedotcom/cli/issues/new?title=${title.title}&body=${this.generateIssueMarkdown(
+        `https://github.com/forcedotcom/cli/issues/new?title=${title}&body=${this.generateIssueMarkdown(
           ghIssue.body,
           diagnosis
         )}&labels=doctor,investigating,${this.config.bin}`

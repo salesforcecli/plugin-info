@@ -53,10 +53,9 @@ export default class Display extends SfCommand<DisplayOutput> {
     }),
     loglevel,
   };
-  private logger: Logger;
 
   public async run(): Promise<DisplayOutput> {
-    this.logger = Logger.childFromRoot(this.constructor.name);
+    const logger = Logger.childFromRoot(this.constructor.name);
     const { flags } = await this.parse(Display);
     const env = new Env();
 
@@ -65,8 +64,8 @@ export default class Display extends SfCommand<DisplayOutput> {
     if (env.getBoolean(HIDE_NOTES) && isHook) {
       // We don't ever want to exit the process for info:releasenotes:display (whatsnew)
       // In most cases we will log a message, but here we only trace log in case someone using stdout of the update command
-      this.logger.trace(`release notes disabled via env var: ${HIDE_NOTES}`);
-      this.logger.trace('exiting');
+      logger.trace(`release notes disabled via env var: ${HIDE_NOTES}`);
+      logger.trace('exiting');
       await Lifecycle.getInstance().emitTelemetry({ eventName: 'NOTES_HIDDEN' });
 
       return;
@@ -119,7 +118,7 @@ export default class Display extends SfCommand<DisplayOutput> {
 
         this.warn(`${this.id} failed: ${message}`);
 
-        this.logger.trace(stack);
+        logger.trace(stack);
         await Lifecycle.getInstance().emitTelemetry({
           eventName: 'COMMAND_ERROR',
           type: 'EXCEPTION',

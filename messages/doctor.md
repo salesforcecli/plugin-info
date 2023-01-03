@@ -1,4 +1,8 @@
-# commandDescription
+# summary
+
+Gather CLI configuration data and run diagnostic tests to discover and report potential problems in your environment.
+
+# description
 
 Gather CLI configuration data and run diagnostic tests to discover and report potential problems in your environment.
 
