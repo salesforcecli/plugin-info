@@ -8,8 +8,8 @@
 import * as os from 'os';
 import * as path from 'path';
 import { exec } from 'child_process';
-import { flags, SfdxCommand } from '@salesforce/command';
-import { Messages, Lifecycle, SfError } from '@salesforce/core';
+import { Flags, loglevel, SfCommand } from '@salesforce/sf-plugins-core';
+import { Lifecycle, Messages, SfError } from '@salesforce/core';
 import * as open from 'open';
 import got from 'got';
 import * as ProxyAgent from 'proxy-agent';
@@ -20,28 +20,32 @@ import { DiagnosticStatus } from '../diagnostics';
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-info', 'doctor');
 
-export default class Doctor extends SfdxCommand {
-  public static description = messages.getMessage('commandDescription');
-  public static examples = messages.getMessage('examples').split(os.EOL);
+export default class Doctor extends SfCommand<SfDoctorDiagnosis> {
+  public static readonly summary = messages.getMessage('summary');
+  public static readonly description = messages.getMessage('description');
+  public static readonly examples = messages.getMessage('examples').split(os.EOL);
 
-  protected static flagsConfig = {
-    command: flags.string({
+  public static readonly flags = {
+    command: Flags.string({
       char: 'c',
-      description: messages.getMessage('flags.command'),
+      summary: messages.getMessage('flags.command'),
     }),
-    plugin: flags.string({
+    plugin: Flags.string({
       char: 'p',
-      description: messages.getMessage('flags.plugin'),
+      summary: messages.getMessage('flags.plugin'),
     }),
-    outputdir: flags.directory({
-      char: 'o',
-      description: messages.getMessage('flags.outputdir'),
+    'output-dir': Flags.directory({
+      char: 'd',
+      summary: messages.getMessage('flags.output-dir.summary'),
+      aliases: ['outputdir', 'o'],
     }),
-    createissue: flags.boolean({
+    'create-issue': Flags.boolean({
       char: 'i',
-      description: messages.getMessage('flags.createissue'),
+      summary: messages.getMessage('flags.create-issue.summary'),
       default: false,
+      aliases: ['createissue'],
     }),
+    loglevel,
   };
 
   // Array of promises that are various doctor tasks to perform
@@ -53,42 +57,39 @@ export default class Doctor extends SfdxCommand {
   private filesWrittenMsgs: string[] = [];
 
   public async run(): Promise<SfDoctorDiagnosis> {
+    const { flags } = await this.parse(Doctor);
     this.doctor = SFDoctor.getInstance();
     const lifecycle = Lifecycle.getInstance();
 
-    const pluginFlag = this.flags.plugin as string;
-    const commandFlag = this.flags.command as string;
-    const outputdirFlag = this.flags.outputdir as string;
-    const createissueFlag = this.flags.createissue as boolean;
-    this.outputDir = path.resolve(outputdirFlag ?? process.cwd());
+    this.outputDir = path.resolve(flags['output-dir'] ?? process.cwd());
 
     // eslint-disable-next-line @typescript-eslint/require-await
     lifecycle.on<DiagnosticStatus>('Doctor:diagnostic', async (data) => {
-      this.ux.log(`${data.status} - ${data.testName}`);
+      this.log(`${data.status} - ${data.testName}`);
       this.doctor.addDiagnosticStatus(data);
     });
 
-    if (commandFlag) {
-      this.setupCommandExecution(commandFlag);
+    if (flags.command) {
+      this.setupCommandExecution(flags.command);
     }
 
-    if (pluginFlag) {
+    if (flags.plugin) {
       // verify the plugin flag matches an installed plugin
-      const plugin = this.config.plugins.find((p) => p.name === pluginFlag);
+      const plugin = this.config.plugins.find((p) => p.name === flags.plugin);
       if (plugin) {
-        const eventName = `sf-doctor-${pluginFlag}`;
+        const eventName = `sf-doctor-${flags.plugin}`;
         const hasDoctorHook = plugin.hooks && Object.keys(plugin.hooks).some((hook) => hook === eventName);
         if (hasDoctorHook) {
-          this.ux.styledHeader(`Running diagnostics for plugin: ${pluginFlag}`);
+          this.styledHeader(`Running diagnostics for plugin: ${flags.plugin}`);
           this.tasks.push(this.config.runHook(eventName, { doctor: this.doctor }));
         } else {
-          this.ux.log(`${pluginFlag} doesn't have diagnostic tests to run.`);
+          this.log(`${flags.plugin} doesn't have diagnostic tests to run.`);
         }
       } else {
-        throw new SfError(messages.getMessage('pluginNotInstalledError', [pluginFlag]), 'UnknownPluginError');
+        throw new SfError(messages.getMessage('pluginNotInstalledError', [flags.plugin]), 'UnknownPluginError');
       }
     } else {
-      this.ux.styledHeader('Running all diagnostics');
+      this.styledHeader('Running all diagnostics');
       // Fire events for plugins that have sf-doctor hooks
       this.config.plugins.forEach((plugin) => {
         const eventName = `sf-doctor-${plugin.name}`;
@@ -108,21 +109,28 @@ export default class Doctor extends SfdxCommand {
     );
     this.filesWrittenMsgs.push(`Wrote doctor diagnosis to: ${diagnosisLocation}`);
 
-    this.ux.log();
-    this.filesWrittenMsgs.forEach((msg) => this.ux.log(msg));
+    this.log();
+    this.filesWrittenMsgs.forEach((msg) => this.log(msg));
 
-    this.ux.log();
-    this.ux.styledHeader('Suggestions');
-    diagnosis.suggestions.forEach((s) => this.ux.log(`  * ${s}`));
+    this.log();
+    this.styledHeader('Suggestions');
+    diagnosis.suggestions.forEach((s) => this.log(`  * ${s}`));
 
-    if (createissueFlag) {
+    if (flags['create-issue']) {
       const raw = 'https://raw.githubusercontent.com/forcedotcom/cli/main/.github/ISSUE_TEMPLATE/bug_report.md';
       const ghIssue = await got(raw, {
         throwHttpErrors: false,
         agent: { https: ProxyAgent(getProxyForUrl(raw)) },
       });
 
-      const title = await this.ux.prompt('Enter a title for your new issue');
+      const title = (
+        await this.prompt({
+          type: 'input',
+          name: 'title',
+          message: 'Enter a title for your new issue',
+        })
+      ).title as string;
+
       const url = encodeURI(
         `https://github.com/forcedotcom/cli/issues/new?title=${title}&body=${this.generateIssueMarkdown(
           ghIssue.body,
@@ -149,7 +157,7 @@ export default class Doctor extends SfdxCommand {
     const info = `
 \`\`\`
 ${diagnosis.cliConfig.userAgent}
-${diagnosis.versionDetail.pluginVersions.join(os.EOL)}
+${diagnosis.versionDetail.pluginVersions?.join(os.EOL)}
 \`\`\`
 ${
   diagnosis.sfdxEnvVars.length
@@ -214,8 +222,8 @@ ${this.doctor
   // in the current or specified directory.
   private setupCommandExecution(command: string): void {
     const cmdString = this.parseCommand(command);
-    this.ux.styledHeader('Running command with debugging');
-    this.ux.log(`${cmdString}\n`);
+    this.styledHeader('Running command with debugging');
+    this.log(`${cmdString}\n`);
     this.doctor.addCommandName(cmdString);
 
     const execPromise = new Promise<void>((resolve) => {

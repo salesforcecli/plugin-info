@@ -11,11 +11,11 @@ import * as SinonChai from 'sinon-chai';
 import { expect, use as chaiUse } from 'chai';
 import { fromStub, stubInterface, stubMethod, spyMethod } from '@salesforce/ts-sinon';
 import { shouldThrow } from '@salesforce/core/lib/testSetup';
-import { UX } from '@salesforce/command';
 import { marked } from 'marked';
 import { Env } from '@salesforce/kit';
 import { Lifecycle } from '@salesforce/core';
 import { Config } from '@oclif/core';
+import { SfCommand } from '@salesforce/sf-plugins-core';
 import * as getInfoConfig from '../../../../src/shared/getInfoConfig';
 import * as getReleaseNotes from '../../../../src/shared/getReleaseNotes';
 import * as getDistTagVersion from '../../../../src/shared/getDistTagVersion';
@@ -52,8 +52,8 @@ describe('info:releasenotes:display', () => {
 
     const cmd = new TestDisplay(params, oclifConfigStub);
 
-    uxLogStub = stubMethod(sandbox, UX.prototype, 'log');
-    uxWarnStub = stubMethod(sandbox, UX.prototype, 'warn');
+    uxLogStub = stubMethod(sandbox, SfCommand.prototype, 'log');
+    uxWarnStub = stubMethod(sandbox, SfCommand.prototype, 'warn');
 
     return cmd.runIt();
   };

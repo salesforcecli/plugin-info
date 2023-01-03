@@ -12,8 +12,8 @@ import * as os from 'os';
 import { marked } from 'marked';
 import * as TerminalRenderer from 'marked-terminal';
 import { Env } from '@salesforce/kit';
-import { flags, SfdxCommand } from '@salesforce/command';
-import { Lifecycle, Messages } from '@salesforce/core';
+import { Flags, SfCommand, loglevel } from '@salesforce/sf-plugins-core';
+import { Lifecycle, Logger, Messages } from '@salesforce/core';
 import { AnyJson, JsonMap } from '@salesforce/ts-types';
 import { getInfoConfig } from '../../../shared/getInfoConfig';
 import { getReleaseNotes } from '../../../shared/getReleaseNotes';
@@ -30,36 +30,42 @@ const HIDE_FOOTER = 'SFDX_HIDE_RELEASE_NOTES_FOOTER';
 // or any library that is using the messages framework can also be loaded this way.
 const messages = Messages.loadMessages('@salesforce/plugin-info', 'display');
 
-export default class Display extends SfdxCommand {
+export default class Display extends SfCommand<DisplayOutput> {
   private static helpers = ['stable', 'stable-rc', 'latest', 'latest-rc', 'rc'];
 
-  public static description = messages.getMessage('commandDescription');
+  public static readonly summary = messages.getMessage('commandDescription');
+  public static readonly description = messages.getMessage('commandDescription');
 
   public static aliases = ['whatsnew'];
 
-  public static examples = messages.getMessage('examples', [Display.helpers.join(', ')]).split(os.EOL);
+  public static readonly examples = messages.getMessage('examples', [Display.helpers.join(', ')]).split(os.EOL);
 
-  protected static flagsConfig = {
-    version: flags.string({
+  public static readonly flags = {
+    version: Flags.string({
       char: 'v',
-      description: messages.getMessage('flags.version'),
+      summary: messages.getMessage('flags.version.summary'),
+      description: messages.getMessage('flags.version.description'),
     }),
-    hook: flags.boolean({
+    hook: Flags.boolean({
       hidden: true,
-      description: messages.getMessage('flags.hook'),
+      summary: messages.getMessage('flags.hook.summary'),
+      description: messages.getMessage('flags.hook.description'),
     }),
+    loglevel,
   };
 
   public async run(): Promise<DisplayOutput> {
+    const logger = Logger.childFromRoot(this.constructor.name);
+    const { flags } = await this.parse(Display);
     const env = new Env();
 
-    const isHook = !!this.flags.hook;
+    const isHook = !!flags.hook;
 
     if (env.getBoolean(HIDE_NOTES) && isHook) {
       // We don't ever want to exit the process for info:releasenotes:display (whatsnew)
       // In most cases we will log a message, but here we only trace log in case someone using stdout of the update command
-      this.logger.trace(`release notes disabled via env var: ${HIDE_NOTES}`);
-      this.logger.trace('exiting');
+      logger.trace(`release notes disabled via env var: ${HIDE_NOTES}`);
+      logger.trace('exiting');
       await Lifecycle.getInstance().emitTelemetry({ eventName: 'NOTES_HIDDEN' });
 
       return;
@@ -72,7 +78,7 @@ export default class Display extends SfdxCommand {
 
       const { distTagUrl, releaseNotesPath, releaseNotesFilename } = infoConfig.releasenotes;
 
-      let version = (this.flags.version as string) ?? installedVersion;
+      let version = flags.version ?? installedVersion;
 
       if (Display.helpers.includes(version)) {
         version = await getDistTagVersion(distTagUrl, version);
@@ -88,12 +94,12 @@ export default class Display extends SfdxCommand {
 
       tokens.unshift(marked.lexer(`# Release notes for '${this.config.bin}':`)[0]);
 
-      if (this.flags.json) {
+      if (flags.json) {
         const body = tokens.map((token) => token.raw).join(os.EOL);
 
         return { body, url: releaseNotesPath };
       } else {
-        this.ux.log(marked.parser(tokens));
+        this.log(marked.parser(tokens));
       }
 
       if (isHook) {
@@ -101,7 +107,7 @@ export default class Display extends SfdxCommand {
           await Lifecycle.getInstance().emitTelemetry({ eventName: 'FOOTER_HIDDEN' });
         } else {
           const footer = messages.getMessage('footer', [this.config.bin, releaseNotesPath, HIDE_NOTES, HIDE_FOOTER]);
-          this.ux.log(marked.parse(footer));
+          this.log(marked.parse(footer));
         }
       }
     } catch (err) {
@@ -110,9 +116,9 @@ export default class Display extends SfdxCommand {
         // --hook is passed in the post install/update scripts
         const { message, stack, name } = err as Error;
 
-        this.ux.warn(`${this.id} failed: ${message}`);
+        this.warn(`${this.id} failed: ${message}`);
 
-        this.logger.trace(stack);
+        logger.trace(stack);
         await Lifecycle.getInstance().emitTelemetry({
           eventName: 'COMMAND_ERROR',
           type: 'EXCEPTION',
@@ -136,7 +142,7 @@ export default class Display extends SfdxCommand {
   }
 }
 
-interface DisplayOutput {
+export interface DisplayOutput {
   body: string;
   url: string;
 }
