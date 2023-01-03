@@ -1,4 +1,4 @@
-# commandDescription
+# summary
 
 Display Salesforce CLI release notes on the command line.
 
@@ -6,26 +6,23 @@ Display Salesforce CLI release notes on the command line.
 
 CLI version or tag for which to display release notes.
 
-# flags.version.description
-
-CLI version or tag for which to display release notes.
-
 # flags.hook.summary
-
-This hidden parameter is used in post install or update hooks.
-
-# flags.hook.description
 
 This hidden parameter is used in post install or update hooks.
 
 # examples
 
 - Display release notes for the currently installed CLI version:
-  $ <%= config.bin %> <%= command.id %>
-  Display release notes for CLI version 7.120.0:
-  $ <%= config.bin %> <%= command.id %> --version 7.120.0
-  Display release notes for the CLI version that corresponds to a tag (%s):
-  $ <%= config.bin %> <%= command.id %> --version latest
+
+  <%= config.bin %> <%= command.id %>
+
+- Display release notes for CLI version 7.120.0:
+
+  <%= config.bin %> <%= command.id %> --version 7.120.0
+
+- Display release notes for the CLI version that corresponds to a tag (%s):
+
+  <%= config.bin %> <%= command.id %> --version latest
 
 # footer
 
