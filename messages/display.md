@@ -2,6 +2,10 @@
 
 Display Salesforce CLI release notes on the command line.
 
+# description
+
+Display Salesforce CLI release notes on the command line.
+
 # flags.version.summary
 
 CLI version or tag for which to display release notes.

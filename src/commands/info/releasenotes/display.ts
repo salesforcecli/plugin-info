@@ -34,6 +34,7 @@ export default class Display extends SfCommand<DisplayOutput> {
   private static helpers = ['stable', 'stable-rc', 'latest', 'latest-rc', 'rc'];
 
   public static readonly summary = messages.getMessage('summary');
+  public static readonly description = messages.getMessage('description');
 
   public static aliases = ['whatsnew'];
 
