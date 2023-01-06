@@ -33,8 +33,8 @@ const messages = Messages.loadMessages('@salesforce/plugin-info', 'display');
 export default class Display extends SfCommand<DisplayOutput> {
   private static helpers = ['stable', 'stable-rc', 'latest', 'latest-rc', 'rc'];
 
-  public static readonly summary = messages.getMessage('commandDescription');
-  public static readonly description = messages.getMessage('commandDescription');
+  public static readonly summary = messages.getMessage('summary');
+  public static readonly description = messages.getMessage('description');
 
   public static aliases = ['whatsnew'];
 
@@ -44,12 +44,10 @@ export default class Display extends SfCommand<DisplayOutput> {
     version: Flags.string({
       char: 'v',
       summary: messages.getMessage('flags.version.summary'),
-      description: messages.getMessage('flags.version.description'),
     }),
     hook: Flags.boolean({
       hidden: true,
       summary: messages.getMessage('flags.hook.summary'),
-      description: messages.getMessage('flags.hook.description'),
     }),
     loglevel,
   };
