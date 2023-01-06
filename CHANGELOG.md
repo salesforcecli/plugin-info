@@ -1,3 +1,15 @@
+## [2.3.2](https://github.com/salesforcecli/plugin-info/compare/2.3.1...2.3.2) (2023-01-06)
+
+
+### Bug Fixes
+
+* edit/standardize messages ([d6d44eb](https://github.com/salesforcecli/plugin-info/commit/d6d44eb24c0a0b5bc697f112bf4ea9fe3fd3eefd))
+* edit/standardize messages ([225b733](https://github.com/salesforcecli/plugin-info/commit/225b733d63b87d61239993310b26c60e3ed8df9b))
+* un-duplicate the description ([ebb1bc9](https://github.com/salesforcecli/plugin-info/commit/ebb1bc9f41b5dc7970d312d1429bef78206ff2bc))
+* update command to take in my messages changes ([0ba6895](https://github.com/salesforcecli/plugin-info/commit/0ba6895862ad98259a217ff983623e56459329c8))
+
+
+
 ## [2.3.1](https://github.com/salesforcecli/plugin-info/compare/2.3.0...2.3.1) (2023-01-04)
 
 
