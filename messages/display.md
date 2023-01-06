@@ -4,7 +4,7 @@ Display Salesforce CLI release notes on the command line.
 
 # description
 
-Display Salesforce CLI release notes on the command line.
+By default, this command displays release notes for the currently installed CLI version on your computer. Use the --version flag to view release notes for a different release.
 
 # flags.version.summary
 
