@@ -38,7 +38,7 @@ export default class Display extends SfCommand<DisplayOutput> {
 
   public static aliases = ['whatsnew'];
 
-  public static readonly examples = messages.getMessage('examples', [Display.helpers.join(', ')]).split(os.EOL);
+  public static readonly examples = messages.getMessages('examples', [Display.helpers.join(', ')]);
 
   public static readonly flags = {
     version: Flags.string({
