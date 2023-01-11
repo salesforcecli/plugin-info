@@ -23,7 +23,7 @@ const messages = Messages.loadMessages('@salesforce/plugin-info', 'doctor');
 export default class Doctor extends SfCommand<SfDoctorDiagnosis> {
   public static readonly summary = messages.getMessage('summary');
   public static readonly description = messages.getMessage('description');
-  public static readonly examples = messages.getMessage('examples').split(os.EOL);
+  public static readonly examples = messages.getMessages('examples');
 
   public static readonly flags = {
     command: Flags.string({
