@@ -14,7 +14,7 @@ import { shouldThrow } from '@salesforce/core/lib/testSetup';
 import { marked } from 'marked';
 import { Env } from '@salesforce/kit';
 import { Lifecycle } from '@salesforce/core';
-import { Config } from '@oclif/core';
+import { Config, Plugin } from '@oclif/core';
 import { SfCommand } from '@salesforce/sf-plugins-core';
 import * as getInfoConfig from '../../../../src/shared/getInfoConfig';
 import * as getReleaseNotes from '../../../../src/shared/getReleaseNotes';
@@ -39,6 +39,7 @@ describe('info:releasenotes:display', () => {
   let markedParserSpy: Sinon.SinonSpy;
 
   const oclifConfigStub = fromStub(stubInterface<Config>(sandbox));
+  const oclifPluginStub = fromStub(stubInterface<Plugin>(sandbox));
 
   class TestDisplay extends Display {
     public async runIt() {
@@ -48,7 +49,8 @@ describe('info:releasenotes:display', () => {
   }
 
   const runDisplayCmd = async (params: string[]) => {
-    oclifConfigStub.bin = 'sfdx';
+    oclifConfigStub.name = 'sfdx-cli';
+    oclifPluginStub.name = 'sfdx-plugin';
 
     const cmd = new TestDisplay(params, oclifConfigStub);
 
@@ -69,6 +71,9 @@ describe('info:releasenotes:display', () => {
 
     oclifConfigStub.pjson.version = '3.3.3';
     oclifConfigStub.root = '/root/path';
+
+    oclifPluginStub.pjson.version = '3.3.3';
+    oclifConfigStub.plugins = [oclifPluginStub];
 
     getBooleanStub = stubMethod(sandbox, Env.prototype, 'getBoolean');
     getBooleanStub.withArgs('SFDX_HIDE_RELEASE_NOTES').returns(false);
@@ -168,7 +173,21 @@ describe('info:releasenotes:display', () => {
   it('logs logs a header with cli bin', async () => {
     await runDisplayCmd([]);
 
-    expect(uxLogStub.args[0][0]).to.contain("# Release notes for 'sfdx':");
+    expect(uxLogStub.args[0][0]).to.contain("# Release notes for 'sfdx-cli':");
+  });
+
+  it('logs logs a header with plugin', async () => {
+    await runDisplayCmd(['sfdx-plugin']);
+
+    expect(uxLogStub.args[0][0]).to.contain("# Release notes for 'sfdx-plugin':");
+  });
+
+  it('throws an error if plugin name is invalid', async () => {
+    try {
+      await shouldThrow(runDisplayCmd(['no-plugin']));
+    } catch (err) {
+      expect((err as Error).message).to.contain("No plugin 'no-plugin' found");
+    }
   });
 
   it('calls getReleaseNotes with passed version', async () => {
@@ -257,7 +276,7 @@ describe('info:releasenotes:display', () => {
     const json = await runDisplayCmd(['--json']);
 
     const expected = {
-      body: `# Release notes for 'sfdx':${os.EOL}## Release notes for 3.3.3`,
+      body: `# Release notes for 'sfdx-cli':${os.EOL}## Release notes for 3.3.3`,
       url: mockInfoConfig.releasenotes.releaseNotesPath,
     };
 
