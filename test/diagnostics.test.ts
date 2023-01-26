@@ -12,7 +12,7 @@ import { fromStub, spyMethod, stubInterface, stubMethod } from '@salesforce/ts-s
 import { Config } from '@oclif/core';
 import { VersionDetail } from '@oclif/plugin-version';
 import { Lifecycle } from '@salesforce/core';
-import { CliUx } from '@oclif/core';
+import { ux } from '@oclif/core';
 import { Doctor } from '../src/doctor';
 import { Diagnostics } from '../src/diagnostics';
 
@@ -40,7 +40,7 @@ describe('Diagnostics', () => {
   let lifecycleEmitSpy: sinon.SinonSpy;
 
   beforeEach(() => {
-    stubMethod(sandbox, CliUx.ux, 'log');
+    stubMethod(sandbox, ux, 'log');
     childProcessExecStub = stubMethod(sandbox, childProcess, 'exec');
     drAddSuggestionSpy = spyMethod(sandbox, Doctor.prototype, 'addSuggestion');
     lifecycleEmitSpy = spyMethod(sandbox, lifecycle, 'emit');
