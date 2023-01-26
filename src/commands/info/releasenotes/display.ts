@@ -13,7 +13,7 @@ import { marked } from 'marked';
 import * as TerminalRenderer from 'marked-terminal';
 import { Env } from '@salesforce/kit';
 import { Flags, SfCommand, loglevel } from '@salesforce/sf-plugins-core';
-import { Lifecycle, Logger, Messages } from '@salesforce/core';
+import { Lifecycle, Logger, Messages, SfError } from '@salesforce/core';
 import { AnyJson, JsonMap } from '@salesforce/ts-types';
 import { getInfoConfig } from '../../../shared/getInfoConfig';
 import { getReleaseNotes } from '../../../shared/getReleaseNotes';
@@ -40,6 +40,13 @@ export default class Display extends SfCommand<DisplayOutput> {
 
   public static readonly examples = messages.getMessages('examples', [Display.helpers.join(', ')]);
 
+  public static args = [
+    {
+      name: 'plugin',
+      description: messages.getMessage('flags.plugin.summary'),
+    },
+  ];
+
   public static readonly flags = {
     version: Flags.string({
       char: 'v',
@@ -54,7 +61,7 @@ export default class Display extends SfCommand<DisplayOutput> {
 
   public async run(): Promise<DisplayOutput> {
     const logger = Logger.childFromRoot(this.constructor.name);
-    const { flags } = await this.parse(Display);
+    const { flags, args } = await this.parse(Display);
     const env = new Env();
 
     const isHook = !!flags.hook;
@@ -70,9 +77,13 @@ export default class Display extends SfCommand<DisplayOutput> {
     }
 
     try {
-      const installedVersion = this.config.pjson.version;
+      const [plugin] = args.plugin ? this.config.plugins.filter((p) => p.name === args.plugin) : [this.config];
 
-      const infoConfig = await getInfoConfig(this.config.root);
+      if (!plugin) throw new SfError(`No plugin '${args.plugin as string}' found`);
+
+      const installedVersion = plugin.pjson.version;
+
+      const infoConfig = await getInfoConfig(plugin.root);
 
       const { distTagUrl, releaseNotesPath, releaseNotesFilename } = infoConfig.releasenotes;
 
@@ -90,7 +101,7 @@ export default class Display extends SfCommand<DisplayOutput> {
         renderer: new TerminalRenderer({ emoji: false }),
       });
 
-      tokens.unshift(marked.lexer(`# Release notes for '${this.config.bin}':`)[0]);
+      tokens.unshift(marked.lexer(`# Release notes for '${plugin.name}':`)[0]);
 
       if (flags.json) {
         const body = tokens.map((token) => token.raw).join(os.EOL);
@@ -104,7 +115,7 @@ export default class Display extends SfCommand<DisplayOutput> {
         if (env.getBoolean(HIDE_FOOTER)) {
           await Lifecycle.getInstance().emitTelemetry({ eventName: 'FOOTER_HIDDEN' });
         } else {
-          const footer = messages.getMessage('footer', [this.config.bin, releaseNotesPath, HIDE_NOTES, HIDE_FOOTER]);
+          const footer = messages.getMessage('footer', [plugin.name, releaseNotesPath, HIDE_NOTES, HIDE_FOOTER]);
           this.log(marked.parse(footer));
         }
       }

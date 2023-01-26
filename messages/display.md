@@ -14,6 +14,10 @@ CLI version or tag for which to display release notes.
 
 This hidden parameter is used in post install or update hooks.
 
+# flags.plugin.summary
+
+Plugin name for which to display release notes.
+
 # examples
 
 - Display release notes for the currently installed CLI version:
