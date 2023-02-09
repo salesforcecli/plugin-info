@@ -89,15 +89,15 @@
     ],
     "topics": {
       "info": {
-        "description": "access cli info from the command line",
+        "description": "Access Salesforce CLI information from the command line.",
         "subtopics": {
           "releasenotes": {
-            "description": "commands related to cli release notes"
+            "description": "Read the Salesforce CLI release notes."
           }
         }
       },
       "doctor": {
-        "description": "diagnostic tools"
+        "description": "Tools for diagnosing problems with Salesforce CLI."
       }
     }
   },
