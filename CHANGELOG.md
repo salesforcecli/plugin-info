@@ -1,3 +1,12 @@
+## [2.4.6](https://github.com/salesforcecli/plugin-info/compare/2.4.5...2.4.6) (2023-02-26)
+
+
+### Bug Fixes
+
+* **deps:** bump open from 8.4.0 to 8.4.2 ([7da831b](https://github.com/salesforcecli/plugin-info/commit/7da831bc8f80b3c39359dccf8f9241e0bb87e690))
+
+
+
 ## [2.4.5](https://github.com/salesforcecli/plugin-info/compare/2.4.4...2.4.5) (2023-02-26)
 
 
