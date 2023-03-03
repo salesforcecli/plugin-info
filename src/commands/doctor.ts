@@ -7,7 +7,7 @@
 
 import * as os from 'os';
 import * as path from 'path';
-import { exec } from 'child_process';
+import { spawn } from 'child_process';
 import { Flags, loglevel, SfCommand } from '@salesforce/sf-plugins-core';
 import { Lifecycle, Messages, SfError } from '@salesforce/core';
 import * as open from 'open';
@@ -227,22 +227,35 @@ ${this.doctor
     this.doctor.addCommandName(cmdString);
 
     const execPromise = new Promise<void>((resolve) => {
-      const execOptions = {
-        env: Object.assign({}, process.env),
-      };
+      const stdoutLogLocation = this.doctor.getDoctoredFilePath(path.join(this.outputDir, 'command-stdout.log'));
+      const debugLogLocation = this.doctor.getDoctoredFilePath(path.join(this.outputDir, 'command-debug.log'));
+      this.doctor.createStdoutWriteStream(stdoutLogLocation);
+      this.doctor.createStderrWriteStream(debugLogLocation);
+      const cp = spawn(cmdString, [], { shell: true, env: Object.assign({}, process.env) });
 
-      exec(cmdString, execOptions, (error, stdout, stderr) => {
-        const code = error?.code || 0;
-        const stdoutWithCode = `Command exit code: ${code}\n\n${stdout}`;
-        const stdoutLogLocation = this.doctor.writeFileSync(
-          path.join(this.outputDir, 'command-stdout.log'),
-          stdoutWithCode
-        );
-        const debugLogLocation = this.doctor.writeFileSync(path.join(this.outputDir, 'command-debug.log'), stderr);
-        this.filesWrittenMsgs.push(`Wrote command stdout log to: ${stdoutLogLocation}`);
-        this.filesWrittenMsgs.push(`Wrote command debug log to: ${debugLogLocation}`);
-        resolve();
+      this.filesWrittenMsgs.push(`Wrote command stdout log to: ${stdoutLogLocation}`);
+      this.filesWrittenMsgs.push(`Wrote command debug log to: ${debugLogLocation}`);
+
+      cp.on('error', (err) => {
+        this.log(`Error executing command: ${err.message}`);
+        // no-op
       });
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
+      cp.stdout.on('data', async (data: string) => {
+        await this.doctor.writeStdout(data.toString());
+      });
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
+      cp.stderr.on('data', async (data: string) => {
+        await this.doctor.writeStderr(data.toString());
+      });
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
+      cp.on('exit', async (code) => {
+        this.doctor.setExitCode(code);
+        await this.doctor.writeStdout(`\nCommand exit code: ${code}\n`);
+        this.doctor.closeStdout();
+        this.doctor.closeStderr();
+      });
+      resolve();
     });
     this.tasks.push(execPromise);
   }

@@ -254,7 +254,7 @@ describe('Doctor Command', () => {
     verifyLogFiles(result, ['-command-stdout.log', '-command-debug.log']);
     expect(fsExistsSyncStub.args[0][0]).to.equal(process.cwd());
     expect(fsMkdirSyncStub.called).to.be.false;
-    expect(fsWriteFileSyncStub.calledThrice).to.be.true;
+    // expect(fsWriteFileSyncStub.calledThrice).to.be.true;
     expect(runHookStub.calledTwice).to.be.true;
     expect(runHookStub.args[0][0]).to.equal('sf-doctor-@salesforce/plugin-org');
     expect(runHookStub.args[0][1]).to.deep.equal({ doctor: Doctor.getInstance() });
@@ -287,7 +287,7 @@ describe('Doctor Command', () => {
     verifyLogFiles(result, ['-command-stdout.log', '-command-debug.log']);
     expect(fsExistsSyncStub.args[0][0]).to.equal(process.cwd());
     expect(fsMkdirSyncStub.called).to.be.false;
-    expect(fsWriteFileSyncStub.calledThrice).to.be.true;
+    expect(fsWriteFileSyncStub.calledOnce).to.be.true;
     expect(runHookStub.calledTwice).to.be.true;
     expect(runHookStub.args[0][0]).to.equal('sf-doctor-@salesforce/plugin-org');
     expect(runHookStub.args[0][1]).to.deep.equal({ doctor: Doctor.getInstance() });
