@@ -43,6 +43,8 @@ describe('Doctor Command', () => {
   let uxStyledHeaderStub: sinon.SinonStub;
   let fsExistsSyncStub: sinon.SinonStub;
   let fsMkdirSyncStub: sinon.SinonStub;
+  let drWriteStdout: sinon.SinonStub;
+  let drWriteStderr: sinon.SinonStub;
   let fsWriteFileSyncStub: sinon.SinonStub;
   let diagnosticsRunStub: sinon.SinonStub;
   let childProcessExecStub: sinon.SinonStub;
@@ -105,6 +107,12 @@ describe('Doctor Command', () => {
     fsWriteFileSyncStub = stubMethod(sandbox, fs, 'writeFileSync');
     diagnosticsRunStub = stubMethod(sandbox, Diagnostics.prototype, 'run');
     childProcessExecStub = stubMethod(sandbox, childProcess, 'exec');
+    drWriteStdout = stubMethod(sandbox, Doctor.prototype, 'writeStdout');
+    drWriteStderr = stubMethod(sandbox, Doctor.prototype, 'writeStderr');
+    stubMethod(sandbox, Doctor.prototype, 'createStdoutWriteStream');
+    stubMethod(sandbox, Doctor.prototype, 'createStderrWriteStream');
+    stubMethod(sandbox, Doctor.prototype, 'closeStdout');
+    stubMethod(sandbox, Doctor.prototype, 'closeStderr');
     runHookStub.reset();
   });
 
@@ -167,6 +175,8 @@ describe('Doctor Command', () => {
     verifyLogFiles(result);
     expect(fsExistsSyncStub.args[0][0]).to.equal(process.cwd());
     expect(fsMkdirSyncStub.called).to.be.false;
+    expect(drWriteStdout.called).to.be.false;
+    expect(drWriteStderr.called).to.be.false;
     expect(fsWriteFileSyncStub.calledOnce).to.be.true;
     expect(runHookStub.calledTwice).to.be.true;
     expect(runHookStub.args[0][0]).to.equal('sf-doctor-@salesforce/plugin-org');
@@ -195,6 +205,8 @@ describe('Doctor Command', () => {
     expect(fsExistsSyncStub.args[0][0]).to.equal(outputdir);
     expect(fsMkdirSyncStub.called).to.be.false;
     expect(fsWriteFileSyncStub.calledOnce).to.be.true;
+    expect(drWriteStdout.called).to.be.false;
+    expect(drWriteStderr.called).to.be.false;
     expect(runHookStub.callCount, 'Expected runHooks to be called twice').to.equal(2);
     expect(runHookStub.args[0][0]).to.equal('sf-doctor-@salesforce/plugin-org');
     expect(runHookStub.args[0][1]).to.deep.equal({ doctor: Doctor.getInstance() });
@@ -221,6 +233,8 @@ describe('Doctor Command', () => {
     verifyLogFiles(result);
     expect(fsExistsSyncStub.args[0][0]).to.equal(outputdir);
     expect(fsMkdirSyncStub.called).to.be.true;
+    expect(drWriteStdout.called).to.be.false;
+    expect(drWriteStderr.called).to.be.false;
     expect(fsWriteFileSyncStub.calledOnce).to.be.true;
     expect(runHookStub.calledTwice).to.be.true;
     expect(runHookStub.args[0][0]).to.equal('sf-doctor-@salesforce/plugin-org');
@@ -254,7 +268,8 @@ describe('Doctor Command', () => {
     verifyLogFiles(result, ['-command-stdout.log', '-command-debug.log']);
     expect(fsExistsSyncStub.args[0][0]).to.equal(process.cwd());
     expect(fsMkdirSyncStub.called).to.be.false;
-    // expect(fsWriteFileSyncStub.calledThrice).to.be.true;
+    expect(drWriteStdout.called).to.be.true;
+    expect(drWriteStderr.called).to.be.true;
     expect(runHookStub.calledTwice).to.be.true;
     expect(runHookStub.args[0][0]).to.equal('sf-doctor-@salesforce/plugin-org');
     expect(runHookStub.args[0][1]).to.deep.equal({ doctor: Doctor.getInstance() });
@@ -288,6 +303,8 @@ describe('Doctor Command', () => {
     expect(fsExistsSyncStub.args[0][0]).to.equal(process.cwd());
     expect(fsMkdirSyncStub.called).to.be.false;
     expect(fsWriteFileSyncStub.calledOnce).to.be.true;
+    expect(drWriteStdout.called).to.be.true;
+    expect(drWriteStderr.called).to.be.true;
     expect(runHookStub.calledTwice).to.be.true;
     expect(runHookStub.args[0][0]).to.equal('sf-doctor-@salesforce/plugin-org');
     expect(runHookStub.args[0][1]).to.deep.equal({ doctor: Doctor.getInstance() });
@@ -315,6 +332,8 @@ describe('Doctor Command', () => {
     expect(fsExistsSyncStub.args[0][0]).to.equal(process.cwd());
     expect(fsMkdirSyncStub.called).to.be.false;
     expect(fsWriteFileSyncStub.calledOnce).to.be.true;
+    expect(drWriteStdout.called).to.be.false;
+    expect(drWriteStderr.called).to.be.false;
     expect(runHookStub.calledOnce).to.be.true;
     expect(runHookStub.args[0][0]).to.equal('sf-doctor-@salesforce/plugin-org');
     expect(runHookStub.args[0][1]).to.deep.equal({ doctor: Doctor.getInstance() });
@@ -339,6 +358,8 @@ describe('Doctor Command', () => {
     expect(fsExistsSyncStub.args[0][0]).to.equal(process.cwd());
     expect(fsMkdirSyncStub.called).to.be.false;
     expect(fsWriteFileSyncStub.calledOnce).to.be.true;
+    expect(drWriteStdout.called).to.be.false;
+    expect(drWriteStderr.called).to.be.false;
     expect(runHookStub.called).to.be.false;
   });
 
@@ -363,6 +384,8 @@ describe('Doctor Command', () => {
     verifyLogFiles(result);
     expect(fsExistsSyncStub.args[0][0]).to.equal(process.cwd());
     expect(fsMkdirSyncStub.called).to.be.false;
+    expect(drWriteStdout.called).to.be.false;
+    expect(drWriteStderr.called).to.be.false;
   });
 
   it('throws with uninstalled plugin flag', async () => {
