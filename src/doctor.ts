@@ -16,12 +16,20 @@ import { Diagnostics, DiagnosticStatus } from './diagnostics';
 
 export interface SfDoctor {
   addCommandName(commandName: string): void;
-  addSuggestion(suggestion: string): void;
   addDiagnosticStatus(status: DiagnosticStatus): void;
   addPluginData(pluginName: string, data: AnyJson): void;
+  addSuggestion(suggestion: string): void;
+  closeStderr(): void;
+  closeStdout(): void;
+  createStderrWriteStream(fullPath: string): void;
+  createStdoutWriteStream(fullPath: string): void;
   diagnose(): Array<Promise<void>>;
   getDiagnosis(): SfDoctorDiagnosis;
+  getDoctoredFilePath(filePath: string): string;
+  setExitCode(code: string | number): void;
   writeFileSync(filePath: string, contents: string): string;
+  writeStderr(contents: string): Promise<boolean>;
+  writeStdout(contents: string): Promise<boolean>;
 }
 
 type CliConfig = Partial<Config> & { nodeEngine: string };
@@ -35,6 +43,7 @@ export interface SfDoctorDiagnosis {
   diagnosticResults: DiagnosticStatus[];
   suggestions: string[];
   commandName?: string;
+  commandExitCode?: string | number;
   logFilePaths: string[];
 }
 
@@ -58,6 +67,8 @@ export class Doctor implements SfDoctor {
 
   // Contains all gathered data and results of diagnostics.
   private diagnosis: SfDoctorDiagnosis;
+  private stdoutWriteStream: fs.WriteStream;
+  private stderrWriteStream: fs.WriteStream;
 
   private constructor(config: Config, versionDetail: VersionDetail) {
     this.id = Date.now();
@@ -77,6 +88,7 @@ export class Doctor implements SfDoctor {
       diagnosticResults: [],
       suggestions: [...PINNED_SUGGESTIONS],
       logFilePaths: [],
+      commandExitCode: 0,
     };
   }
 
@@ -178,14 +190,65 @@ export class Doctor implements SfDoctor {
    * @return The full path to the file.
    */
   public writeFileSync(filePath: string, contents: string): string {
-    const dir = path.dirname(filePath);
-    const fileName = `${this.id}-${path.basename(filePath)}`;
+    const fullPath = this.getDoctoredFilePath(filePath);
+    const dir = path.dirname(fullPath);
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
     }
-    const fullPath = path.join(dir, fileName);
     this.diagnosis.logFilePaths.push(fullPath);
     fs.writeFileSync(fullPath, contents);
     return fullPath;
+  }
+
+  public writeStdout(contents: string): Promise<boolean> {
+    if (!this.stdoutWriteStream) {
+      throw new SfError(messages.getMessage('doctorNotInitializedError'), 'SfDoctorInitError');
+    }
+    return this.writeFile(this.stdoutWriteStream, contents);
+  }
+
+  public writeStderr(contents: string): Promise<boolean> {
+    if (!this.stdoutWriteStream) {
+      throw new SfError(messages.getMessage('doctorNotInitializedError'), 'SfDoctorInitError');
+    }
+    return this.writeFile(this.stderrWriteStream, contents);
+  }
+
+  public createStdoutWriteStream(fullPath: string): void {
+    if (!this.stdoutWriteStream) {
+      this.stdoutWriteStream = fs.createWriteStream(fullPath);
+    }
+  }
+  public createStderrWriteStream(fullPath: string): void {
+    if (!this.stderrWriteStream) {
+      this.stderrWriteStream = fs.createWriteStream(path.join(fullPath));
+    }
+  }
+
+  public closeStderr(): void {
+    this.stderrWriteStream?.end();
+    this.stderrWriteStream?.close();
+  }
+
+  public closeStdout(): void {
+    this.stdoutWriteStream?.end();
+    this.stdoutWriteStream?.close();
+  }
+
+  public getDoctoredFilePath(filePath: string): string {
+    const dir = path.dirname(filePath);
+    const fileName = `${this.id}-${path.basename(filePath)}`;
+    const fullPath = path.join(dir, fileName);
+    this.diagnosis.logFilePaths.push(fullPath);
+    return fullPath;
+  }
+
+  public setExitCode(code: string | number): void {
+    this.diagnosis.commandExitCode = code;
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  private writeFile(stream: fs.WriteStream, contents: string): Promise<boolean> {
+    return Promise.resolve(stream.write(contents));
   }
 }
