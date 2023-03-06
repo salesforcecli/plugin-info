@@ -191,7 +191,7 @@ export class Doctor implements SfDoctor {
    */
   public writeFileSync(filePath: string, contents: string): string {
     const fullPath = this.getDoctoredFilePath(filePath);
-    this.createOutoutDor(fullPath);
+    this.createOutputDir(fullPath);
     this.diagnosis.logFilePaths.push(fullPath);
     fs.writeFileSync(fullPath, contents);
     return fullPath;
@@ -213,14 +213,14 @@ export class Doctor implements SfDoctor {
 
   public createStdoutWriteStream(fullPath: string): void {
     if (!this.stdoutWriteStream) {
-      this.createOutoutDor(fullPath);
+      this.createOutputDir(fullPath);
       this.stdoutWriteStream = fs.createWriteStream(fullPath);
     }
   }
 
   public createStderrWriteStream(fullPath: string): void {
     if (!this.stderrWriteStream) {
-      this.createOutoutDor(fullPath);
+      this.createOutputDir(fullPath);
       this.stderrWriteStream = fs.createWriteStream(path.join(fullPath));
     }
   }
@@ -253,7 +253,7 @@ export class Doctor implements SfDoctor {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  private createOutoutDor(fullPath: string): void {
+  private createOutputDir(fullPath: string): void {
     const dir = path.dirname(fullPath);
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
