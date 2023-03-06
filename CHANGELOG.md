@@ -1,3 +1,12 @@
+# [2.5.0](https://github.com/salesforcecli/plugin-info/compare/2.4.7...2.5.0) (2023-03-06)
+
+
+### Features
+
+* use event handlers to collect stdout/stderr ([f0fe3e8](https://github.com/salesforcecli/plugin-info/commit/f0fe3e856a268dcc92401f4be5aee40295006d1e))
+
+
+
 ## [2.4.7](https://github.com/salesforcecli/plugin-info/compare/2.4.6...2.4.7) (2023-02-26)
 
 
