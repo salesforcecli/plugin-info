@@ -1,3 +1,12 @@
+## [2.5.1](https://github.com/salesforcecli/plugin-info/compare/2.5.0...2.5.1) (2023-03-06)
+
+
+### Bug Fixes
+
+* init output dir during stream create ([3b121a1](https://github.com/salesforcecli/plugin-info/commit/3b121a14c2cb0e05f9bd0a26d01d36a4a324f279))
+
+
+
 # [2.5.0](https://github.com/salesforcecli/plugin-info/compare/2.4.7...2.5.0) (2023-03-06)
 
 
