@@ -233,9 +233,6 @@ ${this.doctor
       this.doctor.createStderrWriteStream(debugLogLocation);
       const cp = spawn(cmdString, [], { shell: true, env: Object.assign({}, process.env) });
 
-      this.filesWrittenMsgs.push(`Wrote command stdout log to: ${stdoutLogLocation}`);
-      this.filesWrittenMsgs.push(`Wrote command debug log to: ${debugLogLocation}`);
-
       cp.on('error', (err) => {
         this.log(`Error executing command: ${err.message}`);
         // no-op
@@ -254,8 +251,10 @@ ${this.doctor
         await this.doctor.writeStdout(`\nCommand exit code: ${code}\n`);
         this.doctor.closeStdout();
         this.doctor.closeStderr();
+        this.filesWrittenMsgs.push(`Wrote command stdout log to: ${stdoutLogLocation}`);
+        this.filesWrittenMsgs.push(`Wrote command debug log to: ${debugLogLocation}`);
+        resolve();
       });
-      resolve();
     });
     this.tasks.push(execPromise);
   }

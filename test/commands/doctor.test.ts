@@ -363,7 +363,6 @@ describe('Doctor Command', () => {
     verifyLogFiles(result);
     expect(fsExistsSyncStub.args[0][0]).to.equal(process.cwd());
     expect(fsMkdirSyncStub.called).to.be.false;
-    expect(fsWriteFileSyncStub.calledOnce).to.be.true;
   });
 
   it('throws with uninstalled plugin flag', async () => {
