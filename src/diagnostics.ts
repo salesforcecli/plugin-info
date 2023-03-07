@@ -6,7 +6,7 @@
  */
 
 import * as childProcess from 'child_process';
-import { Config } from '@oclif/core';
+import { Interfaces } from '@oclif/core';
 import { Lifecycle, Messages } from '@salesforce/core';
 import { SfDoctor, SfDoctorDiagnosis } from './doctor';
 
@@ -37,7 +37,7 @@ const messages = Messages.loadMessages('@salesforce/plugin-info', 'diagnostics')
 export class Diagnostics {
   private diagnosis: SfDoctorDiagnosis;
 
-  public constructor(private readonly doctor: SfDoctor, private config: Config) {
+  public constructor(private readonly doctor: SfDoctor, private config: Interfaces.Config) {
     this.diagnosis = doctor.getDiagnosis();
   }
 

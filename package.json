@@ -6,10 +6,10 @@
   "bugs": "https://github.com/forcedotcom/cli/issues",
   "main": "lib/index.js",
   "dependencies": {
-    "@oclif/core": "^2.1.7",
-    "@salesforce/core": "^3.33.4",
-    "@salesforce/kit": "^1.8.0",
-    "@salesforce/sf-plugins-core": "^2.2.3",
+    "@oclif/core": "^2.5.0",
+    "@salesforce/core": "^3.33.6",
+    "@salesforce/kit": "^1.9.2",
+    "@salesforce/sf-plugins-core": "^2.2.4",
     "got": "^11.8.6",
     "marked": "^4.2.12",
     "marked-terminal": "^4.2.0",
@@ -87,6 +87,11 @@
       "@oclif/plugin-command-snapshot",
       "@salesforce/plugin-command-reference"
     ],
+    "hooks": {
+      "init": [
+        "./lib/hooks/init/init_doctor.js"
+      ]
+    },
     "topics": {
       "info": {
         "description": "Access Salesforce CLI information from the command line.",
