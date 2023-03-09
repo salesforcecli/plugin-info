@@ -9,24 +9,39 @@ import * as childProcess from 'child_process';
 import * as Sinon from 'sinon';
 import { expect } from 'chai';
 import { fromStub, spyMethod, stubInterface, stubMethod } from '@salesforce/ts-sinon';
-import { Config } from '@oclif/core';
-import { VersionDetail } from '@oclif/plugin-version';
+import { Config, Interfaces } from '@oclif/core';
 import { Lifecycle } from '@salesforce/core';
 import { ux } from '@oclif/core';
 import { Doctor } from '../src/doctor';
 import { Diagnostics } from '../src/diagnostics';
 
-let oclifConfigStub: Config;
+let oclifConfig: Config;
 
-const getVersionDetailStub = (overrides?: Partial<VersionDetail>): VersionDetail => {
-  const defaults: VersionDetail = {
+const getVersionDetailStub = (overrides?: Partial<Interfaces.VersionDetails>): Interfaces.VersionDetails => {
+  const defaults: Interfaces.VersionDetails = {
     cliVersion: 'sfdx-cli/7.160.0',
     architecture: 'darwin-x64',
     nodeVersion: 'node-v16.17.0',
     osVersion: 'Darwin 21.6.0',
     shell: 'zsh',
     rootPath: '/Users/foo/testdir',
-    pluginVersions: ['org 2.2.0 (core)', 'source 2.0.13 (core)', 'salesforce-alm 54.8.1 (core)'],
+    pluginVersions: {
+      org: {
+        version: '2.2.0',
+        type: 'core',
+        root: 'foo',
+      },
+      source: {
+        version: '2.0.13',
+        type: 'core',
+        root: 'bar',
+      },
+      'salesforce-alm': {
+        version: '54.8.1',
+        type: 'core',
+        root: 'baz',
+      },
+    },
   };
   return { ...defaults, ...overrides };
 };
@@ -44,22 +59,17 @@ describe('Diagnostics', () => {
     childProcessExecStub = stubMethod(sandbox, childProcess, 'exec');
     drAddSuggestionSpy = spyMethod(sandbox, Doctor.prototype, 'addSuggestion');
     lifecycleEmitSpy = spyMethod(sandbox, lifecycle, 'emit');
-    oclifConfigStub = fromStub(
-      stubInterface<Config>(sandbox, {
-        name: 'sfdx-cli',
-        version: '7.160.0',
-        pjson: {
-          engines: {
-            node: 'node-v16.17.0',
-          },
+    oclifConfig = {
+      name: 'sfdx-cli',
+      version: '7.160.0',
+      pjson: {
+        engines: {
+          node: 'node-v16.17.0',
         },
-        plugins: [
-          { name: '@salesforce/plugin-org' },
-          { name: '@salesforce/plugin-source' },
-          { name: 'salesforce-alm' },
-        ],
-      })
-    );
+      },
+      plugins: [{ name: '@salesforce/plugin-org' }, { name: '@salesforce/plugin-source' }, { name: 'salesforce-alm' }],
+      versionDetails: {},
+    } as unknown as Config;
   });
 
   afterEach(() => {
@@ -71,8 +81,8 @@ describe('Diagnostics', () => {
   });
 
   it('run() executes all methods ending in "Check"', () => {
-    const dr = Doctor.init(oclifConfigStub, getVersionDetailStub());
-    const diagnostics = new Diagnostics(dr, oclifConfigStub);
+    const dr = Doctor.init(oclifConfig);
+    const diagnostics = new Diagnostics(dr, oclifConfig);
     const results = diagnostics.run();
 
     // This will have to be updated with each new test
@@ -92,8 +102,8 @@ describe('Diagnostics', () => {
         cb({}, '7.160.0', '');
       });
 
-      const dr = Doctor.init(oclifConfigStub, getVersionDetailStub());
-      const diagnostics = new Diagnostics(dr, oclifConfigStub);
+      const dr = Doctor.init(oclifConfig);
+      const diagnostics = new Diagnostics(dr, oclifConfig);
       await diagnostics.outdatedCliVersionCheck();
 
       expect(drAddSuggestionSpy.called).to.be.false;
@@ -111,8 +121,8 @@ describe('Diagnostics', () => {
         cb({}, '7.159.0', '');
       });
 
-      const dr = Doctor.init(oclifConfigStub, getVersionDetailStub());
-      const diagnostics = new Diagnostics(dr, oclifConfigStub);
+      const dr = Doctor.init(oclifConfig);
+      const diagnostics = new Diagnostics(dr, oclifConfig);
       await diagnostics.outdatedCliVersionCheck();
 
       expect(drAddSuggestionSpy.called).to.be.false;
@@ -130,8 +140,8 @@ describe('Diagnostics', () => {
         cb({}, '7.162.0', '');
       });
 
-      const dr = Doctor.init(oclifConfigStub, getVersionDetailStub());
-      const diagnostics = new Diagnostics(dr, oclifConfigStub);
+      const dr = Doctor.init(oclifConfig);
+      const diagnostics = new Diagnostics(dr, oclifConfig);
       await diagnostics.outdatedCliVersionCheck();
 
       expect(drAddSuggestionSpy.called).to.be.true;
@@ -149,8 +159,8 @@ describe('Diagnostics', () => {
         cb({ code: 1 }, '', 'connection timeout');
       });
 
-      const dr = Doctor.init(oclifConfigStub, getVersionDetailStub());
-      const diagnostics = new Diagnostics(dr, oclifConfigStub);
+      const dr = Doctor.init(oclifConfig);
+      const diagnostics = new Diagnostics(dr, oclifConfig);
       await diagnostics.outdatedCliVersionCheck();
 
       expect(drAddSuggestionSpy.called).to.be.true;
@@ -164,8 +174,8 @@ describe('Diagnostics', () => {
 
   describe('salesforceDxPluginCheck', () => {
     it('passes when salesforcedx plugin not installed', async () => {
-      const dr = Doctor.init(oclifConfigStub, getVersionDetailStub());
-      const diagnostics = new Diagnostics(dr, oclifConfigStub);
+      const dr = Doctor.init(oclifConfig);
+      const diagnostics = new Diagnostics(dr, oclifConfig);
       await diagnostics.salesforceDxPluginCheck();
 
       expect(drAddSuggestionSpy.called).to.be.false;
@@ -178,9 +188,11 @@ describe('Diagnostics', () => {
 
     it('fails when salesforcedx plugin is installed', async () => {
       const versionDetail = getVersionDetailStub();
-      versionDetail.pluginVersions.push('salesforcedx');
-      const dr = Doctor.init(oclifConfigStub, versionDetail);
-      const diagnostics = new Diagnostics(dr, oclifConfigStub);
+      versionDetail.pluginVersions['salesforcedx'] = { version: '1.0.0', root: 'path/to/root', type: 'core' };
+      // @ts-expect-error: stubbing a private property
+      oclifConfig.versionDetails = versionDetail;
+      const dr = Doctor.init(oclifConfig);
+      const diagnostics = new Diagnostics(dr, oclifConfig);
       await diagnostics.salesforceDxPluginCheck();
 
       expect(drAddSuggestionSpy.called).to.be.true;
@@ -194,8 +206,8 @@ describe('Diagnostics', () => {
 
   describe('linkedPluginCheck', () => {
     it('passes when linked plugin not found', async () => {
-      const dr = Doctor.init(oclifConfigStub, getVersionDetailStub());
-      const diagnostics = new Diagnostics(dr, oclifConfigStub);
+      const dr = Doctor.init(oclifConfig);
+      const diagnostics = new Diagnostics(dr, oclifConfig);
       await diagnostics.linkedPluginCheck();
 
       expect(drAddSuggestionSpy.called).to.be.false;
@@ -207,7 +219,7 @@ describe('Diagnostics', () => {
     });
 
     it('fails when linked plugin is found', async () => {
-      oclifConfigStub = fromStub(
+      oclifConfig = fromStub(
         stubInterface<Config>(sandbox, {
           pjson: {
             engines: {
@@ -221,8 +233,8 @@ describe('Diagnostics', () => {
           ],
         })
       );
-      const dr = Doctor.init(oclifConfigStub, getVersionDetailStub());
-      const diagnostics = new Diagnostics(dr, oclifConfigStub);
+      const dr = Doctor.init(oclifConfig);
+      const diagnostics = new Diagnostics(dr, oclifConfig);
       await diagnostics.linkedPluginCheck();
 
       expect(drAddSuggestionSpy.called).to.be.true;
