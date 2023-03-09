@@ -11,7 +11,6 @@ import { Messages, SfError } from '@salesforce/core';
 import { Env, omit } from '@salesforce/kit';
 import { AnyJson, KeyValue } from '@salesforce/ts-types';
 import { Interfaces } from '@oclif/core';
-import { VersionDetail } from '@oclif/plugin-version';
 import { Diagnostics, DiagnosticStatus } from './diagnostics';
 
 export interface SfDoctor {
@@ -35,7 +34,7 @@ export interface SfDoctor {
 type CliConfig = Partial<Interfaces.Config> & { nodeEngine: string };
 
 export interface SfDoctorDiagnosis {
-  versionDetail: VersionDetail;
+  versionDetail: Interfaces.VersionDetails;
   sfdxEnvVars: Array<KeyValue<string>>;
   sfEnvVars: Array<KeyValue<string>>;
   cliConfig: CliConfig;
@@ -70,7 +69,7 @@ export class Doctor implements SfDoctor {
   private stdoutWriteStream: fs.WriteStream;
   private stderrWriteStream: fs.WriteStream;
 
-  private constructor(config: Interfaces.Config, versionDetail: VersionDetail) {
+  private constructor(config: Interfaces.Config) {
     this.id = Date.now();
     __cliConfig = config;
     const sfdxEnvVars = new Env().entries().filter((e) => e[0].startsWith('SFDX_'));
@@ -80,7 +79,7 @@ export class Doctor implements SfDoctor {
     cliConfig.nodeEngine = config.pjson.engines.node as string;
 
     this.diagnosis = {
-      versionDetail,
+      versionDetail: config.versionDetails,
       sfdxEnvVars,
       sfEnvVars,
       cliConfig,
@@ -115,12 +114,12 @@ export class Doctor implements SfDoctor {
    * @param versionDetail The result of running a verbose version command
    * @returns An instance of SfDoctor
    */
-  public static init(config: Interfaces.Config, versionDetail: VersionDetail): SfDoctor {
+  public static init(config: Interfaces.Config): SfDoctor {
     if (Doctor.instance) {
       throw new SfError(messages.getMessage('doctorAlreadyInitializedError'), 'SfDoctorInitError');
     }
 
-    Doctor.instance = new this(config, versionDetail);
+    Doctor.instance = new this(config);
     return Doctor.instance;
   }
 

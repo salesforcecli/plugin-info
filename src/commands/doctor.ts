@@ -14,6 +14,7 @@ import * as open from 'open';
 import got from 'got';
 import * as ProxyAgent from 'proxy-agent';
 import { getProxyForUrl } from 'proxy-from-env';
+import { PluginVersionDetail } from '@oclif/core/lib/interfaces';
 import { Doctor as SFDoctor, SfDoctor, SfDoctorDiagnosis } from '../doctor';
 import { DiagnosticStatus } from '../diagnostics';
 
@@ -157,7 +158,7 @@ export default class Doctor extends SfCommand<SfDoctorDiagnosis> {
     const info = `
 \`\`\`
 ${diagnosis.cliConfig.userAgent}
-${diagnosis.versionDetail.pluginVersions?.join(os.EOL)}
+${this.formatPlugins(diagnosis.versionDetail.pluginVersions).join(os.EOL)}
 \`\`\`
 ${
   diagnosis.sfdxEnvVars.length
@@ -257,5 +258,24 @@ ${this.doctor
       });
     });
     this.tasks.push(execPromise);
+  }
+
+  private formatPlugins(plugins: Record<string, PluginVersionDetail>): string[] {
+    return Object.entries(plugins)
+      .map(([name, plugin]) => ({ name, ...plugin }))
+      .sort((a, b) => (a.name > b.name ? 1 : -1))
+      .map((plugin) =>
+        `${this.getFriendlyName(plugin.name)} ${plugin.version} (${plugin.type}) ${
+          plugin.type === 'link' ? plugin.root : ''
+        }`.trim()
+      );
+  }
+
+  private getFriendlyName(name: string): string {
+    const scope = this.config.pjson.oclif.scope;
+    if (!scope) return name;
+    const match = name.match(`@${scope}/plugin-(.+)`);
+    if (!match) return name;
+    return match[1];
   }
 }

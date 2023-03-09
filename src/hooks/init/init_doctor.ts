@@ -7,17 +7,15 @@
 
 import type { Hook } from '@oclif/core';
 import { Logger } from '@salesforce/core';
-import { VersionCommand } from '@oclif/plugin-version';
 import { Doctor } from '../../doctor';
 
-const log = Logger.childFromRoot('plugin-plugin-info:init_doctor');
-const hook: Hook<'init'> = async ({ config }): Promise<void> => {
+const log = Logger.childFromRoot('plugin-info:init_doctor');
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const hook: Hook<'init'> = async ({ config, argv, id }): Promise<void> => {
   log.debug('init_doctor hook');
-  if (process.argv[2] === 'doctor') {
-    // The doctor command requires CLI version details obtained from the CLI's oclif config.
-    const versionDetail = await VersionCommand.run(['--verbose', '--json']);
+  if (id === 'doctor') {
     if (!Doctor.isDoctorEnabled()) {
-      Doctor.init(config, versionDetail);
+      Doctor.init(config);
     }
   }
 

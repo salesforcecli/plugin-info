@@ -9,22 +9,37 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as Sinon from 'sinon';
 import { expect } from 'chai';
-import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
-import { Config } from '@oclif/core';
-import { VersionDetail } from '@oclif/plugin-version';
+import { stubMethod } from '@salesforce/ts-sinon';
+import { Config, Interfaces } from '@oclif/core';
 import { Doctor } from '../src/doctor';
 
-let oclifConfigStub: Config;
+let oclifConfig: Config;
 
-const getVersionDetailStub = (overrides?: Partial<VersionDetail>): VersionDetail => {
-  const defaults: VersionDetail = {
+const getVersionDetailStub = (overrides?: Partial<Interfaces.VersionDetails>): Interfaces.VersionDetails => {
+  const defaults: Interfaces.VersionDetails = {
     cliVersion: 'sfdx-cli/7.160.0',
     architecture: 'darwin-x64',
     nodeVersion: 'node-v16.17.0',
     osVersion: 'Darwin 21.6.0',
     shell: 'zsh',
     rootPath: '/Users/foo/testdir',
-    pluginVersions: ['org 2.2.0 (core)', 'source 2.0.13 (core)', 'salesforce-alm 54.8.1 (core)'],
+    pluginVersions: {
+      org: {
+        version: '2.2.0',
+        type: 'core',
+        root: 'foo',
+      },
+      source: {
+        version: '2.0.13',
+        type: 'core',
+        root: 'bar',
+      },
+      'salesforce-alm': {
+        version: '54.8.1',
+        type: 'core',
+        root: 'baz',
+      },
+    },
   };
   return { ...defaults, ...overrides };
 };
@@ -32,16 +47,15 @@ const getVersionDetailStub = (overrides?: Partial<VersionDetail>): VersionDetail
 describe('Doctor Class', () => {
   const sandbox = Sinon.createSandbox();
 
-  oclifConfigStub = fromStub(
-    stubInterface<Config>(sandbox, {
-      pjson: {
-        engines: {
-          node: 'node-v16.17.0',
-        },
+  oclifConfig = {
+    pjson: {
+      engines: {
+        node: 'node-v16.17.0',
       },
-      plugins: [{ name: '@salesforce/plugin-org' }, { name: '@salesforce/plugin-source' }, { name: 'salesforce-alm' }],
-    })
-  );
+    },
+    plugins: [{ name: '@salesforce/plugin-org' }, { name: '@salesforce/plugin-source' }, { name: 'salesforce-alm' }],
+    versionDetails: getVersionDetailStub(),
+  } as unknown as Config;
 
   afterEach(() => {
     sandbox.restore();
@@ -64,8 +78,8 @@ describe('Doctor Class', () => {
 
   it('throws when init() called twice', async () => {
     try {
-      Doctor.init(oclifConfigStub, getVersionDetailStub());
-      Doctor.init(oclifConfigStub, getVersionDetailStub());
+      Doctor.init(oclifConfig);
+      Doctor.init(oclifConfig);
       expect(false, 'should have thrown SfDoctorInitError').to.be.true;
     } catch (err) {
       const error = err as Error;
@@ -78,7 +92,7 @@ describe('Doctor Class', () => {
     const pluginName = '@salesforce/plugin-org';
     const dataEntries = ['fooEntry1', 'fooEntry2'];
     const expectedEntry = { [pluginName]: [dataEntries[0]] };
-    const dr = Doctor.init(oclifConfigStub, getVersionDetailStub());
+    const dr = Doctor.init(oclifConfig);
     dr.addPluginData(pluginName, dataEntries[0]);
     expect(dr.getDiagnosis().pluginSpecificData).to.deep.equal(expectedEntry);
     dr.addPluginData(pluginName, dataEntries[1]);
@@ -92,7 +106,7 @@ describe('Doctor Class', () => {
     stubMethod(sandbox, Date, 'now').returns(dateNow);
     stubMethod(sandbox, fs, 'existsSync').returns(true);
     const fsWriteFileSyncStub = stubMethod(sandbox, fs, 'writeFileSync');
-    const dr = Doctor.init(oclifConfigStub, getVersionDetailStub());
+    const dr = Doctor.init(oclifConfig);
 
     const filePath = path.resolve('foo.log');
     const expectedFilePath = path.resolve('1234-foo.log');
