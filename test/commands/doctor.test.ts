@@ -10,28 +10,43 @@ import * as path from 'path';
 import * as childProcess from 'child_process';
 import * as Sinon from 'sinon';
 import { expect } from 'chai';
-import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
+import { stubMethod } from '@salesforce/ts-sinon';
 import { Lifecycle, Messages } from '@salesforce/core';
-import { Config } from '@oclif/core';
-import { VersionDetail } from '@oclif/plugin-version';
+import { Config, Interfaces } from '@oclif/core';
 import { SfCommand } from '@salesforce/sf-plugins-core';
 import DoctorCmd from '../../src/commands/doctor';
-import { Doctor, SfDoctorDiagnosis, Diagnostics, DiagnosticStatus } from '../../src';
+import { Diagnostics, DiagnosticStatus, Doctor, SfDoctorDiagnosis } from '../../src';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-info', 'doctor');
 
-let oclifConfigStub: Config;
+let oclifConfig: Config;
 
-const getVersionDetailStub = (overrides?: Partial<VersionDetail>): VersionDetail => {
-  const defaults: VersionDetail = {
+const getVersionDetailStub = (overrides?: Partial<Interfaces.VersionDetails>): Interfaces.VersionDetails => {
+  const defaults: Interfaces.VersionDetails = {
     cliVersion: 'sfdx-cli/7.160.0',
     architecture: 'darwin-x64',
     nodeVersion: 'node-v16.17.0',
     osVersion: 'Darwin 21.6.0',
     shell: 'zsh',
     rootPath: '/Users/foo/testdir',
-    pluginVersions: ['org 2.2.0 (core)', 'source 2.0.13 (core)', 'salesforce-alm 54.8.1 (core)'],
+    pluginVersions: {
+      org: {
+        version: '2.2.0',
+        type: 'core',
+        root: 'foo',
+      },
+      source: {
+        version: '2.0.13',
+        type: 'core',
+        root: 'bar',
+      },
+      'salesforce-alm': {
+        version: '54.8.1',
+        type: 'core',
+        root: 'baz',
+      },
+    },
   };
   return { ...defaults, ...overrides };
 };
@@ -51,35 +66,36 @@ describe('Doctor Command', () => {
   let promptStub: sinon.SinonStub;
   let openStub: sinon.SinonStub;
 
-  oclifConfigStub = fromStub(
-    stubInterface<Config>(sandbox, {
-      pjson: {
-        engines: {
-          node: 'node-v16.17.0',
-        },
+  oclifConfig = {
+    runHook: sandbox.stub(),
+    pjson: {
+      engines: {
+        node: 'node-v16.17.0',
       },
-      plugins: [
-        {
-          name: '@salesforce/plugin-org',
-          hooks: { 'sf-doctor-@salesforce/plugin-org': './lib/hooks/diagnostics' },
-        },
-        {
-          name: '@salesforce/plugin-source',
-          hooks: { 'sf-doctor-@salesforce/plugin-source': './lib/hooks/diagnostics' },
-        },
-        {
-          name: 'salesforce-alm',
-        },
-        {
-          name: '@salesforce/plugin-data',
-        },
-      ],
-      bin: 'sfdx',
-    })
-  );
+      oclif: {},
+    },
+    plugins: [
+      {
+        name: '@salesforce/plugin-org',
+        hooks: { 'sf-doctor-@salesforce/plugin-org': './lib/hooks/diagnostics' },
+      },
+      {
+        name: '@salesforce/plugin-source',
+        hooks: { 'sf-doctor-@salesforce/plugin-source': './lib/hooks/diagnostics' },
+      },
+      {
+        name: 'salesforce-alm',
+      },
+      {
+        name: '@salesforce/plugin-data',
+      },
+    ],
+    bin: 'sfdx',
+    versionDetails: {},
+  } as unknown as Config;
 
   // eslint-disable-next-line @typescript-eslint/unbound-method
-  const runHookStub = oclifConfigStub.runHook as sinon.SinonStub;
+  const runHookStub = oclifConfig.runHook as sinon.SinonStub;
 
   class TestDoctor extends DoctorCmd {
     public async runIt() {
@@ -89,7 +105,7 @@ describe('Doctor Command', () => {
   }
 
   const runDoctorCmd = async (params: string[]) => {
-    const cmd = new TestDoctor(params, oclifConfigStub);
+    const cmd = new TestDoctor(params, oclifConfig);
     uxLogStub = stubMethod(sandbox, SfCommand.prototype, 'log');
     promptStub = stubMethod(sandbox, SfCommand.prototype, 'prompt').resolves({ title: 'my new and crazy issue' });
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -155,7 +171,9 @@ describe('Doctor Command', () => {
     fsExistsSyncStub.returns(true);
     const versionDetail = getVersionDetailStub();
     const diagnosticStatus: DiagnosticStatus = { testName: 'doctor test', status: 'pass' };
-    Doctor.init(oclifConfigStub, versionDetail);
+    // @ts-expect-error: stubbing a private property
+    oclifConfig.versionDetails = versionDetail;
+    Doctor.init(oclifConfig);
     diagnosticsRunStub.callsFake(() => {
       const dr = Doctor.getInstance();
       const promise = Lifecycle.getInstance().emit('Doctor:diagnostic', diagnosticStatus);
@@ -189,7 +207,9 @@ describe('Doctor Command', () => {
     const outputdir = path.resolve('foo', 'bar', 'test');
     fsExistsSyncStub.returns(true);
     const versionDetail = getVersionDetailStub();
-    Doctor.init(oclifConfigStub, versionDetail);
+    // @ts-expect-error: stubbing a private property
+    oclifConfig.versionDetails = versionDetail;
+    Doctor.init(oclifConfig);
     diagnosticsRunStub.callsFake(() => [Promise.resolve()]);
 
     const result = await runDoctorCmd(['--outputdir', outputdir]);
@@ -218,7 +238,9 @@ describe('Doctor Command', () => {
     const outputdir = path.resolve('foo', 'bar', 'test');
     fsExistsSyncStub.returns(false);
     const versionDetail = getVersionDetailStub();
-    Doctor.init(oclifConfigStub, versionDetail);
+    // @ts-expect-error: stubbing a private property
+    oclifConfig.versionDetails = versionDetail;
+    Doctor.init(oclifConfig);
     diagnosticsRunStub.callsFake(() => [Promise.resolve()]);
 
     const result = await runDoctorCmd(['--outputdir', outputdir]);
@@ -245,10 +267,12 @@ describe('Doctor Command', () => {
 
   it('runs doctor command with command flag (minimal)', async () => {
     const cmd = 'force:org:list --all';
-    const expectedCmd = `${oclifConfigStub.bin} ${cmd} --dev-debug`;
+    const expectedCmd = `${oclifConfig.bin} ${cmd} --dev-debug`;
     fsExistsSyncStub.returns(true);
     const versionDetail = getVersionDetailStub();
-    Doctor.init(oclifConfigStub, versionDetail);
+    // @ts-expect-error: stubbing a private property
+    oclifConfig.versionDetails = versionDetail;
+    Doctor.init(oclifConfig);
     diagnosticsRunStub.callsFake(() => [Promise.resolve()]);
     childProcessExecStub.callsFake((cmdString, opts, cb: () => void) => {
       expect(cmdString).to.equal(expectedCmd);
@@ -279,10 +303,12 @@ describe('Doctor Command', () => {
   });
 
   it('runs doctor command with command flag (full)', async () => {
-    const cmd = `${oclifConfigStub.bin} force:org:list --all --dev-debug`;
+    const cmd = `${oclifConfig.bin} force:org:list --all --dev-debug`;
     fsExistsSyncStub.returns(true);
     const versionDetail = getVersionDetailStub();
-    Doctor.init(oclifConfigStub, versionDetail);
+    // @ts-expect-error: stubbing a private property
+    oclifConfig.versionDetails = versionDetail;
+    Doctor.init(oclifConfig);
     diagnosticsRunStub.callsFake(() => [Promise.resolve()]);
     childProcessExecStub.callsFake((cmdString, opts, cb: () => void) => {
       expect(cmdString).to.equal(cmd);
@@ -316,7 +342,9 @@ describe('Doctor Command', () => {
   it('runs doctor command with plugin flag', async () => {
     fsExistsSyncStub.returns(true);
     const versionDetail = getVersionDetailStub();
-    Doctor.init(oclifConfigStub, versionDetail);
+    // @ts-expect-error: stubbing a private property
+    oclifConfig.versionDetails = versionDetail;
+    Doctor.init(oclifConfig);
     diagnosticsRunStub.callsFake(() => [Promise.resolve()]);
 
     const result = await runDoctorCmd(['--plugin', '@salesforce/plugin-org']);
@@ -342,7 +370,9 @@ describe('Doctor Command', () => {
   it('runs doctor command with plugin flag (no plugin tests)', async () => {
     fsExistsSyncStub.returns(true);
     const versionDetail = getVersionDetailStub();
-    Doctor.init(oclifConfigStub, versionDetail);
+    // @ts-expect-error: stubbing a private property
+    oclifConfig.versionDetails = versionDetail;
+    Doctor.init(oclifConfig);
     diagnosticsRunStub.callsFake(() => [Promise.resolve()]);
 
     const result = await runDoctorCmd(['--plugin', '@salesforce/plugin-data']);
@@ -366,7 +396,9 @@ describe('Doctor Command', () => {
   it('runs doctor command with createissue flag', async () => {
     fsExistsSyncStub.returns(true);
     const versionDetail = getVersionDetailStub();
-    Doctor.init(oclifConfigStub, versionDetail);
+    // @ts-expect-error: stubbing a private property
+    oclifConfig.versionDetails = versionDetail;
+    Doctor.init(oclifConfig);
     diagnosticsRunStub.callsFake(() => [Promise.resolve()]);
 
     const result = await runDoctorCmd(['--createissue']);
@@ -391,7 +423,9 @@ describe('Doctor Command', () => {
   it('throws with uninstalled plugin flag', async () => {
     fsExistsSyncStub.returns(true);
     const versionDetail = getVersionDetailStub();
-    Doctor.init(oclifConfigStub, versionDetail);
+    // @ts-expect-error: stubbing a private property
+    oclifConfig.versionDetails = versionDetail;
+    Doctor.init(oclifConfig);
     diagnosticsRunStub.callsFake(() => [Promise.resolve()]);
 
     try {

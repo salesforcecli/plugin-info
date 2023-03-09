@@ -1,12 +1,12 @@
 {
   "name": "@salesforce/plugin-info",
   "description": "Plugin for accessing cli info from the command line",
-  "version": "2.5.1",
+  "version": "3.0.0",
   "author": "Salesforce",
   "bugs": "https://github.com/forcedotcom/cli/issues",
   "main": "lib/index.js",
   "dependencies": {
-    "@oclif/core": "^2.5.0",
+    "@oclif/core": "^2.6.2",
     "@salesforce/core": "^3.33.6",
     "@salesforce/kit": "^1.9.2",
     "@salesforce/sf-plugins-core": "^2.2.4",
@@ -21,8 +21,7 @@
   },
   "devDependencies": {
     "@oclif/plugin-command-snapshot": "^3.3.8",
-    "@oclif/plugin-version": "1.2.1",
-    "@salesforce/cli-plugins-testkit": "^3.2.20",
+    "@salesforce/cli-plugins-testkit": "^3.2.24",
     "@salesforce/dev-config": "^3.1.0",
     "@salesforce/dev-scripts": "^3.1.1",
     "@salesforce/plugin-command-reference": "^1.6.4",
