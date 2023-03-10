@@ -97,7 +97,7 @@ export class Diagnostics {
     const testName = 'salesforcedx plugin not installed';
     let status: DiagnosticStatus['status'] = 'pass';
 
-    const plugins = Object.keys(this.diagnosis.versionDetail.pluginVersions ?? {});
+    const plugins = Object.keys(this.config.versionDetails.pluginVersions ?? {});
     if (plugins?.some((p) => p === 'salesforcedx')) {
       status = 'fail';
       const bin = this.diagnosis.cliConfig.bin;

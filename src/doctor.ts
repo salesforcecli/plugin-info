@@ -11,6 +11,7 @@ import { Messages, SfError } from '@salesforce/core';
 import { Env, omit } from '@salesforce/kit';
 import { AnyJson, KeyValue } from '@salesforce/ts-types';
 import { Interfaces } from '@oclif/core';
+import { PluginVersionDetail } from '@oclif/core/lib/interfaces';
 import { Diagnostics, DiagnosticStatus } from './diagnostics';
 
 export interface SfDoctor {
@@ -34,7 +35,7 @@ export interface SfDoctor {
 type CliConfig = Partial<Interfaces.Config> & { nodeEngine: string };
 
 export interface SfDoctorDiagnosis {
-  versionDetail: Interfaces.VersionDetails;
+  versionDetail: Omit<Interfaces.VersionDetails, 'pluginVersions'> & { pluginVersions: string[] };
   sfdxEnvVars: Array<KeyValue<string>>;
   sfEnvVars: Array<KeyValue<string>>;
   cliConfig: CliConfig;
@@ -66,8 +67,8 @@ export class Doctor implements SfDoctor {
 
   // Contains all gathered data and results of diagnostics.
   private diagnosis: SfDoctorDiagnosis;
-  private stdoutWriteStream: fs.WriteStream;
-  private stderrWriteStream: fs.WriteStream;
+  private stdoutWriteStream: fs.WriteStream | undefined;
+  private stderrWriteStream: fs.WriteStream | undefined;
 
   private constructor(config: Interfaces.Config) {
     this.id = Date.now();
@@ -78,8 +79,10 @@ export class Doctor implements SfDoctor {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     cliConfig.nodeEngine = config.pjson.engines.node as string;
 
+    const { pluginVersions, ...versionDetails } = config.versionDetails;
+
     this.diagnosis = {
-      versionDetail: config.versionDetails,
+      versionDetail: { ...versionDetails, pluginVersions: formatPlugins(config, pluginVersions ?? {}) },
       sfdxEnvVars,
       sfEnvVars,
       cliConfig,
@@ -210,7 +213,7 @@ export class Doctor implements SfDoctor {
   }
 
   public writeStderr(contents: string): Promise<boolean> {
-    if (!this.stdoutWriteStream) {
+    if (!this.stderrWriteStream) {
       throw new SfError(messages.getMessage('doctorNotInitializedError'), 'SfDoctorInitError');
     }
     return this.writeFile(this.stderrWriteStream, contents);
@@ -264,4 +267,22 @@ export class Doctor implements SfDoctor {
       fs.mkdirSync(dir, { recursive: true });
     }
   }
+}
+
+export function formatPlugins(config: Interfaces.Config, plugins: Record<string, PluginVersionDetail>): string[] {
+  function getFriendlyName(name: string): string {
+    const scope = config?.pjson?.oclif?.scope;
+    if (!scope) return name;
+    const match = name.match(`@${scope}/plugin-(.+)`);
+    if (!match) return name;
+    return match[1];
+  }
+  return Object.entries(plugins)
+    .map(([name, plugin]) => ({ name, ...plugin }))
+    .sort((a, b) => (a.name > b.name ? 1 : -1))
+    .map((plugin) =>
+      `${getFriendlyName(plugin.name)} ${plugin.version} (${plugin.type}) ${
+        plugin.type === 'link' ? plugin.root : ''
+      }`.trim()
+    );
 }

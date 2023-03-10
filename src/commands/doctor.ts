@@ -14,7 +14,6 @@ import * as open from 'open';
 import got from 'got';
 import * as ProxyAgent from 'proxy-agent';
 import { getProxyForUrl } from 'proxy-from-env';
-import { PluginVersionDetail } from '@oclif/core/lib/interfaces';
 import { Doctor as SFDoctor, SfDoctor, SfDoctorDiagnosis } from '../doctor';
 import { DiagnosticStatus } from '../diagnostics';
 
@@ -53,8 +52,8 @@ export default class Doctor extends SfCommand<SfDoctorDiagnosis> {
   // such as running a command and running diagnostics.
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private tasks: Array<Promise<any>> = [];
-  private doctor: SfDoctor;
-  private outputDir: string;
+  private doctor!: SfDoctor;
+  private outputDir: string = process.cwd();
   private filesWrittenMsgs: string[] = [];
 
   public async run(): Promise<SfDoctorDiagnosis> {
@@ -158,7 +157,7 @@ export default class Doctor extends SfCommand<SfDoctorDiagnosis> {
     const info = `
 \`\`\`
 ${diagnosis.cliConfig.userAgent}
-${this.formatPlugins(diagnosis.versionDetail.pluginVersions).join(os.EOL)}
+${(diagnosis.versionDetail.pluginVersions ?? []).join(os.EOL)}
 \`\`\`
 ${
   diagnosis.sfdxEnvVars.length
@@ -248,7 +247,7 @@ ${this.doctor
       });
       // eslint-disable-next-line @typescript-eslint/no-misused-promises
       cp.on('exit', async (code) => {
-        this.doctor.setExitCode(code);
+        this.doctor.setExitCode(code ?? 0);
         await this.doctor.writeStdout(`\nCommand exit code: ${code}\n`);
         this.doctor.closeStdout();
         this.doctor.closeStderr();
@@ -258,24 +257,5 @@ ${this.doctor
       });
     });
     this.tasks.push(execPromise);
-  }
-
-  private formatPlugins(plugins: Record<string, PluginVersionDetail>): string[] {
-    return Object.entries(plugins)
-      .map(([name, plugin]) => ({ name, ...plugin }))
-      .sort((a, b) => (a.name > b.name ? 1 : -1))
-      .map((plugin) =>
-        `${this.getFriendlyName(plugin.name)} ${plugin.version} (${plugin.type}) ${
-          plugin.type === 'link' ? plugin.root : ''
-        }`.trim()
-      );
-  }
-
-  private getFriendlyName(name: string): string {
-    const scope = this.config.pjson.oclif.scope;
-    if (!scope) return name;
-    const match = name.match(`@${scope}/plugin-(.+)`);
-    if (!match) return name;
-    return match[1];
   }
 }

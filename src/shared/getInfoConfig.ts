@@ -7,7 +7,7 @@
 
 import { join } from 'path';
 import * as fs from 'fs';
-import { PJSON } from '@oclif/config';
+import { PJSON } from '@oclif/core/lib/interfaces';
 
 export interface PjsonWithInfo extends PJSON {
   oclif: PJSON['oclif'] & {

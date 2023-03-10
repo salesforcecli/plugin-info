@@ -30,7 +30,7 @@ const HIDE_FOOTER = 'SFDX_HIDE_RELEASE_NOTES_FOOTER';
 // or any library that is using the messages framework can also be loaded this way.
 const messages = Messages.loadMessages('@salesforce/plugin-info', 'display');
 
-export default class Display extends SfCommand<DisplayOutput> {
+export default class Display extends SfCommand<DisplayOutput | undefined> {
   private static helpers = ['stable', 'stable-rc', 'latest', 'latest-rc', 'rc'];
 
   public static readonly summary = messages.getMessage('summary');
@@ -52,7 +52,7 @@ export default class Display extends SfCommand<DisplayOutput> {
     loglevel,
   };
 
-  public async run(): Promise<DisplayOutput> {
+  public async run(): Promise<DisplayOutput | undefined> {
     const logger = Logger.childFromRoot(this.constructor.name);
     const { flags } = await this.parse(Display);
     const env = new Env();

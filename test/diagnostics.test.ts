@@ -96,7 +96,7 @@ describe('Diagnostics', () => {
 
   describe('outdatedCliVersionCheck', () => {
     it('passes when CLI version is equal to latest', async () => {
-      childProcessExecStub.callsFake((cmdString, opts, cb: (e, stdout, stderr) => void) => {
+      childProcessExecStub.callsFake((cmdString, opts, cb: (e: unknown, stdout: unknown, stderr: unknown) => void) => {
         expect(cmdString).to.equal('npm view sfdx-cli dist-tags.latest');
         expect(opts).to.be.ok;
         cb({}, '7.160.0', '');
@@ -115,7 +115,7 @@ describe('Diagnostics', () => {
     });
 
     it('passes when CLI version is greater than latest', async () => {
-      childProcessExecStub.callsFake((cmdString, opts, cb: (e, stdout, stderr) => void) => {
+      childProcessExecStub.callsFake((cmdString, opts, cb: (e: unknown, stdout: unknown, stderr: unknown) => void) => {
         expect(cmdString).to.equal('npm view sfdx-cli dist-tags.latest');
         expect(opts).to.be.ok;
         cb({}, '7.159.0', '');
@@ -134,7 +134,7 @@ describe('Diagnostics', () => {
     });
 
     it('fails when CLI version is less than latest', async () => {
-      childProcessExecStub.callsFake((cmdString, opts, cb: (e, stdout, stderr) => void) => {
+      childProcessExecStub.callsFake((cmdString, opts, cb: (e: unknown, stdout: unknown, stderr: unknown) => void) => {
         expect(cmdString).to.equal('npm view sfdx-cli dist-tags.latest');
         expect(opts).to.be.ok;
         cb({}, '7.162.0', '');
@@ -153,7 +153,7 @@ describe('Diagnostics', () => {
     });
 
     it('fails when npm request fails', async () => {
-      childProcessExecStub.callsFake((cmdString, opts, cb: (e, stdout, stderr) => void) => {
+      childProcessExecStub.callsFake((cmdString, opts, cb: (e: unknown, stdout: unknown, stderr: unknown) => void) => {
         expect(cmdString).to.equal('npm view sfdx-cli dist-tags.latest');
         expect(opts).to.be.ok;
         cb({ code: 1 }, '', 'connection timeout');
@@ -188,6 +188,7 @@ describe('Diagnostics', () => {
 
     it('fails when salesforcedx plugin is installed', async () => {
       const versionDetail = getVersionDetailStub();
+      versionDetail.pluginVersions = {};
       versionDetail.pluginVersions['salesforcedx'] = { version: '1.0.0', root: 'path/to/root', type: 'core' };
       // @ts-expect-error: stubbing a private property
       oclifConfig.versionDetails = versionDetail;

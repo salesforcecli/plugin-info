@@ -16,6 +16,7 @@ import { Config, Interfaces } from '@oclif/core';
 import { SfCommand } from '@salesforce/sf-plugins-core';
 import DoctorCmd from '../../src/commands/doctor';
 import { Diagnostics, DiagnosticStatus, Doctor, SfDoctorDiagnosis } from '../../src';
+import { formatPlugins } from '../../src/doctor';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@salesforce/plugin-info', 'doctor');
@@ -49,6 +50,19 @@ const getVersionDetailStub = (overrides?: Partial<Interfaces.VersionDetails>): I
     },
   };
   return { ...defaults, ...overrides };
+};
+
+const getVersionDetailResult = (config: Interfaces.Config): Record<string, unknown> => {
+  const defaults: Record<string, unknown> = {
+    cliVersion: 'sfdx-cli/7.160.0',
+    architecture: 'darwin-x64',
+    nodeVersion: 'node-v16.17.0',
+    osVersion: 'Darwin 21.6.0',
+    shell: 'zsh',
+    rootPath: '/Users/foo/testdir',
+    pluginVersions: [],
+  };
+  return { ...defaults, pluginVersions: formatPlugins(config, config.versionDetails.pluginVersions ?? {}) };
 };
 
 describe('Doctor Command', () => {
@@ -185,7 +199,8 @@ describe('Doctor Command', () => {
 
     expect(uxLogStub.called).to.be.true;
     expect(uxStyledHeaderStub.called).to.be.true;
-    expect(result).to.have.property('versionDetail', versionDetail);
+    expect(result).to.have.property('versionDetail');
+    expect(result.versionDetail).to.deep.equal(getVersionDetailResult(oclifConfig));
     expect(result).to.have.property('cliConfig');
     expect(result.diagnosticResults).to.deep.equal([diagnosticStatus]);
     verifyEnvVars(result);
@@ -216,7 +231,8 @@ describe('Doctor Command', () => {
 
     expect(uxLogStub.called).to.be.true;
     expect(uxStyledHeaderStub.called).to.be.true;
-    expect(result).to.have.property('versionDetail', versionDetail);
+    expect(result).to.have.property('versionDetail');
+    expect(result.versionDetail).to.deep.equal(getVersionDetailResult(oclifConfig));
     expect(result).to.have.property('cliConfig');
     expect(result.diagnosticResults).to.deep.equal([]);
     verifyEnvVars(result);
@@ -247,7 +263,8 @@ describe('Doctor Command', () => {
 
     expect(uxLogStub.called).to.be.true;
     expect(uxStyledHeaderStub.called).to.be.true;
-    expect(result).to.have.property('versionDetail', versionDetail);
+    expect(result).to.have.property('versionDetail');
+    expect(result.versionDetail).to.deep.equal(getVersionDetailResult(oclifConfig));
     expect(result).to.have.property('cliConfig');
     expect(result.diagnosticResults).to.deep.equal([]);
     verifyEnvVars(result);
@@ -284,7 +301,8 @@ describe('Doctor Command', () => {
 
     expect(uxLogStub.called).to.be.true;
     expect(uxStyledHeaderStub.called).to.be.true;
-    expect(result).to.have.property('versionDetail', versionDetail);
+    expect(result).to.have.property('versionDetail');
+    expect(result.versionDetail).to.deep.equal(getVersionDetailResult(oclifConfig));
     expect(result).to.have.property('cliConfig');
     expect(result.diagnosticResults).to.deep.equal([]);
     verifyEnvVars(result);
@@ -320,7 +338,8 @@ describe('Doctor Command', () => {
 
     expect(uxLogStub.called).to.be.true;
     expect(uxStyledHeaderStub.called).to.be.true;
-    expect(result).to.have.property('versionDetail', versionDetail);
+    expect(result).to.have.property('versionDetail');
+    expect(result.versionDetail).to.deep.equal(getVersionDetailResult(oclifConfig));
     expect(result).to.have.property('cliConfig');
     expect(result.diagnosticResults).to.deep.equal([]);
     verifyEnvVars(result);
@@ -351,7 +370,8 @@ describe('Doctor Command', () => {
 
     expect(uxLogStub.called).to.be.true;
     expect(uxStyledHeaderStub.called).to.be.true;
-    expect(result).to.have.property('versionDetail', versionDetail);
+    expect(result).to.have.property('versionDetail');
+    expect(result.versionDetail).to.deep.equal(getVersionDetailResult(oclifConfig));
     expect(result).to.have.property('cliConfig');
     expect(result.diagnosticResults).to.deep.equal([]);
     verifyEnvVars(result);
@@ -379,7 +399,8 @@ describe('Doctor Command', () => {
 
     expect(uxLogStub.called).to.be.true;
     expect(uxStyledHeaderStub.called).to.be.true;
-    expect(result).to.have.property('versionDetail', versionDetail);
+    expect(result).to.have.property('versionDetail');
+    expect(result.versionDetail).to.deep.equal(getVersionDetailResult(oclifConfig));
     expect(result).to.have.property('cliConfig');
     expect(result.diagnosticResults).to.deep.equal([]);
     verifyEnvVars(result);
@@ -408,7 +429,8 @@ describe('Doctor Command', () => {
     expect(uxLogStub.called).to.be.true;
     expect(promptStub.callCount).to.equal(1);
     expect(uxStyledHeaderStub.called).to.be.true;
-    expect(result).to.have.property('versionDetail', versionDetail);
+    expect(result).to.have.property('versionDetail');
+    expect(result.versionDetail).to.deep.equal(getVersionDetailResult(oclifConfig));
     expect(result).to.have.property('cliConfig');
     expect(result.diagnosticResults).to.deep.equal([]);
     verifyEnvVars(result);
