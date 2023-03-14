@@ -1,3 +1,26 @@
+# [2.6.0](https://github.com/salesforcecli/plugin-info/compare/2.5.2...2.6.0) (2023-03-14)
+
+
+### Bug Fixes
+
+* init doctor in hook ([f77c7ed](https://github.com/salesforcecli/plugin-info/commit/f77c7ed695d8a56323fa28b5edf38546f381feba))
+
+
+### Features
+
+* initialize doctor with init hook ([ce47d7b](https://github.com/salesforcecli/plugin-info/commit/ce47d7b631562298de026af27108d4eb34b5378d))
+
+
+
+## [2.5.2](https://github.com/salesforcecli/plugin-info/compare/2.5.1...2.5.2) (2023-03-12)
+
+
+### Bug Fixes
+
+* **deps:** bump @salesforce/kit from 1.9.0 to 1.9.2 ([95f0ae4](https://github.com/salesforcecli/plugin-info/commit/95f0ae456c1faffd93d5db6fccc06ff3a81498ad))
+
+
+
 ## [2.5.1](https://github.com/salesforcecli/plugin-info/compare/2.5.0...2.5.1) (2023-03-06)
 
 
