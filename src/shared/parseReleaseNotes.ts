@@ -10,19 +10,23 @@ import * as semver from 'semver';
 
 const parseReleaseNotes = (notes: string, version: string, baseUrl: string): marked.Token[] => {
   let found = false;
-  let closestVersion: string;
-  let versions: string[];
+  let closestVersion: string | null = null;
+  let versions: string[] = [];
 
   const parsed = marked.lexer(notes);
 
-  let tokens: marked.Token[];
-
-  const findVersion = (desiredVersion: string): void => {
+  const findVersion = (desiredVersion: string | null): marked.Token[] => {
     versions = [];
 
-    tokens = parsed.filter((token) => {
+    if (desiredVersion === null) {
+      return [];
+    }
+
+    return parsed.filter((token) => {
       // TODO: Could make header depth (2) a setting in oclif.info.releasenotes
       if (token.type === 'heading' && token.depth === 2) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         const coercedVersion = semver.coerce(token.text).version;
 
         // We will use this to find the closest patch if passed version is not found
@@ -41,15 +45,15 @@ const parseReleaseNotes = (notes: string, version: string, baseUrl: string): mar
     });
   };
 
-  findVersion(version);
+  let tokens = findVersion(version);
 
-  if (!tokens.length) {
+  if (!tokens || tokens.length === 0) {
     // If version was not found, try again with the closest patch version
     const semverRange = `${semver.major(version)}.${semver.minor(version)}.x`;
 
     closestVersion = semver.maxSatisfying<string>(versions, semverRange);
 
-    findVersion(closestVersion);
+    tokens = findVersion(closestVersion);
 
     if (!tokens.length) {
       throw new Error(`Didn't find version '${version}'. View release notes online at: ${baseUrl}`);
@@ -66,7 +70,7 @@ const parseReleaseNotes = (notes: string, version: string, baseUrl: string): mar
 
   marked.walkTokens(tokens, fixRelativeLinks);
 
-  if (closestVersion !== undefined) {
+  if (closestVersion !== null) {
     const warning = marked.lexer(
       `# ATTENTION: Version ${version} was not found. Showing notes for closest patch version ${closestVersion}.`
     )[0];

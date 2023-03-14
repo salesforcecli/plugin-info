@@ -40,7 +40,7 @@ describe('getInfoConfig tests', () => {
           },
         },
       },
-    };
+    } as PjsonWithInfo;
 
     // keep pjsonMock as JSON to access values in tests
     readFileStub = stubMethod(sandbox, fs.promises, 'readFile').resolves(JSON.stringify(pjsonMock));
@@ -71,6 +71,7 @@ describe('getInfoConfig tests', () => {
   it('info config is extracted from package.json', async () => {
     const info = await getInfoConfig(path);
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     expect(info).to.deep.equal(pjsonMock.oclif.info);
   });
 
@@ -81,7 +82,7 @@ describe('getInfoConfig tests', () => {
       await shouldThrow(getInfoConfig(path));
     } catch (err) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      expect(err.message).to.equal('getInfoConfig() failed to find pjson.oclif.info config');
+      expect((err as Error).message).to.equal('getInfoConfig() failed to find pjson.oclif.info config');
     }
   });
 });

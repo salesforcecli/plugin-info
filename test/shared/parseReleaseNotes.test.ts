@@ -55,7 +55,7 @@ describe('parseReleaseNotes tests', () => {
       parseReleaseNotes(notes, '1.2.3', baseUrl);
     } catch (err) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      expect(err.message).to.equal(`Didn't find version '1.2.3'. View release notes online at: ${baseUrl}`);
+      expect((err as Error).message).to.equal(`Didn't find version '1.2.3'. View release notes online at: ${baseUrl}`);
     }
   });
 
@@ -72,7 +72,7 @@ describe('parseReleaseNotes tests', () => {
       parseReleaseNotes(notes, '3.3.1', baseUrl);
     } catch (err) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      expect(err.message).to.equal(`Didn't find version '3.3.1'. View release notes online at: ${baseUrl}`);
+      expect((err as Error).message).to.equal(`Didn't find version '3.3.1'. View release notes online at: ${baseUrl}`);
     }
   });
 

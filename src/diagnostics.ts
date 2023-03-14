@@ -6,7 +6,7 @@
  */
 
 import * as childProcess from 'child_process';
-import { Config } from '@oclif/core';
+import { Interfaces } from '@oclif/core';
 import { Lifecycle, Messages } from '@salesforce/core';
 import { SfDoctor, SfDoctorDiagnosis } from './doctor';
 
@@ -37,7 +37,7 @@ const messages = Messages.loadMessages('@salesforce/plugin-info', 'diagnostics')
 export class Diagnostics {
   private diagnosis: SfDoctorDiagnosis;
 
-  public constructor(private readonly doctor: SfDoctor, private config: Config) {
+  public constructor(private readonly doctor: SfDoctor, private config: Interfaces.Config) {
     this.diagnosis = doctor.getDiagnosis();
   }
 
@@ -97,8 +97,8 @@ export class Diagnostics {
     const testName = 'salesforcedx plugin not installed';
     let status: DiagnosticStatus['status'] = 'pass';
 
-    const plugins = this.diagnosis.versionDetail.pluginVersions;
-    if (plugins?.some((p) => p.split(' ')[0] === 'salesforcedx')) {
+    const plugins = Object.keys(this.config.versionDetails.pluginVersions ?? {});
+    if (plugins?.some((p) => p === 'salesforcedx')) {
       status = 'fail';
       const bin = this.diagnosis.cliConfig.bin;
       this.doctor.addSuggestion(messages.getMessage('salesforceDxPluginDetected', [bin]));

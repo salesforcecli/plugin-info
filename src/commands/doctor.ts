@@ -52,8 +52,8 @@ export default class Doctor extends SfCommand<SfDoctorDiagnosis> {
   // such as running a command and running diagnostics.
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private tasks: Array<Promise<any>> = [];
-  private doctor: SfDoctor;
-  private outputDir: string;
+  private doctor!: SfDoctor;
+  private outputDir: string = process.cwd();
   private filesWrittenMsgs: string[] = [];
 
   public async run(): Promise<SfDoctorDiagnosis> {
@@ -157,7 +157,7 @@ export default class Doctor extends SfCommand<SfDoctorDiagnosis> {
     const info = `
 \`\`\`
 ${diagnosis.cliConfig.userAgent}
-${diagnosis.versionDetail.pluginVersions?.join(os.EOL)}
+${(diagnosis.versionDetail.pluginVersions ?? []).join(os.EOL)}
 \`\`\`
 ${
   diagnosis.sfdxEnvVars.length
@@ -247,7 +247,7 @@ ${this.doctor
       });
       // eslint-disable-next-line @typescript-eslint/no-misused-promises
       cp.on('exit', async (code) => {
-        this.doctor.setExitCode(code);
+        this.doctor.setExitCode(code ?? 0);
         await this.doctor.writeStdout(`\nCommand exit code: ${code}\n`);
         this.doctor.closeStdout();
         this.doctor.closeStderr();

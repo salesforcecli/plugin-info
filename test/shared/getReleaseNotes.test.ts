@@ -8,9 +8,9 @@
 import got from 'got';
 import { expect, use as chaiUse } from 'chai';
 import * as Sinon from 'sinon';
-import * as SinonChai from 'sinon-chai';
 import * as semver from 'semver';
 import { stubMethod, spyMethod } from '@salesforce/ts-sinon';
+import * as SinonChai from 'sinon-chai';
 import { getReleaseNotes } from '../../src/shared/getReleaseNotes';
 import { SFDX_RELEASE_NOTES_TIMEOUT } from '../../src/constants';
 
@@ -32,7 +32,7 @@ describe('getReleaseNotes tests', () => {
   let rawPath: string;
   let version: string;
   let filename: string;
-  let options;
+  let options: Record<string, unknown>;
   let versionedResponse: gotResponse;
   let readmeResponse: gotResponse;
 

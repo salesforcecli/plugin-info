@@ -10,8 +10,8 @@ import * as path from 'path';
 import { Messages, SfError } from '@salesforce/core';
 import { Env, omit } from '@salesforce/kit';
 import { AnyJson, KeyValue } from '@salesforce/ts-types';
-import { Config } from '@oclif/core';
-import { VersionDetail } from '@oclif/plugin-version';
+import { Interfaces } from '@oclif/core';
+import { PluginVersionDetail } from '@oclif/core/lib/interfaces';
 import { Diagnostics, DiagnosticStatus } from './diagnostics';
 
 export interface SfDoctor {
@@ -32,10 +32,10 @@ export interface SfDoctor {
   writeStdout(contents: string): Promise<boolean>;
 }
 
-type CliConfig = Partial<Config> & { nodeEngine: string };
+type CliConfig = Partial<Interfaces.Config> & { nodeEngine: string };
 
 export interface SfDoctorDiagnosis {
-  versionDetail: VersionDetail;
+  versionDetail: Omit<Interfaces.VersionDetails, 'pluginVersions'> & { pluginVersions: string[] };
   sfdxEnvVars: Array<KeyValue<string>>;
   sfEnvVars: Array<KeyValue<string>>;
   cliConfig: CliConfig;
@@ -57,7 +57,7 @@ const PINNED_SUGGESTIONS = [
 
 // private config from the CLI
 // eslint-disable-next-line no-underscore-dangle
-let __cliConfig: Config;
+let __cliConfig: Interfaces.Config;
 
 export class Doctor implements SfDoctor {
   // singleton instance
@@ -67,10 +67,10 @@ export class Doctor implements SfDoctor {
 
   // Contains all gathered data and results of diagnostics.
   private diagnosis: SfDoctorDiagnosis;
-  private stdoutWriteStream: fs.WriteStream;
-  private stderrWriteStream: fs.WriteStream;
+  private stdoutWriteStream: fs.WriteStream | undefined;
+  private stderrWriteStream: fs.WriteStream | undefined;
 
-  private constructor(config: Config, versionDetail: VersionDetail) {
+  private constructor(config: Interfaces.Config) {
     this.id = Date.now();
     __cliConfig = config;
     const sfdxEnvVars = new Env().entries().filter((e) => e[0].startsWith('SFDX_'));
@@ -79,8 +79,10 @@ export class Doctor implements SfDoctor {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     cliConfig.nodeEngine = config.pjson.engines.node as string;
 
+    const { pluginVersions, ...versionDetails } = config.versionDetails;
+
     this.diagnosis = {
-      versionDetail,
+      versionDetail: { ...versionDetails, pluginVersions: formatPlugins(config, pluginVersions ?? {}) },
       sfdxEnvVars,
       sfEnvVars,
       cliConfig,
@@ -101,6 +103,12 @@ export class Doctor implements SfDoctor {
     }
     return Doctor.instance;
   }
+  /**
+   * Returns true if Doctor has been initialized.
+   */
+  public static isDoctorEnabled(): boolean {
+    return !!Doctor.instance;
+  }
 
   /**
    * Initializes a new instance of SfDoctor with CLI config data.
@@ -109,12 +117,12 @@ export class Doctor implements SfDoctor {
    * @param versionDetail The result of running a verbose version command
    * @returns An instance of SfDoctor
    */
-  public static init(config: Config, versionDetail: VersionDetail): SfDoctor {
+  public static init(config: Interfaces.Config): SfDoctor {
     if (Doctor.instance) {
       throw new SfError(messages.getMessage('doctorAlreadyInitializedError'), 'SfDoctorInitError');
     }
 
-    Doctor.instance = new this(config, versionDetail);
+    Doctor.instance = new this(config);
     return Doctor.instance;
   }
 
@@ -205,7 +213,7 @@ export class Doctor implements SfDoctor {
   }
 
   public writeStderr(contents: string): Promise<boolean> {
-    if (!this.stdoutWriteStream) {
+    if (!this.stderrWriteStream) {
       throw new SfError(messages.getMessage('doctorNotInitializedError'), 'SfDoctorInitError');
     }
     return this.writeFile(this.stderrWriteStream, contents);
@@ -259,4 +267,22 @@ export class Doctor implements SfDoctor {
       fs.mkdirSync(dir, { recursive: true });
     }
   }
+}
+
+export function formatPlugins(config: Interfaces.Config, plugins: Record<string, PluginVersionDetail>): string[] {
+  function getFriendlyName(name: string): string {
+    const scope = config?.pjson?.oclif?.scope;
+    if (!scope) return name;
+    const match = name.match(`@${scope}/plugin-(.+)`);
+    if (!match) return name;
+    return match[1];
+  }
+  return Object.entries(plugins)
+    .map(([name, plugin]) => ({ name, ...plugin }))
+    .sort((a, b) => (a.name > b.name ? 1 : -1))
+    .map((plugin) =>
+      `${getFriendlyName(plugin.name)} ${plugin.version} (${plugin.type}) ${
+        plugin.type === 'link' ? plugin.root : ''
+      }`.trim()
+    );
 }
