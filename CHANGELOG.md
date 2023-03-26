@@ -1,3 +1,12 @@
+## [2.6.3](https://github.com/salesforcecli/plugin-info/compare/2.6.2...2.6.3) (2023-03-26)
+
+
+### Bug Fixes
+
+* **deps:** bump marked from 4.2.12 to 4.3.0 ([efc4afa](https://github.com/salesforcecli/plugin-info/commit/efc4afa7a2d50427f99932db6fbd4596187ff7fc))
+
+
+
 ## [2.6.2](https://github.com/salesforcecli/plugin-info/compare/2.6.1...2.6.2) (2023-03-19)
 
 
