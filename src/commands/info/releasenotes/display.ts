@@ -36,7 +36,7 @@ export default class Display extends SfCommand<DisplayOutput | undefined> {
   public static readonly summary = messages.getMessage('summary');
   public static readonly description = messages.getMessage('description');
 
-  public static aliases = ['whatsnew'];
+  public static readonly aliases = ['whatsnew'];
 
   public static readonly examples = messages.getMessages('examples', [Display.helpers.join(', ')]);
 
@@ -57,7 +57,7 @@ export default class Display extends SfCommand<DisplayOutput | undefined> {
     const { flags } = await this.parse(Display);
     const env = new Env();
 
-    const isHook = !!flags.hook;
+    const isHook = flags.hook;
 
     if (env.getBoolean(HIDE_NOTES) && isHook) {
       // We don't ever want to exit the process for info:releasenotes:display (whatsnew)

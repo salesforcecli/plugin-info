@@ -86,7 +86,7 @@ describe('Diagnostics', () => {
     const results = diagnostics.run();
 
     // This will have to be updated with each new test
-    expect(results.length).to.equal(3);
+    expect(results.length).to.equal(4);
     expect(childProcessExecStub.called).to.be.true;
     expect(lifecycleEmitSpy.called).to.be.true;
     expect(lifecycleEmitSpy.args[0][0]).to.equal('Doctor:diagnostic');
@@ -202,6 +202,46 @@ describe('Diagnostics', () => {
         testName: 'salesforcedx plugin not installed',
         status: 'fail',
       });
+    });
+  });
+  describe('deprecatedCliCheck', () => {
+    it('fails when sfdx 7 installed', async () => {
+      const dr = Doctor.init(oclifConfig);
+      const diagnostics = new Diagnostics(dr, oclifConfig);
+      await diagnostics.deprecatedCliCheck();
+
+      expect(drAddSuggestionSpy.called).to.be.true;
+      expect(lifecycleEmitSpy.called).to.be.true;
+      expect(lifecycleEmitSpy.args[0][1]).to.deep.equal({
+        testName: 'using sfdx-cli version 7',
+        status: 'fail',
+      });
+    });
+
+    it('fails when sf 1 installed', async () => {
+      oclifConfig.name = '@salesforce/cli';
+      oclifConfig.version = '1.0.0';
+      const dr = Doctor.init(oclifConfig);
+      const diagnostics = new Diagnostics(dr, oclifConfig);
+      await diagnostics.deprecatedCliCheck();
+
+      expect(drAddSuggestionSpy.called).to.be.true;
+      expect(lifecycleEmitSpy.called).to.be.true;
+      expect(lifecycleEmitSpy.args[0][1]).to.deep.equal({
+        testName: 'using @salesforce/cli version 1',
+        status: 'fail',
+      });
+    });
+
+    it('passes when sf 2 is installed', async () => {
+      oclifConfig.name = '@salesforce/cli';
+      oclifConfig.version = '2.0.0';
+      const dr = Doctor.init(oclifConfig);
+      const diagnostics = new Diagnostics(dr, oclifConfig);
+      await diagnostics.deprecatedCliCheck();
+
+      expect(drAddSuggestionSpy.called).to.be.false;
+      expect(lifecycleEmitSpy.called).to.be.false;
     });
   });
 

@@ -90,6 +90,27 @@ export class Diagnostics {
   }
 
   /**
+   * Checks to see if the cli is outdated and deprecated (sfdx7 sf1)
+   */
+  public async deprecatedCliCheck(): Promise<void> {
+    const cliName = this.config.name;
+    const cliVersion = this.config.version;
+
+    if (cliName === 'sfdx-cli' && cliVersion.startsWith('7.')) {
+      await Lifecycle.getInstance().emit('Doctor:diagnostic', { testName: 'using sfdx-cli version 7', status: 'fail' });
+      this.doctor.addSuggestion(messages.getMessage('uninstallSuggestion', [cliName, cliVersion]));
+    }
+
+    if (cliName === '@salesforce/cli' && cliVersion.startsWith('1.')) {
+      await Lifecycle.getInstance().emit('Doctor:diagnostic', {
+        testName: 'using @salesforce/cli version 1',
+        status: 'fail',
+      });
+      this.doctor.addSuggestion(messages.getMessage('uninstallSuggestion', [cliName, cliVersion]));
+    }
+  }
+
+  /**
    * Checks if the salesforcedx plugin is installed and suggests
    * to uninstall it if there.
    */
