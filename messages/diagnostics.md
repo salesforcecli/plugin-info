@@ -17,4 +17,4 @@ Warning: the [%s] plugin is linked.
 
 # uninstallSuggestion
 
-Please uninstall the Salesforce CLI (%s) version %s and install the @salesforce/cli version 2. See https://developer.salesforce.com/docs/atlas.en-us.sfdx_setup.meta/sfdx_setup/sfdx_setup_uninstall.htm for uninstall instructions.
+Uninstall the deprecated Salesforce CLI (%s) version %s and install the @salesforce/cli version 2. See https://developer.salesforce.com/docs/atlas.en-us.sfdx_setup.meta/sfdx_setup/sfdx_setup_uninstall.htm for uninstall instructions.
