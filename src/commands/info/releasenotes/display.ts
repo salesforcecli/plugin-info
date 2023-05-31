@@ -23,9 +23,6 @@ import { parseReleaseNotes } from '../../../shared/parseReleaseNotes';
 // Initialize Messages with the current plugin directory
 Messages.importMessagesDirectory(__dirname);
 
-const HIDE_NOTES = 'SFDX_HIDE_RELEASE_NOTES';
-const HIDE_FOOTER = 'SFDX_HIDE_RELEASE_NOTES_FOOTER';
-
 // Load the specific messages for this file. Messages from @salesforce/command, @salesforce/core,
 // or any library that is using the messages framework can also be loaded this way.
 const messages = Messages.loadMessages('@salesforce/plugin-info', 'display');
@@ -36,7 +33,7 @@ export default class Display extends SfCommand<DisplayOutput | undefined> {
   public static readonly summary = messages.getMessage('summary');
   public static readonly description = messages.getMessage('description');
 
-  public static aliases = ['whatsnew'];
+  public static readonly aliases = ['whatsnew'];
 
   public static readonly examples = messages.getMessages('examples', [Display.helpers.join(', ')]);
 
@@ -53,13 +50,14 @@ export default class Display extends SfCommand<DisplayOutput | undefined> {
   };
 
   public async run(): Promise<DisplayOutput | undefined> {
+    const HIDE_NOTES = this.config.bin === 'sf' ? 'SF_HIDE_RELEASE_NOTES' : 'SFDX_HIDE_RELEASE_NOTES';
+    const HIDE_FOOTER = this.config.bin === 'sf' ? 'SF_HIDE_RELEASE_NOTES_FOOTER' : 'SFDX_HIDE_RELEASE_NOTES_FOOTER';
+
     const logger = Logger.childFromRoot(this.constructor.name);
     const { flags } = await this.parse(Display);
     const env = new Env();
 
-    const isHook = !!flags.hook;
-
-    if (env.getBoolean(HIDE_NOTES) && isHook) {
+    if (env.getBoolean(HIDE_NOTES) && flags.hook) {
       // We don't ever want to exit the process for info:releasenotes:display (whatsnew)
       // In most cases we will log a message, but here we only trace log in case someone using stdout of the update command
       logger.trace(`release notes disabled via env var: ${HIDE_NOTES}`);
@@ -100,7 +98,7 @@ export default class Display extends SfCommand<DisplayOutput | undefined> {
         this.log(marked.parser(tokens));
       }
 
-      if (isHook) {
+      if (flags.hook) {
         if (env.getBoolean(HIDE_FOOTER)) {
           await Lifecycle.getInstance().emitTelemetry({ eventName: 'FOOTER_HIDDEN' });
         } else {
@@ -109,7 +107,7 @@ export default class Display extends SfCommand<DisplayOutput | undefined> {
         }
       }
     } catch (err) {
-      if (isHook) {
+      if (flags.hook) {
         // Do not throw error if --hook is passed, just warn so we don't exit any processes.
         // --hook is passed in the post install/update scripts
         const { message, stack, name } = err as Error;
