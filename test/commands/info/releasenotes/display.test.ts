@@ -310,8 +310,8 @@ describe('sf info:releasenotes:display', () => {
     oclifConfigStub.root = '/root/path';
 
     getBooleanStub = stubMethod(sandbox, Env.prototype, 'getBoolean');
-    getBooleanStub.withArgs('SFDX_HIDE_RELEASE_NOTES').returns(false);
-    getBooleanStub.withArgs('SFDX_HIDE_RELEASE_NOTES_FOOTER').returns(false);
+    getBooleanStub.withArgs('SF_HIDE_RELEASE_NOTES').returns(false);
+    getBooleanStub.withArgs('SF_HIDE_RELEASE_NOTES_FOOTER').returns(false);
 
     getInfoConfigStub = stubMethod(sandbox, getInfoConfig, 'getInfoConfig').returns(mockInfoConfig);
     getReleaseNotesStub = stubMethod(sandbox, getReleaseNotes, 'getReleaseNotes').returns('## Release notes for 3.3.3');
@@ -339,7 +339,7 @@ describe('sf info:releasenotes:display', () => {
   });
 
   it('ignores hide release notes env var if running command directly (without --hook)', async () => {
-    getBooleanStub.withArgs('SFDX_HIDE_RELEASE_NOTES').returns(true);
+    getBooleanStub.withArgs('SF_HIDE_RELEASE_NOTES').returns(true);
 
     await runDisplayCmd([]);
 
