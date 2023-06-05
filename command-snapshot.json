@@ -3,12 +3,16 @@
     "command": "doctor",
     "plugin": "@salesforce/plugin-info",
     "flags": ["command", "create-issue", "json", "loglevel", "output-dir", "plugin"],
-    "alias": []
+    "alias": [],
+    "flagChars": ["c", "d", "i", "p"],
+    "flagAliases": ["createissue", "o", "outputdir"]
   },
   {
     "command": "info:releasenotes:display",
     "plugin": "@salesforce/plugin-info",
     "flags": ["hook", "json", "loglevel", "version"],
-    "alias": ["whatsnew"]
+    "alias": ["whatsnew"],
+    "flagChars": ["v"],
+    "flagAliases": []
   }
 ]
