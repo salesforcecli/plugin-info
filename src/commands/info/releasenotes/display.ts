@@ -26,19 +26,19 @@ Messages.importMessagesDirectory(__dirname);
 const HIDE_NOTES = 'SFDX_HIDE_RELEASE_NOTES';
 const HIDE_FOOTER = 'SFDX_HIDE_RELEASE_NOTES_FOOTER';
 
+const helpers = ['stable', 'stable-rc', 'latest', 'latest-rc', 'rc'];
+
 // Load the specific messages for this file. Messages from @salesforce/command, @salesforce/core,
 // or any library that is using the messages framework can also be loaded this way.
 const messages = Messages.loadMessages('@salesforce/plugin-info', 'display');
 
 export default class Display extends SfCommand<DisplayOutput | undefined> {
-  private static helpers = ['stable', 'stable-rc', 'latest', 'latest-rc', 'rc'];
-
   public static readonly summary = messages.getMessage('summary');
   public static readonly description = messages.getMessage('description');
 
-  public static aliases = ['whatsnew'];
+  public static readonly aliases = ['whatsnew'];
 
-  public static readonly examples = messages.getMessages('examples', [Display.helpers.join(', ')]);
+  public static readonly examples = messages.getMessages('examples', [helpers.join(', ')]);
 
   public static readonly flags = {
     version: Flags.string({
@@ -78,7 +78,7 @@ export default class Display extends SfCommand<DisplayOutput | undefined> {
 
       let version = flags.version ?? installedVersion;
 
-      if (Display.helpers.includes(version)) {
+      if (helpers.includes(version)) {
         version = await getDistTagVersion(distTagUrl, version);
       }
 
