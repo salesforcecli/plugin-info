@@ -12,8 +12,7 @@ import { Flags, loglevel, SfCommand } from '@salesforce/sf-plugins-core';
 import { Lifecycle, Messages, SfError } from '@salesforce/core';
 import * as open from 'open';
 import got from 'got';
-import * as ProxyAgent from 'proxy-agent';
-import { getProxyForUrl } from 'proxy-from-env';
+import { ProxyAgent } from 'proxy-agent';
 import { Doctor as SFDoctor, SfDoctor, SfDoctorDiagnosis } from '../doctor';
 import { DiagnosticStatus } from '../diagnostics';
 
@@ -120,7 +119,7 @@ export default class Doctor extends SfCommand<SfDoctorDiagnosis> {
       const raw = 'https://raw.githubusercontent.com/forcedotcom/cli/main/.github/ISSUE_TEMPLATE/bug_report.md';
       const ghIssue = await got(raw, {
         throwHttpErrors: false,
-        agent: { https: ProxyAgent(getProxyForUrl(raw)) },
+        agent: { https: new ProxyAgent() },
       });
 
       const title = (

@@ -9,6 +9,7 @@ import got from 'got';
 import { expect, use as chaiUse } from 'chai';
 import * as Sinon from 'sinon';
 import * as SinonChai from 'sinon-chai';
+import { ProxyAgent } from 'proxy-agent';
 import { stubMethod } from '@salesforce/ts-sinon';
 import { getDistTagVersion, DistTagJson } from '../../src/shared/getDistTagVersion';
 
@@ -44,10 +45,8 @@ describe('getDistTagVersion tests', () => {
     await getDistTagVersion(url, 'latest');
 
     expect(gotStub.args[0][0]).to.equal(url);
-    expect(JSON.parse(JSON.stringify(gotStub.args[0][1])), JSON.stringify(gotStub.args[0][1])).to.deep.equal({
-      agent: { https: {} },
-      timeout: 3000,
-    });
+    expect(gotStub.args[0][1]).to.have.property('timeout', 3000);
+    expect(gotStub.args[0][1]).to.have.property('agent').and.to.have.property('https').and.be.instanceOf(ProxyAgent);
   });
 
   it('returns rc if version is "latest-rc"', async () => {
