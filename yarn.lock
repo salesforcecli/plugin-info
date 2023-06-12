@@ -1033,7 +1033,7 @@
     typescript "^4.9.5"
     wireit "^0.9.5"
 
-"@salesforce/kit@^3.0.2":
+"@salesforce/kit@^3.0.2", "@salesforce/kit@^3.0.3":
   version "3.0.3"
   resolved "https://registry.yarnpkg.com/@salesforce/kit/-/kit-3.0.3.tgz#7144bf4d135b45d9f7a0a52365ec5e55b380b4e0"
   integrity sha512-je1x5wt2+BVcGuFvd6anodqSFQY68cDnSosAfxYCQfuQsknTNp+QorliATurpKfucOJ6yAKCxP8nxGjZzcAX0w==
@@ -1041,14 +1041,14 @@
     "@salesforce/ts-types" "^2.0.1"
     tslib "^2.5.2"
 
-"@salesforce/plugin-command-reference@^3.0.2":
-  version "3.0.3"
-  resolved "https://registry.yarnpkg.com/@salesforce/plugin-command-reference/-/plugin-command-reference-3.0.3.tgz#8769a9346703224ce42f3b957120769cc99fff93"
-  integrity sha512-LXCL3Dx5pQ7VFj/+FdPjYTHgxhvdf2kDCM/ZsEyIwW0FidsnYbzeCmtX7eHK74G62ryLqZf+5Z9HV3jcB8RzPA==
+"@salesforce/plugin-command-reference@^3.0.4":
+  version "3.0.4"
+  resolved "https://registry.yarnpkg.com/@salesforce/plugin-command-reference/-/plugin-command-reference-3.0.4.tgz#d5b65422836b37e0a0232e998609574c795fc2d1"
+  integrity sha512-ExKGPLQBTjdJhCciP7h5HLt7H16AUaT29j2YS1MsmYQXFNY+HeyDhGURvHwV9Ym0kzukpza0meuK5vCKRfSlSg==
   dependencies:
     "@oclif/core" "^2.8.5"
     "@salesforce/core" "^4.0.1"
-    "@salesforce/kit" "^3.0.2"
+    "@salesforce/kit" "^3.0.3"
     "@salesforce/sf-plugins-core" "^3.0.2"
     "@salesforce/ts-types" "^2.0.2"
     chalk "^4"
@@ -1077,7 +1077,7 @@
     chalk "^4"
     inquirer "^8.2.5"
 
-"@salesforce/ts-sinon@^1.4.6":
+"@salesforce/ts-sinon@^1.4.8":
   version "1.4.8"
   resolved "https://registry.yarnpkg.com/@salesforce/ts-sinon/-/ts-sinon-1.4.8.tgz#9c3f2f5616f42d0b4fd1562946d1ffc6f4528916"
   integrity sha512-W0gfQmakiKrV1feX+kTMnASftgwzoEjrBAT40vN0cCF1uc/wQ05myLGiX/dckO411s36kzlbvt33QM0VzyyE+A==
@@ -3166,7 +3166,7 @@ eslint-plugin-prefer-arrow@^1.2.1:
   resolved "https://registry.yarnpkg.com/eslint-plugin-prefer-arrow/-/eslint-plugin-prefer-arrow-1.2.3.tgz#e7fbb3fa4cd84ff1015b9c51ad86550e55041041"
   integrity sha512-J9I5PKCOJretVuiZRGvPQxCbllxGAV/viI20JO3LYblAodofBxyMnZAJ+WGeClHgANnSJberTNoFWWjrWKBuXQ==
 
-eslint-plugin-sf-plugin@^1.15.6:
+eslint-plugin-sf-plugin@^1.15.8:
   version "1.15.8"
   resolved "https://registry.yarnpkg.com/eslint-plugin-sf-plugin/-/eslint-plugin-sf-plugin-1.15.8.tgz#6926244f8f8ea7015b8109283abf44736e59aa76"
   integrity sha512-78toJayNZinG0NFKPBVeRzGoYwUViQcrvCMQq/h/7D3f0XKZ6NRHEt1V+Dt3j0GOZ+A/UqWbrLuvMPl4sPMo2Q==
@@ -3195,7 +3195,7 @@ eslint-visitor-keys@^3.3.0, eslint-visitor-keys@^3.4.1:
   resolved "https://registry.yarnpkg.com/eslint-visitor-keys/-/eslint-visitor-keys-3.4.1.tgz#c22c48f48942d08ca824cc526211ae400478a994"
   integrity sha512-pZnmmLwYzf+kWaM/Qgrvpen51upAktaaiI01nsJD/Yr3lMOdNtq0cxkrrg16w64VtisN6okbs7Q8AfGqj4c9fA==
 
-eslint@^8.41.0:
+eslint@^8.41.0, eslint@^8.42.0:
   version "8.42.0"
   resolved "https://registry.yarnpkg.com/eslint/-/eslint-8.42.0.tgz#7bebdc3a55f9ed7167251fe7259f75219cade291"
   integrity sha512-ulg9Ms6E1WPf67PHaEY4/6E2tEn5/f7FXGzr3t9cBMugOmf1INYvuUwwh1aXQN4MfJ6a5K2iNwP3w4AColvI9A==
