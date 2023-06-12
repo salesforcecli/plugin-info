@@ -62,10 +62,9 @@ export default class Doctor extends SfCommand<SfDoctorDiagnosis> {
 
     this.outputDir = path.resolve(flags['output-dir'] ?? process.cwd());
 
-    // eslint-disable-next-line @typescript-eslint/require-await
     lifecycle.on<DiagnosticStatus>('Doctor:diagnostic', async (data) => {
       this.log(`${data.status} - ${data.testName}`);
-      this.doctor.addDiagnosticStatus(data);
+      return Promise.resolve(this.doctor.addDiagnosticStatus(data));
     });
 
     if (flags.command) {

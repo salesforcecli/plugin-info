@@ -15,7 +15,6 @@ import { ProxyAgent } from 'proxy-agent';
 import { getReleaseNotes } from '../../src/shared/getReleaseNotes';
 import { SFDX_RELEASE_NOTES_TIMEOUT } from '../../src/constants';
 
-// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 chaiUse(SinonChai);
 
 type gotResponse = {

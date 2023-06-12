@@ -13,7 +13,6 @@ import { ProxyAgent } from 'proxy-agent';
 import { stubMethod } from '@salesforce/ts-sinon';
 import { getDistTagVersion, DistTagJson } from '../../src/shared/getDistTagVersion';
 
-// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 chaiUse(SinonChai);
 
 describe('getDistTagVersion tests', () => {
