@@ -7,14 +7,13 @@
 
 import * as pathPkg from 'path';
 import * as fs from 'fs';
-import { expect, use as chaiUse } from 'chai';
+import { expect, use as chaiUse, assert } from 'chai';
 import * as Sinon from 'sinon';
 import * as SinonChai from 'sinon-chai';
 import { stubMethod, spyMethod } from '@salesforce/ts-sinon';
 import { shouldThrow } from '@salesforce/core/lib/testSetup';
 import { getInfoConfig, PjsonWithInfo } from '../../src/shared/getInfoConfig';
 
-// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 chaiUse(SinonChai);
 
 describe('getInfoConfig tests', () => {
@@ -70,8 +69,6 @@ describe('getInfoConfig tests', () => {
 
   it('info config is extracted from package.json', async () => {
     const info = await getInfoConfig(path);
-
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     expect(info).to.deep.equal(pjsonMock.oclif.info);
   });
 
@@ -81,8 +78,8 @@ describe('getInfoConfig tests', () => {
     try {
       await shouldThrow(getInfoConfig(path));
     } catch (err) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      expect((err as Error).message).to.equal('getInfoConfig() failed to find pjson.oclif.info config');
+      assert(err instanceof Error);
+      expect(err.message).to.equal('getInfoConfig() failed to find pjson.oclif.info config');
     }
   });
 });

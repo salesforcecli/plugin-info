@@ -6,8 +6,7 @@
  */
 
 import got from 'got';
-import * as ProxyAgent from 'proxy-agent';
-import { getProxyForUrl } from 'proxy-from-env';
+import { ProxyAgent } from 'proxy-agent';
 import { SFDX_RELEASE_NOTES_TIMEOUT } from '../constants';
 
 export type DistTagJson = {
@@ -18,7 +17,7 @@ export type DistTagJson = {
 const getDistTagVersion = async (url: string, distTag: string): Promise<string> => {
   // TODO: Could use npm instead here. That way private cli repos could auth with .npmrc
   // -- could utilize this: https://github.com/salesforcecli/plugin-trust/blob/0393b906a30e8858816625517eda5db69377c178/src/lib/npmCommand.ts
-  const options = { timeout: SFDX_RELEASE_NOTES_TIMEOUT, agent: { https: ProxyAgent(getProxyForUrl(url)) } };
+  const options = { timeout: SFDX_RELEASE_NOTES_TIMEOUT, agent: { https: new ProxyAgent() } };
 
   const body = await got(url, options).json<DistTagJson>();
 

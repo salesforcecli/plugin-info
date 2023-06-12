@@ -6,14 +6,13 @@
  */
 
 import * as fs from 'fs';
-import { expect, use as chaiUse } from 'chai';
+import { expect, use as chaiUse, assert } from 'chai';
 import * as Sinon from 'sinon';
 import * as SinonChai from 'sinon-chai';
 import { spyMethod } from '@salesforce/ts-sinon';
 import { marked } from 'marked';
 import { parseReleaseNotes } from '../../src/shared/parseReleaseNotes';
 
-// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 chaiUse(SinonChai);
 
 describe('parseReleaseNotes tests', () => {
@@ -54,8 +53,8 @@ describe('parseReleaseNotes tests', () => {
     try {
       parseReleaseNotes(notes, '1.2.3', baseUrl);
     } catch (err) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      expect((err as Error).message).to.equal(`Didn't find version '1.2.3'. View release notes online at: ${baseUrl}`);
+      assert(err instanceof Error);
+      expect(err.message).to.equal(`Didn't find version '1.2.3'. View release notes online at: ${baseUrl}`);
     }
   });
 
@@ -71,8 +70,8 @@ describe('parseReleaseNotes tests', () => {
       // Won't find partial version (3.3.1 is part of 13.3.1)
       parseReleaseNotes(notes, '3.3.1', baseUrl);
     } catch (err) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      expect((err as Error).message).to.equal(`Didn't find version '3.3.1'. View release notes online at: ${baseUrl}`);
+      assert(err instanceof Error);
+      expect(err.message).to.equal(`Didn't find version '3.3.1'. View release notes online at: ${baseUrl}`);
     }
   });
 

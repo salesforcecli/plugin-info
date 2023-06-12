@@ -11,10 +11,10 @@ import * as Sinon from 'sinon';
 import * as semver from 'semver';
 import { stubMethod, spyMethod } from '@salesforce/ts-sinon';
 import * as SinonChai from 'sinon-chai';
+import { ProxyAgent } from 'proxy-agent';
 import { getReleaseNotes } from '../../src/shared/getReleaseNotes';
 import { SFDX_RELEASE_NOTES_TIMEOUT } from '../../src/constants';
 
-// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 chaiUse(SinonChai);
 
 type gotResponse = {
@@ -32,7 +32,6 @@ describe('getReleaseNotes tests', () => {
   let rawPath: string;
   let version: string;
   let filename: string;
-  let options: Record<string, unknown>;
   let versionedResponse: gotResponse;
   let readmeResponse: gotResponse;
 
@@ -41,11 +40,6 @@ describe('getReleaseNotes tests', () => {
     rawPath = 'https://raw.githubusercontent.com/forcedotcom/cli/main/releasenotes/sfdx';
     version = '1.2.3';
     filename = 'readme.md';
-    options = {
-      agent: { https: {} },
-      timeout: SFDX_RELEASE_NOTES_TIMEOUT,
-      throwHttpErrors: false,
-    };
     versionedResponse = {
       statusCode: 200,
       body: 'versioned response body',
@@ -82,17 +76,25 @@ describe('getReleaseNotes tests', () => {
   it('makes versioned GET request with correct args', async () => {
     await getReleaseNotes(path, filename, version);
 
-    const expected = [`${rawPath}/v1.md`, options];
+    // const expected = [`${rawPath}/v1.md`, options];
 
-    expect(JSON.parse(JSON.stringify(gotStub.args[0]))).to.deep.equal(expected);
+    // expect(JSON.parse(JSON.stringify(gotStub.args[0]))).to.deep.equal(expected);
+    expect(gotStub.args[0][0]).to.equal(`${rawPath}/v1.md`);
+    expect(gotStub.args[0][1]).to.have.property('timeout').and.equal(SFDX_RELEASE_NOTES_TIMEOUT);
+    expect(gotStub.args[0][1]).to.have.property('throwHttpErrors').and.equal(false);
+    expect(gotStub.args[0][1]).to.have.property('agent').and.to.have.property('https').and.be.instanceOf(ProxyAgent);
   });
 
   it('makes readme GET request with correct args', async () => {
     await getReleaseNotes(path, filename, version);
 
-    const expected = [`${rawPath}/${filename}`, { ...options, throwHttpErrors: true }];
+    // const expected = [`${rawPath}/${filename}`, { ...options, throwHttpErrors: true }];
 
-    expect(JSON.parse(JSON.stringify(gotStub.args[1]))).to.deep.equal(expected);
+    // expect(JSON.parse(JSON.stringify(gotStub.args[1]))).to.deep.equal(expected);
+    expect(gotStub.args[1][0]).to.equal(`${rawPath}/${filename}`);
+    expect(gotStub.args[1][1]).to.have.property('timeout').and.equal(SFDX_RELEASE_NOTES_TIMEOUT);
+    expect(gotStub.args[1][1]).to.have.property('throwHttpErrors').and.equal(true);
+    expect(gotStub.args[1][1]).to.have.property('agent').and.to.have.property('https').and.be.instanceOf(ProxyAgent);
   });
 
   it('returns versioned markdown if found', async () => {
