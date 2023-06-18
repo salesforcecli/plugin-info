@@ -1,3 +1,12 @@
+## [2.6.21](https://github.com/salesforcecli/plugin-info/compare/2.6.20...2.6.21) (2023-06-18)
+
+
+### Bug Fixes
+
+* **deps:** bump @oclif/core from 2.8.5 to 2.8.7 ([973128f](https://github.com/salesforcecli/plugin-info/commit/973128f58b1b5094793e564f9f1317f203357a7d))
+
+
+
 ## [2.6.20](https://github.com/salesforcecli/plugin-info/compare/2.6.19...2.6.20) (2023-06-12)
 
 
