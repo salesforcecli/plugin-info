@@ -199,7 +199,7 @@ export class Doctor implements SfDoctor {
    */
   public writeFileSync(filePath: string, contents: string): string {
     const fullPath = this.getDoctoredFilePath(filePath);
-    this.createOutputDir(fullPath);
+    createOutputDir(fullPath);
     this.diagnosis.logFilePaths.push(fullPath);
     fs.writeFileSync(fullPath, contents);
     return fullPath;
@@ -209,26 +209,26 @@ export class Doctor implements SfDoctor {
     if (!this.stdoutWriteStream) {
       throw new SfError(messages.getMessage('doctorNotInitializedError'), 'SfDoctorInitError');
     }
-    return this.writeFile(this.stdoutWriteStream, contents);
+    return writeFile(this.stdoutWriteStream, contents);
   }
 
   public writeStderr(contents: string): Promise<boolean> {
     if (!this.stderrWriteStream) {
       throw new SfError(messages.getMessage('doctorNotInitializedError'), 'SfDoctorInitError');
     }
-    return this.writeFile(this.stderrWriteStream, contents);
+    return writeFile(this.stderrWriteStream, contents);
   }
 
   public createStdoutWriteStream(fullPath: string): void {
     if (!this.stdoutWriteStream) {
-      this.createOutputDir(fullPath);
+      createOutputDir(fullPath);
       this.stdoutWriteStream = fs.createWriteStream(fullPath);
     }
   }
 
   public createStderrWriteStream(fullPath: string): void {
     if (!this.stderrWriteStream) {
-      this.createOutputDir(fullPath);
+      createOutputDir(fullPath);
       this.stderrWriteStream = fs.createWriteStream(path.join(fullPath));
     }
   }
@@ -254,19 +254,6 @@ export class Doctor implements SfDoctor {
   public setExitCode(code: string | number): void {
     this.diagnosis.commandExitCode = code;
   }
-
-  // eslint-disable-next-line class-methods-use-this
-  private writeFile(stream: fs.WriteStream, contents: string): Promise<boolean> {
-    return Promise.resolve(stream.write(contents));
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  private createOutputDir(fullPath: string): void {
-    const dir = path.dirname(fullPath);
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
-    }
-  }
 }
 
 export function formatPlugins(config: Interfaces.Config, plugins: Record<string, PluginVersionDetail>): string[] {
@@ -286,3 +273,13 @@ export function formatPlugins(config: Interfaces.Config, plugins: Record<string,
       }`.trim()
     );
 }
+
+const createOutputDir = (fullPath: string): void => {
+  const dir = path.dirname(fullPath);
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
+};
+
+const writeFile = (stream: fs.WriteStream, contents: string): Promise<boolean> =>
+  Promise.resolve(stream.write(contents));

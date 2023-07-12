@@ -1,3 +1,174 @@
+## [2.6.29](https://github.com/salesforcecli/plugin-info/compare/2.6.28...2.6.29) (2023-07-09)
+
+
+### Bug Fixes
+
+* **deps:** bump @salesforce/sf-plugins-core from 3.1.3 to 3.1.5 ([5c663da](https://github.com/salesforcecli/plugin-info/commit/5c663da4fb9b21a0a820a3af74bf8c2bc028a9bf))
+
+
+
+## [2.6.28](https://github.com/salesforcecli/plugin-info/compare/2.6.27...2.6.28) (2023-07-09)
+
+
+### Bug Fixes
+
+* **deps:** bump @salesforce/kit from 3.0.3 to 3.0.4 ([da52e59](https://github.com/salesforcecli/plugin-info/commit/da52e598af5f69caa7e68a2ca50daef6a731bd25))
+
+
+
+## [2.6.27](https://github.com/salesforcecli/plugin-info/compare/2.6.26...2.6.27) (2023-07-09)
+
+
+### Bug Fixes
+
+* **deps:** bump @salesforce/core from 4.3.5 to 4.3.7 ([bacb85b](https://github.com/salesforcecli/plugin-info/commit/bacb85b78ae50cf089ee73f98cae77b123cb7571))
+
+
+
+## [2.6.26](https://github.com/salesforcecli/plugin-info/compare/2.6.25...2.6.26) (2023-07-09)
+
+
+### Bug Fixes
+
+* **deps:** bump @oclif/core from 2.8.7 to 2.8.11 ([a133578](https://github.com/salesforcecli/plugin-info/commit/a133578c9ce0c8c4cb02dd1c839716f8fa2beea6))
+
+
+
+## [2.6.25](https://github.com/salesforcecli/plugin-info/compare/2.6.24...2.6.25) (2023-07-02)
+
+
+### Bug Fixes
+
+* **deps:** bump @salesforce/sf-plugins-core from 3.1.2 to 3.1.3 ([5d5f45f](https://github.com/salesforcecli/plugin-info/commit/5d5f45fce2b20ed1d11ff77efc4aa2b48679507a))
+
+
+
+## [2.6.24](https://github.com/salesforcecli/plugin-info/compare/2.6.23...2.6.24) (2023-06-25)
+
+
+### Bug Fixes
+
+* **deps:** bump semver from 7.5.2 to 7.5.3 ([600c14e](https://github.com/salesforcecli/plugin-info/commit/600c14e2317da87c087d07f3b83de1ce33046597))
+
+
+
+## [2.6.23](https://github.com/salesforcecli/plugin-info/compare/2.6.22...2.6.23) (2023-06-24)
+
+
+### Bug Fixes
+
+* **deps:** bump semver from 7.5.1 to 7.5.2 ([2ea4b06](https://github.com/salesforcecli/plugin-info/commit/2ea4b061477b76a5daef432c1a3c94bafbdb5cbf))
+
+
+
+## [2.6.22](https://github.com/salesforcecli/plugin-info/compare/2.6.21...2.6.22) (2023-06-18)
+
+
+### Bug Fixes
+
+* **deps:** bump @salesforce/sf-plugins-core from 3.0.4 to 3.1.1 ([d77bcac](https://github.com/salesforcecli/plugin-info/commit/d77bcac90e53cfb91b8f813d1b49d9f8a6ef46e7))
+
+
+
+## [2.6.21](https://github.com/salesforcecli/plugin-info/compare/2.6.20...2.6.21) (2023-06-18)
+
+
+### Bug Fixes
+
+* **deps:** bump @oclif/core from 2.8.5 to 2.8.7 ([973128f](https://github.com/salesforcecli/plugin-info/commit/973128f58b1b5094793e564f9f1317f203357a7d))
+
+
+
+## [2.6.20](https://github.com/salesforcecli/plugin-info/compare/2.6.19...2.6.20) (2023-06-12)
+
+
+### Bug Fixes
+
+* bump proxy-agent to new major version ([#429](https://github.com/salesforcecli/plugin-info/issues/429)) ([20b0680](https://github.com/salesforcecli/plugin-info/commit/20b068077e59037f190af2d1d9ba4b4b001cb044))
+
+
+
+## [2.6.19](https://github.com/salesforcecli/plugin-info/compare/2.6.18...2.6.19) (2023-06-05)
+
+
+### Bug Fixes
+
+* use SF prefixed env vars, add UTs ([58e0a9f](https://github.com/salesforcecli/plugin-info/commit/58e0a9f2ec3ff19e9351e9392dce9e1b68389188))
+
+
+
+## [2.6.18](https://github.com/salesforcecli/plugin-info/compare/2.6.17...2.6.18) (2023-06-05)
+
+
+### Bug Fixes
+
+* **deps:** bump tslib from 2.5.2 to 2.5.3 ([1a51d97](https://github.com/salesforcecli/plugin-info/commit/1a51d9757d80f42ac1ba294256ddd40bbe68a07f))
+
+
+
+## [2.6.17](https://github.com/salesforcecli/plugin-info/compare/2.6.16...2.6.17) (2023-06-04)
+
+
+### Bug Fixes
+
+* **deps:** bump @salesforce/core from 4.0.1 to 4.1.0 ([9f185d5](https://github.com/salesforcecli/plugin-info/commit/9f185d5cbf4640d931887b9bc3a722fc10aaa9a5))
+
+
+
+## [2.6.16](https://github.com/salesforcecli/plugin-info/compare/2.6.15...2.6.16) (2023-05-28)
+
+
+### Bug Fixes
+
+* **deps:** bump tslib from 2.5.0 to 2.5.2 ([2013886](https://github.com/salesforcecli/plugin-info/commit/2013886a38c569e98b45124d8cd262b2bfde6226))
+
+
+
+## [2.6.15](https://github.com/salesforcecli/plugin-info/compare/2.6.14...2.6.15) (2023-05-28)
+
+
+### Bug Fixes
+
+* **deps:** bump @salesforce/core from 3.36.1 to 3.36.2 ([fc197b1](https://github.com/salesforcecli/plugin-info/commit/fc197b1afc42e9cdc5499f86eca0ef9ef6d01345))
+
+
+
+## [2.6.14](https://github.com/salesforcecli/plugin-info/compare/2.6.13...2.6.14) (2023-05-21)
+
+
+### Bug Fixes
+
+* **deps:** bump @salesforce/sf-plugins-core from 2.4.2 to 2.4.3 ([5d650f4](https://github.com/salesforcecli/plugin-info/commit/5d650f45ee54ab6c8458d395c9ff56b91a456a81))
+
+
+
+## [2.6.13](https://github.com/salesforcecli/plugin-info/compare/2.6.12...2.6.13) (2023-05-16)
+
+
+### Bug Fixes
+
+* **deps:** bump vm2 from 3.9.17 to 3.9.18 ([9bf4a1a](https://github.com/salesforcecli/plugin-info/commit/9bf4a1adcc053e3f0f0a9ccf3e3d307418db7e4a))
+
+
+
+## [2.6.12](https://github.com/salesforcecli/plugin-info/compare/2.6.11...2.6.12) (2023-05-14)
+
+
+### Bug Fixes
+
+* **deps:** bump @salesforce/core from 3.36.0 to 3.36.1 ([e6272ec](https://github.com/salesforcecli/plugin-info/commit/e6272ec64425a169a6ca4ee072d8691ea69c7c43))
+
+
+
+## [2.6.11](https://github.com/salesforcecli/plugin-info/compare/2.6.10...2.6.11) (2023-05-14)
+
+
+### Bug Fixes
+
+* **deps:** bump @salesforce/sf-plugins-core from 2.4.0 to 2.4.2 ([56ab945](https://github.com/salesforcecli/plugin-info/commit/56ab945cdf018d3746e50b4e6e8ba970ae88e7f7))
+
+
+
 ## [2.6.10](https://github.com/salesforcecli/plugin-info/compare/2.6.9...2.6.10) (2023-04-30)
 
 
