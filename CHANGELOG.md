@@ -1,3 +1,12 @@
+## [2.6.30](https://github.com/salesforcecli/plugin-info/compare/2.6.29...2.6.30) (2023-07-12)
+
+
+### Bug Fixes
+
+* add doctor test for sf1/sfdx7 and suggest uninstall ([593642a](https://github.com/salesforcecli/plugin-info/commit/593642a6ee1aa5f5508894925080d648812ff0a3))
+
+
+
 ## [2.6.29](https://github.com/salesforcecli/plugin-info/compare/2.6.28...2.6.29) (2023-07-09)
 
 
