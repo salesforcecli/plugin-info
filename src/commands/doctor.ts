@@ -73,7 +73,7 @@ export default class Doctor extends SfCommand<SfDoctorDiagnosis> {
 
     if (flags.plugin) {
       // verify the plugin flag matches an installed plugin
-      const plugin = this.config.plugins.find((p) => p.name === flags.plugin);
+      const plugin = this.config.getPluginsList().find((p) => p.name === flags.plugin);
       if (plugin) {
         const eventName = `sf-doctor-${flags.plugin}`;
         const hasDoctorHook = plugin.hooks && Object.keys(plugin.hooks).some((hook) => hook === eventName);
