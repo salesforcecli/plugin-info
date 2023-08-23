@@ -104,6 +104,7 @@ describe('Doctor Command', () => {
         name: '@salesforce/plugin-data',
       },
     ],
+    getPluginsList: () => oclifConfig.plugins,
     bin: 'sfdx',
     versionDetails: {},
   } as unknown as Config;

@@ -73,7 +73,7 @@ export default class Doctor extends SfCommand<SfDoctorDiagnosis> {
 
     if (flags.plugin) {
       // verify the plugin flag matches an installed plugin
-      const plugin = this.config.plugins.find((p) => p.name === flags.plugin);
+      const plugin = this.config.getPluginsList().find((p) => p.name === flags.plugin);
       if (plugin) {
         const eventName = `sf-doctor-${flags.plugin}`;
         const hasDoctorHook = plugin.hooks && Object.keys(plugin.hooks).some((hook) => hook === eventName);
@@ -89,7 +89,7 @@ export default class Doctor extends SfCommand<SfDoctorDiagnosis> {
     } else {
       this.styledHeader('Running all diagnostics');
       // Fire events for plugins that have sf-doctor hooks
-      this.config.plugins.forEach((plugin) => {
+      this.config.getPluginsList().forEach((plugin) => {
         const eventName = `sf-doctor-${plugin.name}`;
         if (plugin.hooks && Object.keys(plugin.hooks).find((hook) => hook === eventName)) {
           this.tasks.push(this.config.runHook(eventName, { doctor: this.doctor }));
