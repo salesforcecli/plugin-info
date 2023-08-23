@@ -68,6 +68,7 @@ describe('Diagnostics', () => {
         },
       },
       plugins: [{ name: '@salesforce/plugin-org' }, { name: '@salesforce/plugin-source' }, { name: 'salesforce-alm' }],
+      getPluginsList: () => oclifConfig.plugins,
       versionDetails: {},
     } as unknown as Config;
   });
@@ -268,6 +269,11 @@ describe('Diagnostics', () => {
             },
           },
           plugins: [
+            { name: '@salesforce/plugin-org', type: 'core' },
+            { name: '@salesforce/plugin-source', type: 'link' },
+            { name: 'salesforce-alm', type: 'core' },
+          ],
+          getPluginsList: () => [
             { name: '@salesforce/plugin-org', type: 'core' },
             { name: '@salesforce/plugin-source', type: 'link' },
             { name: 'salesforce-alm', type: 'core' },
