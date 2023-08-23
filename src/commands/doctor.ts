@@ -89,7 +89,7 @@ export default class Doctor extends SfCommand<SfDoctorDiagnosis> {
     } else {
       this.styledHeader('Running all diagnostics');
       // Fire events for plugins that have sf-doctor hooks
-      this.config.plugins.forEach((plugin) => {
+      this.config.getPluginsList().forEach((plugin) => {
         const eventName = `sf-doctor-${plugin.name}`;
         if (plugin.hooks && Object.keys(plugin.hooks).find((hook) => hook === eventName)) {
           this.tasks.push(this.config.runHook(eventName, { doctor: this.doctor }));

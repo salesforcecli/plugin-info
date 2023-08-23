@@ -134,7 +134,7 @@ export class Diagnostics {
     const testName = 'no linked plugins';
     let status: DiagnosticStatus['status'] = 'pass';
 
-    const plugins = this.config.plugins;
+    const plugins = this.config.getPluginsList();
     const linkedPlugins = plugins.filter((p) => p.type === 'link');
     linkedPlugins.forEach((lp) => {
       status = 'fail';
