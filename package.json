@@ -14,7 +14,7 @@
     "marked": "^4.3.0",
     "marked-terminal": "^4.2.0",
     "open": "^8.4.2",
-    "proxy-agent": "^6.3.0",
+    "proxy-agent": "^6.3.1",
     "semver": "^7.5.4",
     "tslib": "^2"
   },
