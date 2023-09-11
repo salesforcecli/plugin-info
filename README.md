@@ -2,6 +2,8 @@
 
 [![NPM](https://img.shields.io/npm/v/@salesforce/plugin-info.svg?label=@salesforce/plugin-info)](https://www.npmjs.com/package/@salesforce/plugin-info) [![Downloads/week](https://img.shields.io/npm/dw/@salesforce/plugin-info.svg)](https://npmjs.org/package/@salesforce/plugin-info) [![License](https://img.shields.io/badge/License-BSD%203--Clause-brightgreen.svg)](https://raw.githubusercontent.com/salesforcecli/plugin-info/main/LICENSE.txt)
 
+# Foo
+
 ## Learn about the plugin-info
 
 Salesforce CLI plugins are based on the [oclif plugin framework](<(https://oclif.io/docs/introduction.html)>). Read the [plugin developer guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_plugins.meta/sfdx_cli_plugins/cli_plugins_architecture_sf_cli.htm) to learn about Salesforce CLI plugin development.
