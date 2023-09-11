@@ -80,7 +80,6 @@ sfdx plugins
 
 - [`sfdx doctor`](#sfdx-doctor)
 - [`sfdx info:releasenotes:display`](#sfdx-inforeleasenotesdisplay)
-- [`sfdx whatsnew`](#sfdx-whatsnew)
 
 ## `sfdx doctor`
 
@@ -127,7 +126,7 @@ EXAMPLES
     $ sfdx doctor --plugin @salesforce/plugin-source
 ```
 
-_See code: [src/commands/doctor.ts](https://github.com/salesforcecli/plugin-info/blob/v2.6.42-dev.0/src/commands/doctor.ts)_
+_See code: [src/commands/doctor.ts](https://github.com/salesforcecli/plugin-info/blob/v2.6.43-dev.0/src/commands/doctor.ts)_
 
 ## `sfdx info:releasenotes:display`
 
@@ -166,43 +165,6 @@ EXAMPLES
     $ sfdx info:releasenotes:display --version latest
 ```
 
-_See code: [src/commands/info/releasenotes/display.ts](https://github.com/salesforcecli/plugin-info/blob/v2.6.42-dev.0/src/commands/info/releasenotes/display.ts)_
-
-## `sfdx whatsnew`
-
-Display Salesforce CLI release notes on the command line.
-
-```
-USAGE
-  $ sfdx whatsnew [--json] [-v <value>]
-
-FLAGS
-  -v, --version=<value>  CLI version or tag for which to display release notes.
-
-GLOBAL FLAGS
-  --json  Format output as json.
-
-DESCRIPTION
-  Display Salesforce CLI release notes on the command line.
-
-  By default, this command displays release notes for the currently installed CLI version on your computer. Use the
-  --version flag to view release notes for a different release.
-
-ALIASES
-  $ sfdx whatsnew
-
-EXAMPLES
-  Display release notes for the currently installed CLI version:
-
-    $ sfdx whatsnew stable, stable-rc, latest, latest-rc, rc
-
-  Display release notes for CLI version 7.120.0:
-
-    $ sfdx whatsnew --version 7.120.0 stable, stable-rc, latest, latest-rc, rc
-
-  Display release notes for the CLI version that corresponds to a tag (stable, stable-rc, latest, latest-rc, rc):
-
-    $ sfdx whatsnew --version latest
-```
+_See code: [src/commands/info/releasenotes/display.ts](https://github.com/salesforcecli/plugin-info/blob/v2.6.43-dev.0/src/commands/info/releasenotes/display.ts)_
 
 <!-- commandsstop -->
