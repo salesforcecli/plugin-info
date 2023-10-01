@@ -124,7 +124,7 @@ EXAMPLES
     $ sfdx doctor --plugin @salesforce/plugin-source
 ```
 
-_See code: [src/commands/doctor.ts](https://github.com/salesforcecli/plugin-info/blob/2.6.47/src/commands/doctor.ts)_
+_See code: [src/commands/doctor.ts](https://github.com/salesforcecli/plugin-info/blob/2.6.48/src/commands/doctor.ts)_
 
 ## `sfdx info:releasenotes:display`
 
@@ -163,6 +163,6 @@ EXAMPLES
     $ sfdx info:releasenotes:display --version latest
 ```
 
-_See code: [src/commands/info/releasenotes/display.ts](https://github.com/salesforcecli/plugin-info/blob/2.6.47/src/commands/info/releasenotes/display.ts)_
+_See code: [src/commands/info/releasenotes/display.ts](https://github.com/salesforcecli/plugin-info/blob/2.6.48/src/commands/info/releasenotes/display.ts)_
 
 <!-- commandsstop -->
