@@ -52,10 +52,6 @@ Check http://status.salesforce.com for general Salesforce availability and perfo
 
 Must first initialize a new SfDoctor.
 
-# doctorAlreadyInitializedError
-
-SfDoctor has already been initialized.
-
 # pluginNotInstalledError
 
 Specified plugin [%s] isn't installed. Install it, correct the name, or choose another plugin.

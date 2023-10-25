@@ -120,7 +120,7 @@ export class Doctor implements SfDoctor {
    */
   public static init(config: Interfaces.Config): SfDoctor {
     if (Doctor.instance) {
-      throw new SfError(messages.getMessage('doctorAlreadyInitializedError'), 'SfDoctorInitError');
+      return Doctor.instance;
     }
 
     Doctor.instance = new this(config);
