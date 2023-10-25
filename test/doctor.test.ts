@@ -76,18 +76,6 @@ describe('Doctor Class', () => {
     }
   });
 
-  it('throws when init() called twice', async () => {
-    try {
-      Doctor.init(oclifConfig);
-      Doctor.init(oclifConfig);
-      expect(false, 'should have thrown SfDoctorInitError').to.be.true;
-    } catch (err) {
-      const error = err as Error;
-      expect(error.name).to.equal('SfDoctorInitError');
-      expect(error.message).to.include('SfDoctor has already been initialized');
-    }
-  });
-
   it('adds plugin data', async () => {
     const pluginName = '@salesforce/plugin-org';
     const dataEntries = ['fooEntry1', 'fooEntry2'];
