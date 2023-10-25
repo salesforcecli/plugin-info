@@ -6,9 +6,9 @@
  */
 
 import { marked } from 'marked';
-import * as semver from 'semver';
+import { coerce, major, minor, maxSatisfying } from 'semver';
 
-const parseReleaseNotes = (notes: string, version: string, baseUrl: string): marked.Token[] => {
+export const parseReleaseNotes = (notes: string, version: string, baseUrl: string): marked.Token[] => {
   let found = false;
   let closestVersion: string | null = null;
   let versions: string[] = [];
@@ -27,7 +27,7 @@ const parseReleaseNotes = (notes: string, version: string, baseUrl: string): mar
       if (token.type === 'heading' && token.depth === 2) {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        const coercedVersion = semver.coerce(token.text).version;
+        const coercedVersion = coerce(token.text).version;
 
         // We will use this to find the closest patch if passed version is not found
         versions.push(coercedVersion);
@@ -49,9 +49,9 @@ const parseReleaseNotes = (notes: string, version: string, baseUrl: string): mar
 
   if (!tokens || tokens.length === 0) {
     // If version was not found, try again with the closest patch version
-    const semverRange = `${semver.major(version)}.${semver.minor(version)}.x`;
+    const semverRange = `${major(version)}.${minor(version)}.x`;
 
-    closestVersion = semver.maxSatisfying<string>(versions, semverRange);
+    closestVersion = maxSatisfying<string>(versions, semverRange);
 
     tokens = findVersion(closestVersion);
 
@@ -81,4 +81,4 @@ const parseReleaseNotes = (notes: string, version: string, baseUrl: string): mar
   return tokens;
 };
 
-export { parseReleaseNotes };
+export default { parseReleaseNotes };

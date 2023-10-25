@@ -5,18 +5,19 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as os from 'os';
-import * as path from 'path';
-import { spawn } from 'child_process';
+import { EOL } from 'node:os';
+import { dirname, resolve as pathResolve, join } from 'node:path';
+import { spawn } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
 import { Flags, loglevel, SfCommand } from '@salesforce/sf-plugins-core';
 import { Lifecycle, Messages, SfError } from '@salesforce/core';
-import * as open from 'open';
+import open from 'open';
 import got from 'got';
 import { ProxyAgent } from 'proxy-agent';
-import { Doctor as SFDoctor, SfDoctor, SfDoctorDiagnosis } from '../doctor';
-import { DiagnosticStatus } from '../diagnostics';
+import { Doctor as SFDoctor, SfDoctor, SfDoctorDiagnosis } from '../doctor.js';
+import { DiagnosticStatus } from '../diagnostics.js';
 
-Messages.importMessagesDirectory(__dirname);
+Messages.importMessagesDirectory(dirname(fileURLToPath(import.meta.url)));
 const messages = Messages.loadMessages('@salesforce/plugin-info', 'doctor');
 
 export default class Doctor extends SfCommand<SfDoctorDiagnosis> {
@@ -27,11 +28,11 @@ export default class Doctor extends SfCommand<SfDoctorDiagnosis> {
   public static readonly flags = {
     command: Flags.string({
       char: 'c',
-      summary: messages.getMessage('flags.command'),
+      summary: messages.getMessage('flags.command.summary'),
     }),
     plugin: Flags.string({
       char: 'p',
-      summary: messages.getMessage('flags.plugin'),
+      summary: messages.getMessage('flags.plugin.summary'),
     }),
     'output-dir': Flags.directory({
       char: 'd',
@@ -60,7 +61,7 @@ export default class Doctor extends SfCommand<SfDoctorDiagnosis> {
     this.doctor = SFDoctor.getInstance();
     const lifecycle = Lifecycle.getInstance();
 
-    this.outputDir = path.resolve(flags['output-dir'] ?? process.cwd());
+    this.outputDir = pathResolve(flags['output-dir'] ?? process.cwd());
 
     lifecycle.on<DiagnosticStatus>('Doctor:diagnostic', async (data) => {
       this.log(`${data.status} - ${data.testName}`);
@@ -102,7 +103,7 @@ export default class Doctor extends SfCommand<SfDoctorDiagnosis> {
 
     const diagnosis = this.doctor.getDiagnosis();
     const diagnosisLocation = this.doctor.writeFileSync(
-      path.join(this.outputDir, 'diagnosis.json'),
+      join(this.outputDir, 'diagnosis.json'),
       JSON.stringify(diagnosis, null, 2)
     );
     this.filesWrittenMsgs.push(`Wrote doctor diagnosis to: ${diagnosisLocation}`);
@@ -155,14 +156,14 @@ export default class Doctor extends SfCommand<SfDoctorDiagnosis> {
     const info = `
 \`\`\`
 ${diagnosis.cliConfig.userAgent}
-${(diagnosis.versionDetail.pluginVersions ?? []).join(os.EOL)}
+${(diagnosis.versionDetail.pluginVersions ?? []).join(EOL)}
 \`\`\`
 ${
   diagnosis.sfdxEnvVars.length
     ? `
 \`\`\`
 SFDX ENV. VARS.
-${diagnosis.sfdxEnvVars.join(os.EOL)}
+${diagnosis.sfdxEnvVars.join(EOL)}
 \`\`\`
 `
     : ''
@@ -173,7 +174,7 @@ ${
     ? `
 \`\`\`
 SF ENV. VARS.
-${diagnosis.sfEnvVars.join(os.EOL)}
+${diagnosis.sfEnvVars.join(EOL)}
 \`\`\`
 `
     : ''
@@ -191,11 +192,11 @@ ${this.doctor
   .diagnosticResults.map(
     (res) => `${res.status === 'pass' ? ':white_check_mark:' : ':x:'} ${res.status} - ${res.testName}`
   )
-  .join(os.EOL)}
+  .join(EOL)}
 `;
     return body
-      .replace(new RegExp(`---(.|${os.EOL})*---${os.EOL}${os.EOL}`), '')
-      .replace(new RegExp(`${os.EOL}- Which shell/terminal (.|${os.EOL})*- Paste the output here`), info);
+      .replace(new RegExp(`---(.|${EOL})*---${EOL}${EOL}`), '')
+      .replace(new RegExp(`${EOL}- Which shell/terminal (.|${EOL})*- Paste the output here`), info);
   }
 
   // Takes the command flag and:
@@ -225,8 +226,8 @@ ${this.doctor
     this.doctor.addCommandName(cmdString);
 
     const execPromise = new Promise<void>((resolve) => {
-      const stdoutLogLocation = this.doctor.getDoctoredFilePath(path.join(this.outputDir, 'command-stdout.log'));
-      const debugLogLocation = this.doctor.getDoctoredFilePath(path.join(this.outputDir, 'command-debug.log'));
+      const stdoutLogLocation = this.doctor.getDoctoredFilePath(join(this.outputDir, 'command-stdout.log'));
+      const debugLogLocation = this.doctor.getDoctoredFilePath(join(this.outputDir, 'command-debug.log'));
       this.doctor.createStdoutWriteStream(stdoutLogLocation);
       this.doctor.createStderrWriteStream(debugLogLocation);
       const cp = spawn(cmdString, [], { shell: true, env: Object.assign({}, process.env) });

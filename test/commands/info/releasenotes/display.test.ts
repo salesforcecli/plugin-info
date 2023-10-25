@@ -5,29 +5,27 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as os from 'os';
-import * as Sinon from 'sinon';
-import * as SinonChai from 'sinon-chai';
+import os from 'node:os';
+import Sinon from 'sinon';
+import SinonChai from 'sinon-chai';
 import { expect, use as chaiUse } from 'chai';
 import { fromStub, stubInterface, stubMethod, spyMethod } from '@salesforce/ts-sinon';
-import { shouldThrow } from '@salesforce/core/lib/testSetup';
+import { shouldThrow } from '@salesforce/core/lib/testSetup.js';
 import { marked } from 'marked';
 import { Env } from '@salesforce/kit';
 import { Lifecycle } from '@salesforce/core';
 import { Config } from '@oclif/core';
 import { SfCommand } from '@salesforce/sf-plugins-core';
-import * as getInfoConfig from '../../../../src/shared/getInfoConfig';
-import * as getReleaseNotes from '../../../../src/shared/getReleaseNotes';
-import * as getDistTagVersion from '../../../../src/shared/getDistTagVersion';
-import * as parseReleaseNotes from '../../../../src/shared/parseReleaseNotes';
-import Display from '../../../../src/commands/info/releasenotes/display';
+import { InfoConfig } from '../../../../src/shared/getInfoConfig.js';
+import shared from '../../../../src/shared/index.js';
+import Display from '../../../../src/commands/info/releasenotes/display.js';
 
 chaiUse(SinonChai);
 
 describe('sfdx info:releasenotes:display', () => {
   const sandbox = Sinon.createSandbox();
 
-  let mockInfoConfig: getInfoConfig.InfoConfig;
+  let mockInfoConfig: InfoConfig;
   let getBooleanStub: sinon.SinonStub;
   let uxLogStub: sinon.SinonStub;
   let uxWarnStub: sinon.SinonStub;
@@ -73,10 +71,10 @@ describe('sfdx info:releasenotes:display', () => {
     getBooleanStub.withArgs('SFDX_HIDE_RELEASE_NOTES').returns(false);
     getBooleanStub.withArgs('SFDX_HIDE_RELEASE_NOTES_FOOTER').returns(false);
 
-    getInfoConfigStub = stubMethod(sandbox, getInfoConfig, 'getInfoConfig').returns(mockInfoConfig);
-    getReleaseNotesStub = stubMethod(sandbox, getReleaseNotes, 'getReleaseNotes').returns('## Release notes for 3.3.3');
-    getDistTagVersionStub = stubMethod(sandbox, getDistTagVersion, 'getDistTagVersion').returns('1.2.3');
-    parseReleaseNotesSpy = spyMethod(sandbox, parseReleaseNotes, 'parseReleaseNotes');
+    getInfoConfigStub = stubMethod(sandbox, shared, 'getInfoConfig').returns(mockInfoConfig);
+    getReleaseNotesStub = stubMethod(sandbox, shared, 'getReleaseNotes').returns('## Release notes for 3.3.3');
+    getDistTagVersionStub = stubMethod(sandbox, shared, 'getDistTagVersion').returns('1.2.3');
+    parseReleaseNotesSpy = spyMethod(sandbox, shared, 'parseReleaseNotes');
     markedParserSpy = spyMethod(sandbox, marked, 'parser');
   });
 
@@ -266,7 +264,7 @@ describe('sfdx info:releasenotes:display', () => {
 describe('sf info:releasenotes:display', () => {
   const sandbox = Sinon.createSandbox();
 
-  let mockInfoConfig: getInfoConfig.InfoConfig;
+  let mockInfoConfig: InfoConfig;
   let getBooleanStub: sinon.SinonStub;
   let uxLogStub: sinon.SinonStub;
   let uxWarnStub: sinon.SinonStub;
@@ -312,10 +310,10 @@ describe('sf info:releasenotes:display', () => {
     getBooleanStub.withArgs('SF_HIDE_RELEASE_NOTES').returns(false);
     getBooleanStub.withArgs('SF_HIDE_RELEASE_NOTES_FOOTER').returns(false);
 
-    getInfoConfigStub = stubMethod(sandbox, getInfoConfig, 'getInfoConfig').returns(mockInfoConfig);
-    getReleaseNotesStub = stubMethod(sandbox, getReleaseNotes, 'getReleaseNotes').returns('## Release notes for 3.3.3');
-    getDistTagVersionStub = stubMethod(sandbox, getDistTagVersion, 'getDistTagVersion').returns('1.2.3');
-    parseReleaseNotesSpy = spyMethod(sandbox, parseReleaseNotes, 'parseReleaseNotes');
+    getInfoConfigStub = stubMethod(sandbox, shared, 'getInfoConfig').returns(mockInfoConfig);
+    getReleaseNotesStub = stubMethod(sandbox, shared, 'getReleaseNotes').returns('## Release notes for 3.3.3');
+    getDistTagVersionStub = stubMethod(sandbox, shared, 'getDistTagVersion').returns('1.2.3');
+    parseReleaseNotesSpy = spyMethod(sandbox, shared, 'parseReleaseNotes');
     markedParserSpy = spyMethod(sandbox, marked, 'parser');
   });
 

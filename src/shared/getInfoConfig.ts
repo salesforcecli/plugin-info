@@ -5,12 +5,12 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import { join } from 'path';
-import * as fs from 'fs';
-import { PJSON } from '@oclif/core/lib/interfaces';
+import pathPkg from 'node:path';
+import fs from 'node:fs/promises';
+import { Interfaces } from '@oclif/core';
 
-export interface PjsonWithInfo extends PJSON {
-  oclif: PJSON['oclif'] & {
+export interface PjsonWithInfo extends Interfaces.PJSON {
+  oclif: Interfaces.PJSON['oclif'] & {
     info: InfoConfig;
   };
 }
@@ -38,11 +38,11 @@ Add to oclif object
 }
 */
 
-const getInfoConfig = async (path: string): Promise<InfoConfig> => {
+export const getInfoConfig = async (path: string): Promise<InfoConfig> => {
   // TODO: could add env var support for these values
-  const fullPath = join(path, 'package.json');
+  const fullPath = pathPkg.join(path, 'package.json');
 
-  const json = JSON.parse(await fs.promises.readFile(fullPath, 'utf8')) as PjsonWithInfo;
+  const json = JSON.parse(await fs.readFile(fullPath, 'utf8')) as PjsonWithInfo;
 
   const { info } = json.oclif;
 
@@ -51,4 +51,4 @@ const getInfoConfig = async (path: string): Promise<InfoConfig> => {
   return info;
 };
 
-export { getInfoConfig };
+export default { getInfoConfig };

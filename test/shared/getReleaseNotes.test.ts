@@ -7,13 +7,13 @@
 
 import got from 'got';
 import { expect, use as chaiUse } from 'chai';
-import * as Sinon from 'sinon';
-import * as semver from 'semver';
+import Sinon from 'sinon';
+import semver from 'semver';
 import { stubMethod, spyMethod } from '@salesforce/ts-sinon';
-import * as SinonChai from 'sinon-chai';
+import SinonChai from 'sinon-chai';
 import { ProxyAgent } from 'proxy-agent';
-import { getReleaseNotes } from '../../src/shared/getReleaseNotes';
-import { SFDX_RELEASE_NOTES_TIMEOUT } from '../../src/constants';
+import { getReleaseNotes } from '../../src/shared/getReleaseNotes.js';
+import { SFDX_RELEASE_NOTES_TIMEOUT } from '../../src/constants.js';
 
 chaiUse(SinonChai);
 
@@ -49,7 +49,7 @@ describe('getReleaseNotes tests', () => {
       body: 'readme response body',
     };
 
-    gotStub = stubMethod(sandbox, got, 'default');
+    gotStub = stubMethod(sandbox, got, 'get');
     semverSpy = spyMethod(sandbox, semver, 'major');
 
     gotStub.onCall(0).returns(versionedResponse);
@@ -80,7 +80,7 @@ describe('getReleaseNotes tests', () => {
 
     // expect(JSON.parse(JSON.stringify(gotStub.args[0]))).to.deep.equal(expected);
     expect(gotStub.args[0][0]).to.equal(`${rawPath}/v1.md`);
-    expect(gotStub.args[0][1]).to.have.property('timeout').and.equal(SFDX_RELEASE_NOTES_TIMEOUT);
+    expect(gotStub.args[0][1]).to.have.property('timeout').and.deep.equal({ request: SFDX_RELEASE_NOTES_TIMEOUT });
     expect(gotStub.args[0][1]).to.have.property('throwHttpErrors').and.equal(false);
     expect(gotStub.args[0][1]).to.have.property('agent').and.to.have.property('https').and.be.instanceOf(ProxyAgent);
   });
@@ -92,7 +92,7 @@ describe('getReleaseNotes tests', () => {
 
     // expect(JSON.parse(JSON.stringify(gotStub.args[1]))).to.deep.equal(expected);
     expect(gotStub.args[1][0]).to.equal(`${rawPath}/${filename}`);
-    expect(gotStub.args[1][1]).to.have.property('timeout').and.equal(SFDX_RELEASE_NOTES_TIMEOUT);
+    expect(gotStub.args[1][1]).to.have.property('timeout').and.deep.equal({ request: SFDX_RELEASE_NOTES_TIMEOUT });
     expect(gotStub.args[1][1]).to.have.property('throwHttpErrors').and.equal(true);
     expect(gotStub.args[1][1]).to.have.property('agent').and.to.have.property('https').and.be.instanceOf(ProxyAgent);
   });

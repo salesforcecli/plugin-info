@@ -6,17 +6,11 @@
  */
 
 import type { Hook } from '@oclif/core';
-import { Logger } from '@salesforce/core';
-import { Doctor } from '../../doctor';
+import { Doctor } from '../../doctor.js';
 
-const log = Logger.childFromRoot('plugin-info:init_doctor');
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const hook: Hook<'init'> = async ({ config, argv, id }): Promise<void> => {
-  log.debug('init_doctor hook');
-  if (id === 'doctor') {
-    if (!Doctor.isDoctorEnabled()) {
-      Doctor.init(config);
-    }
+const hook: Hook<'init'> = async ({ config, id }): Promise<void> => {
+  if (id === 'doctor' && !Doctor.isDoctorEnabled()) {
+    Doctor.init(config);
   }
 
   return Promise.resolve();

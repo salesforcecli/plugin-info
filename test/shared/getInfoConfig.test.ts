@@ -5,14 +5,14 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as pathPkg from 'path';
-import * as fs from 'fs';
+import pathPkg from 'node:path';
+import fs from 'node:fs';
 import { expect, use as chaiUse, assert } from 'chai';
-import * as Sinon from 'sinon';
-import * as SinonChai from 'sinon-chai';
+import Sinon from 'sinon';
+import SinonChai from 'sinon-chai';
 import { stubMethod, spyMethod } from '@salesforce/ts-sinon';
-import { shouldThrow } from '@salesforce/core/lib/testSetup';
-import { getInfoConfig, PjsonWithInfo } from '../../src/shared/getInfoConfig';
+import { shouldThrow } from '@salesforce/core/lib/testSetup.js';
+import { getInfoConfig, PjsonWithInfo } from '../../src/shared/getInfoConfig.js';
 
 chaiUse(SinonChai);
 

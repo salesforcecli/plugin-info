@@ -5,20 +5,19 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as os from 'os';
+import { EOL } from 'node:os';
+import { dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { marked } from 'marked';
-import * as TerminalRenderer from 'marked-terminal';
+import TerminalRenderer from 'marked-terminal';
 import { Env } from '@salesforce/kit';
 import { Flags, SfCommand, loglevel } from '@salesforce/sf-plugins-core';
 import { Lifecycle, Logger, Messages } from '@salesforce/core';
 import { AnyJson, JsonMap } from '@salesforce/ts-types';
-import { getInfoConfig } from '../../../shared/getInfoConfig';
-import { getReleaseNotes } from '../../../shared/getReleaseNotes';
-import { getDistTagVersion } from '../../../shared/getDistTagVersion';
-import { parseReleaseNotes } from '../../../shared/parseReleaseNotes';
+import shared from '../../../shared/index.js';
 
 // Initialize Messages with the current plugin directory
-Messages.importMessagesDirectory(__dirname);
+Messages.importMessagesDirectory(dirname(fileURLToPath(import.meta.url)));
 
 const helpers = ['stable', 'stable-rc', 'latest', 'latest-rc', 'rc'];
 
@@ -67,19 +66,19 @@ export default class Display extends SfCommand<DisplayOutput | undefined> {
     try {
       const installedVersion = this.config.pjson.version;
 
-      const infoConfig = await getInfoConfig(this.config.root);
+      const infoConfig = await shared.getInfoConfig(this.config.root);
 
       const { distTagUrl, releaseNotesPath, releaseNotesFilename } = infoConfig.releasenotes;
 
       let version = flags.version ?? installedVersion;
 
       if (helpers.includes(version)) {
-        version = await getDistTagVersion(distTagUrl, version);
+        version = await shared.getDistTagVersion(distTagUrl, version);
       }
 
-      const releaseNotes = await getReleaseNotes(releaseNotesPath, releaseNotesFilename, version);
+      const releaseNotes = await shared.getReleaseNotes(releaseNotesPath, releaseNotesFilename, version);
 
-      const tokens = parseReleaseNotes(releaseNotes, version, releaseNotesPath);
+      const tokens = shared.parseReleaseNotes(releaseNotes, version, releaseNotesPath);
 
       marked.setOptions({
         renderer: new TerminalRenderer({ emoji: false }),
@@ -88,7 +87,7 @@ export default class Display extends SfCommand<DisplayOutput | undefined> {
       tokens.unshift(marked.lexer(`# Release notes for '${this.config.bin}':`)[0]);
 
       if (flags.json) {
-        const body = tokens.map((token) => token.raw).join(os.EOL);
+        const body = tokens.map((token) => token.raw).join(EOL);
 
         return { body, url: releaseNotesPath };
       } else {
