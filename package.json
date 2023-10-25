@@ -85,11 +85,6 @@
       "@oclif/plugin-command-snapshot",
       "@salesforce/plugin-command-reference"
     ],
-    "hooks": {
-      "init": [
-        "./lib/hooks/init/init_doctor.js"
-      ]
-    },
     "topics": {
       "info": {
         "description": "Access Salesforce CLI information from the command line.",

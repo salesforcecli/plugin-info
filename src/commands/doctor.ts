@@ -58,7 +58,8 @@ export default class Doctor extends SfCommand<SfDoctorDiagnosis> {
 
   public async run(): Promise<SfDoctorDiagnosis> {
     const { flags } = await this.parse(Doctor);
-    this.doctor = SFDoctor.getInstance();
+    // this.doctor = SFDoctor.getInstance();
+    this.doctor = SFDoctor.init(this.config);
     const lifecycle = Lifecycle.getInstance();
 
     this.outputDir = pathResolve(flags['output-dir'] ?? process.cwd());
