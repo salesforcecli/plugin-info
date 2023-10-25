@@ -19,8 +19,8 @@
   "devDependencies": {
     "@oclif/plugin-command-snapshot": "^5",
     "@salesforce/cli-plugins-testkit": "^4.4.10",
-    "@salesforce/dev-config": "^4.0.2-dev.1",
-    "@salesforce/dev-scripts": "^5.11.1",
+    "@salesforce/dev-config": "^4.1.0",
+    "@salesforce/dev-scripts": "^5.11.2-dev.1",
     "@salesforce/plugin-command-reference": "^3.0.33",
     "@salesforce/prettier-config": "^0.0.3",
     "@salesforce/ts-sinon": "^1.4.18",
@@ -198,7 +198,7 @@
       "output": []
     },
     "test:command-reference": {
-      "command": "\"./bin/dev.js\" commandreference:generate --erroronwarnings",
+      "command": "ts-node \"./bin/dev.js\" commandreference:generate --erroronwarnings",
       "files": [
         "src/**/*.ts",
         "messages/**",
@@ -209,7 +209,7 @@
       ]
     },
     "test:deprecation-policy": {
-      "command": "\"./bin/dev.js\" snapshot:compare",
+      "command": "ts-node \"./bin/dev.js\" snapshot:compare",
       "files": [
         "src/**/*.ts"
       ],
@@ -219,7 +219,7 @@
       ]
     },
     "test:json-schema": {
-      "command": "\"./bin/dev.js\" schema:compare",
+      "command": "ts-node \"./bin/dev.js\" schema:compare",
       "files": [
         "src/**/*.ts",
         "schemas"
