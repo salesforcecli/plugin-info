@@ -5,9 +5,9 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as os from 'os';
-import * as path from 'path';
-import { spawn } from 'child_process';
+import * as os from 'node:os';
+import * as path from 'node:path';
+import { spawn } from 'node:child_process';
 import { Flags, loglevel, SfCommand } from '@salesforce/sf-plugins-core';
 import { Lifecycle, Messages, SfError } from '@salesforce/core';
 import * as open from 'open';
@@ -27,11 +27,11 @@ export default class Doctor extends SfCommand<SfDoctorDiagnosis> {
   public static readonly flags = {
     command: Flags.string({
       char: 'c',
-      summary: messages.getMessage('flags.command'),
+      summary: messages.getMessage('flags.command.summary'),
     }),
     plugin: Flags.string({
       char: 'p',
-      summary: messages.getMessage('flags.plugin'),
+      summary: messages.getMessage('flags.plugin.summary'),
     }),
     'output-dir': Flags.directory({
       char: 'd',

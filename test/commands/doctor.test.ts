@@ -5,9 +5,9 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as fs from 'fs';
-import * as path from 'path';
-import * as childProcess from 'child_process';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
+import * as childProcess from 'node:child_process';
 import * as Sinon from 'sinon';
 import { expect } from 'chai';
 import { stubMethod } from '@salesforce/ts-sinon';
