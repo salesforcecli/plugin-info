@@ -5,7 +5,7 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as childProcess from 'child_process';
+import * as childProcess from 'node:child_process';
 import { Interfaces } from '@oclif/core';
 import { Lifecycle, Messages } from '@salesforce/core';
 import { SfDoctor, SfDoctorDiagnosis } from './doctor';
