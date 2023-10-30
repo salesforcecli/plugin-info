@@ -10,11 +10,11 @@ Use the --command parameter to run a specific command in debug mode; the doctor 
 
 Plugin providers can also implement their own doctor diagnostic tests by listening to the "sf-doctor" event and running plugin specific tests that are then included in the doctor diagnostics log.
 
-# flags.command
+# flags.command.summary
 
 Command to run in debug mode; results are written to a log file.
 
-# flags.plugin
+# flags.plugin.summary
 
 Specific plugin on which to run diagnostics.
 
