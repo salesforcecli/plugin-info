@@ -76,16 +76,16 @@ sfdx plugins
 
 <!-- commands -->
 
-- [`sfdx doctor`](#sfdx-doctor)
-- [`sfdx info:releasenotes:display`](#sfdx-inforeleasenotesdisplay)
+- [`sf doctor`](#sf-doctor)
+- [`sf info releasenotes display`](#sf-info-releasenotes-display)
 
-## `sfdx doctor`
+## `sf doctor`
 
 Gather CLI configuration data and run diagnostic tests to discover and report potential problems in your environment.
 
 ```
 USAGE
-  $ sfdx doctor [--json] [-c <value>] [-p <value>] [-d <value>] [-i]
+  $ sf doctor [--json] [-c <value>] [-p <value>] [-d <value>] [-i]
 
 FLAGS
   -c, --command=<value>     Command to run in debug mode; results are written to a log file.
@@ -113,26 +113,26 @@ DESCRIPTION
 EXAMPLES
   Run CLI doctor diagnostics:
 
-    $ sfdx doctor
+    $ sf doctor
 
   Run CLI doctor diagnostics and the specified command, and write the debug output to a file:
 
-    $ sfdx doctor --command "force:org:list --all"
+    $ sf doctor --command "force:org:list --all"
 
   Run CLI doctor diagnostics for a specific plugin:
 
-    $ sfdx doctor --plugin @salesforce/plugin-source
+    $ sf doctor --plugin @salesforce/plugin-source
 ```
 
-_See code: [src/commands/doctor.ts](https://github.com/salesforcecli/plugin-info/blob/2.6.51/src/commands/doctor.ts)_
+_See code: [src/commands/doctor.ts](https://github.com/salesforcecli/plugin-info/blob/2.6.52-dev.0/src/commands/doctor.ts)_
 
-## `sfdx info:releasenotes:display`
+## `sf info releasenotes display`
 
 Display Salesforce CLI release notes on the command line.
 
 ```
 USAGE
-  $ sfdx info:releasenotes:display [--json] [-v <value>]
+  $ sf info releasenotes display [--json] [-v <value>]
 
 FLAGS
   -v, --version=<value>  CLI version or tag for which to display release notes.
@@ -147,22 +147,22 @@ DESCRIPTION
   --version flag to view release notes for a different release.
 
 ALIASES
-  $ sfdx whatsnew
+  $ sf whatsnew
 
 EXAMPLES
   Display release notes for the currently installed CLI version:
 
-    $ sfdx info:releasenotes:display stable, stable-rc, latest, latest-rc, rc
+    $ sf info releasenotes display stable, stable-rc, latest, latest-rc, rc
 
   Display release notes for CLI version 7.120.0:
 
-    $ sfdx info:releasenotes:display --version 7.120.0 stable, stable-rc, latest, latest-rc, rc
+    $ sf info releasenotes display --version 7.120.0 stable, stable-rc, latest, latest-rc, rc
 
   Display release notes for the CLI version that corresponds to a tag (stable, stable-rc, latest, latest-rc, rc):
 
-    $ sfdx info:releasenotes:display --version latest
+    $ sf info releasenotes display --version latest
 ```
 
-_See code: [src/commands/info/releasenotes/display.ts](https://github.com/salesforcecli/plugin-info/blob/2.6.51/src/commands/info/releasenotes/display.ts)_
+_See code: [src/commands/info/releasenotes/display.ts](https://github.com/salesforcecli/plugin-info/blob/2.6.52-dev.0/src/commands/info/releasenotes/display.ts)_
 
 <!-- commandsstop -->
