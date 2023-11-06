@@ -5,15 +5,15 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as childProcess from 'node:child_process';
-import * as Sinon from 'sinon';
+import childProcess from 'node:child_process';
+import Sinon from 'sinon';
 import { expect } from 'chai';
 import { fromStub, spyMethod, stubInterface, stubMethod } from '@salesforce/ts-sinon';
 import { Config, Interfaces } from '@oclif/core';
 import { Lifecycle } from '@salesforce/core';
 import { ux } from '@oclif/core';
-import { Doctor } from '../src/doctor';
-import { Diagnostics } from '../src/diagnostics';
+import { Doctor } from '../src/doctor.js';
+import { Diagnostics } from '../src/diagnostics.js';
 
 let oclifConfig: Config;
 

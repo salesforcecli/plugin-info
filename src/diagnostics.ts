@@ -5,10 +5,12 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as childProcess from 'node:child_process';
+import childProcess from 'node:child_process';
+import { dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { Interfaces } from '@oclif/core';
 import { Lifecycle, Messages } from '@salesforce/core';
-import { SfDoctor, SfDoctorDiagnosis } from './doctor';
+import { SfDoctor, SfDoctorDiagnosis } from './doctor.js';
 
 // const SUPPORTED_SHELLS = [
 //   'bash',
@@ -22,7 +24,7 @@ export interface DiagnosticStatus {
   status: 'pass' | 'fail' | 'warn' | 'unknown';
 }
 
-Messages.importMessagesDirectory(__dirname);
+Messages.importMessagesDirectory(dirname(fileURLToPath(import.meta.url)));
 const messages = Messages.loadMessages('@salesforce/plugin-info', 'diagnostics');
 
 /**

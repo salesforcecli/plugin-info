@@ -5,20 +5,21 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as fs from 'node:fs';
-import * as path from 'node:path';
-import * as childProcess from 'node:child_process';
-import * as Sinon from 'sinon';
+import path from 'node:path';
+import childProcess from 'node:child_process';
+import { fileURLToPath } from 'node:url';
+import fs from 'node:fs';
+import Sinon from 'sinon';
 import { expect } from 'chai';
 import { stubMethod } from '@salesforce/ts-sinon';
 import { Lifecycle, Messages } from '@salesforce/core';
 import { Config, Interfaces } from '@oclif/core';
 import { SfCommand } from '@salesforce/sf-plugins-core';
-import DoctorCmd from '../../src/commands/doctor';
-import { Diagnostics, DiagnosticStatus, Doctor, SfDoctorDiagnosis } from '../../src';
-import { formatPlugins } from '../../src/doctor';
+import DoctorCmd from '../../src/commands/doctor.js';
+import { Diagnostics, DiagnosticStatus, Doctor, SfDoctorDiagnosis } from '../../src/index.js';
+import { formatPlugins } from '../../src/doctor.js';
 
-Messages.importMessagesDirectory(__dirname);
+Messages.importMessagesDirectory(path.dirname(fileURLToPath(import.meta.url)));
 const messages = Messages.loadMessages('@salesforce/plugin-info', 'doctor');
 
 let oclifConfig: Config;
@@ -132,7 +133,7 @@ describe('Doctor Command', () => {
     return cmd.runIt();
   };
 
-  beforeEach(() => {
+  beforeEach(async () => {
     fsExistsSyncStub = stubMethod(sandbox, fs, 'existsSync');
     fsMkdirSyncStub = stubMethod(sandbox, fs, 'mkdirSync');
     fsWriteFileSyncStub = stubMethod(sandbox, fs, 'writeFileSync');

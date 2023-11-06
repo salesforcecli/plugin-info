@@ -5,19 +5,21 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as fs from 'node:fs';
+import fs from 'node:fs';
+import { dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { expect, use as chaiUse, assert } from 'chai';
-import * as Sinon from 'sinon';
-import * as SinonChai from 'sinon-chai';
+import Sinon from 'sinon';
+import SinonChai from 'sinon-chai';
 import { spyMethod } from '@salesforce/ts-sinon';
 import { marked } from 'marked';
-import { parseReleaseNotes } from '../../src/shared/parseReleaseNotes';
+import { parseReleaseNotes } from '../../src/shared/parseReleaseNotes.js';
 
 chaiUse(SinonChai);
 
 describe('parseReleaseNotes tests', () => {
   const sandbox = Sinon.createSandbox();
-  const notes = fs.readFileSync(`${__dirname}/../fixtures/notes.md`, 'utf8');
+  const notes = fs.readFileSync(`${dirname(fileURLToPath(import.meta.url))}/../fixtures/notes.md`, 'utf8');
   const baseUrl = 'https://github.com/forcedotcom/cli/tree/main/releasenotes/sfdx';
 
   let lexerSpy: Sinon.SinonSpy;

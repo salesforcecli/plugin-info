@@ -5,13 +5,13 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as fs from 'node:fs';
-import * as path from 'node:path';
-import * as Sinon from 'sinon';
+import fs from 'node:fs';
+import path from 'node:path';
+import Sinon from 'sinon';
 import { expect } from 'chai';
 import { stubMethod } from '@salesforce/ts-sinon';
 import { Config, Interfaces } from '@oclif/core';
-import { Doctor } from '../src/doctor';
+import { Doctor } from '../src/doctor.js';
 
 let oclifConfig: Config;
 
@@ -73,18 +73,6 @@ describe('Doctor Class', () => {
       const error = err as Error;
       expect(error.name).to.equal('SfDoctorInitError');
       expect(error.message).to.include('Must first initialize a new SfDoctor');
-    }
-  });
-
-  it('throws when init() called twice', async () => {
-    try {
-      Doctor.init(oclifConfig);
-      Doctor.init(oclifConfig);
-      expect(false, 'should have thrown SfDoctorInitError').to.be.true;
-    } catch (err) {
-      const error = err as Error;
-      expect(error.name).to.equal('SfDoctorInitError');
-      expect(error.message).to.include('SfDoctor has already been initialized');
     }
   });
 

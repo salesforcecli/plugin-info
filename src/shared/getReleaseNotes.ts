@@ -6,24 +6,24 @@
  */
 
 import got from 'got';
-import { major } from 'semver';
+import semver from 'semver';
 import { ProxyAgent } from 'proxy-agent';
-import { SFDX_RELEASE_NOTES_TIMEOUT } from '../constants';
+import { SFDX_RELEASE_NOTES_TIMEOUT } from '../constants.js';
 
-const getReleaseNotes = async (base: string, filename: string, version: string): Promise<string> => {
-  const majorVersion = major(version);
+export const getReleaseNotes = async (base: string, filename: string, version: string): Promise<string> => {
+  const majorVersion = semver.major(version);
 
   const rawBase = base.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/').replace('/tree/', '/');
 
   const options = {
-    timeout: SFDX_RELEASE_NOTES_TIMEOUT,
+    timeout: { request: SFDX_RELEASE_NOTES_TIMEOUT },
     throwHttpErrors: false,
     agent: { https: new ProxyAgent() },
   };
 
   const getPromises = [
-    got(`${rawBase}/v${majorVersion}.md`, options),
-    got(`${rawBase}/${filename}`, { ...options, throwHttpErrors: true }),
+    got.get(`${rawBase}/v${majorVersion}.md`, options),
+    got.get(`${rawBase}/${filename}`, { ...options, throwHttpErrors: true }),
   ];
 
   const [versioned, readme] = await Promise.all(getPromises);
@@ -33,4 +33,4 @@ const getReleaseNotes = async (base: string, filename: string, version: string):
   return body;
 };
 
-export { getReleaseNotes };
+export default { getReleaseNotes };

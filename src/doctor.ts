@@ -5,14 +5,15 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as fs from 'node:fs';
-import * as path from 'node:path';
+import fs from 'node:fs';
+import { join, dirname, basename } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { Messages, SfError } from '@salesforce/core';
 import { Env, omit } from '@salesforce/kit';
 import { AnyJson, KeyValue } from '@salesforce/ts-types';
 import { Interfaces } from '@oclif/core';
 import { PluginVersionDetail } from '@oclif/core/lib/interfaces';
-import { Diagnostics, DiagnosticStatus } from './diagnostics';
+import { Diagnostics, DiagnosticStatus } from './diagnostics.js';
 
 export interface SfDoctor {
   addCommandName(commandName: string): void;
@@ -47,7 +48,7 @@ export interface SfDoctorDiagnosis {
   logFilePaths: string[];
 }
 
-Messages.importMessagesDirectory(__dirname);
+Messages.importMessagesDirectory(dirname(fileURLToPath(import.meta.url)));
 const messages = Messages.loadMessages('@salesforce/plugin-info', 'doctor');
 
 const PINNED_SUGGESTIONS = [
@@ -119,7 +120,7 @@ export class Doctor implements SfDoctor {
    */
   public static init(config: Interfaces.Config): SfDoctor {
     if (Doctor.instance) {
-      throw new SfError(messages.getMessage('doctorAlreadyInitializedError'), 'SfDoctorInitError');
+      return Doctor.instance;
     }
 
     Doctor.instance = new this(config);
@@ -229,7 +230,7 @@ export class Doctor implements SfDoctor {
   public createStderrWriteStream(fullPath: string): void {
     if (!this.stderrWriteStream) {
       createOutputDir(fullPath);
-      this.stderrWriteStream = fs.createWriteStream(path.join(fullPath));
+      this.stderrWriteStream = fs.createWriteStream(join(fullPath));
     }
   }
 
@@ -244,9 +245,9 @@ export class Doctor implements SfDoctor {
   }
 
   public getDoctoredFilePath(filePath: string): string {
-    const dir = path.dirname(filePath);
-    const fileName = `${this.id}-${path.basename(filePath)}`;
-    const fullPath = path.join(dir, fileName);
+    const dir = dirname(filePath);
+    const fileName = `${this.id}-${basename(filePath)}`;
+    const fullPath = join(dir, fileName);
     this.diagnosis.logFilePaths.push(fullPath);
     return fullPath;
   }
@@ -275,7 +276,7 @@ export function formatPlugins(config: Interfaces.Config, plugins: Record<string,
 }
 
 const createOutputDir = (fullPath: string): void => {
-  const dir = path.dirname(fullPath);
+  const dir = dirname(fullPath);
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
   }

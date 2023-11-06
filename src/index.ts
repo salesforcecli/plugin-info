@@ -5,5 +5,5 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-export { Doctor, SfDoctor, SfDoctorDiagnosis } from './doctor';
-export { Diagnostics, DiagnosticStatus } from './diagnostics';
+export { Doctor, SfDoctor, SfDoctorDiagnosis } from './doctor.js';
+export { Diagnostics, DiagnosticStatus } from './diagnostics.js';
