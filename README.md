@@ -124,7 +124,7 @@ EXAMPLES
     $ sf doctor --plugin @salesforce/plugin-source
 ```
 
-_See code: [src/commands/doctor.ts](https://github.com/salesforcecli/plugin-info/blob/2.6.52-dev.0/src/commands/doctor.ts)_
+_See code: [src/commands/doctor.ts](https://github.com/salesforcecli/plugin-info/blob/2.6.52/src/commands/doctor.ts)_
 
 ## `sf info releasenotes display`
 
@@ -163,6 +163,6 @@ EXAMPLES
     $ sf info releasenotes display --version latest
 ```
 
-_See code: [src/commands/info/releasenotes/display.ts](https://github.com/salesforcecli/plugin-info/blob/2.6.52-dev.0/src/commands/info/releasenotes/display.ts)_
+_See code: [src/commands/info/releasenotes/display.ts](https://github.com/salesforcecli/plugin-info/blob/2.6.52/src/commands/info/releasenotes/display.ts)_
 
 <!-- commandsstop -->

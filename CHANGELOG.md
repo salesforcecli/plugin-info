@@ -1,3 +1,12 @@
+## [2.6.52](https://github.com/salesforcecli/plugin-info/compare/2.6.52-dev.0...2.6.52) (2023-11-06)
+
+## [2.6.52-dev.0](https://github.com/salesforcecli/plugin-info/compare/2.6.51...2.6.52-dev.0) (2023-11-02)
+
+### Bug Fixes
+
+- dont throw on re-init ([af84152](https://github.com/salesforcecli/plugin-info/commit/af841522ec60ab5fe7a97553a4d49aacad1214ac))
+- remove init hook ([5c8a516](https://github.com/salesforcecli/plugin-info/commit/5c8a516d0dc0ff11557d627ea65c0c5426201e15))
+
 ## [2.6.51](https://github.com/salesforcecli/plugin-info/compare/2.6.50...2.6.51) (2023-10-23)
 
 ### Bug Fixes
