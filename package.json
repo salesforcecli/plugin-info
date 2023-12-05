@@ -19,7 +19,7 @@
   "devDependencies": {
     "@oclif/plugin-command-snapshot": "^5",
     "@salesforce/cli-plugins-testkit": "^5",
-    "@salesforce/dev-scripts": "^8.0.0",
+    "@salesforce/dev-scripts": "8.0.1-qa.0",
     "@salesforce/plugin-command-reference": "^3.0.48",
     "@salesforce/ts-sinon": "^1.4.19",
     "@types/marked": "^4.0.8",
@@ -89,6 +89,7 @@
     "compile": "wireit",
     "docs": "sf-docs",
     "format": "wireit",
+    "link-check": "wireit",
     "lint": "wireit",
     "postpack": "shx rm -f oclif.manifest.json oclif.lock",
     "prepack": "sf-prepack",
@@ -158,7 +159,8 @@
         "test:command-reference",
         "test:deprecation-policy",
         "lint",
-        "test:json-schema"
+        "test:json-schema",
+        "link-check"
       ]
     },
     "test:only": {
@@ -202,6 +204,15 @@
       "files": [
         "src/**/*.ts",
         "schemas"
+      ],
+      "output": []
+    },
+    "link-check": {
+      "command": "node -e \"process.exit(process.env.SKIP_LINK_CHECK ? 0 : 1)\" || linkinator \"**/*.md\" --skip \"CHANGELOG.md|node_modules|test/|confluence.internal.salesforce.com|%s\" --markdown --retry --directory-listing --verbosity error",
+      "files": [
+        "./*.md",
+        "./!(CHANGELOG).md",
+        "messages/**/*.md"
       ],
       "output": []
     }
