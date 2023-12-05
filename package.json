@@ -214,6 +214,11 @@
         "./!(CHANGELOG).md",
         "messages/**/*.md"
       ],
+      "env": {
+        "SKIP_LINK_CHECK": {
+          "external": true
+        }
+      },
       "output": []
     }
   },
