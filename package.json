@@ -6,7 +6,7 @@
   "bugs": "https://github.com/forcedotcom/cli/issues",
   "dependencies": {
     "@oclif/core": "^3.13.1",
-    "@salesforce/core": "^6.2.2",
+    "@salesforce/core": "^6.4.0",
     "@salesforce/kit": "^3.0.15",
     "@salesforce/sf-plugins-core": "^5.0.8",
     "got": "^13.0.0",
@@ -19,7 +19,7 @@
   "devDependencies": {
     "@oclif/plugin-command-snapshot": "^5",
     "@salesforce/cli-plugins-testkit": "^5",
-    "@salesforce/dev-scripts": "^8.1.1",
+    "@salesforce/dev-scripts": "^8.1.2",
     "@salesforce/plugin-command-reference": "^3.0.48",
     "@salesforce/ts-sinon": "^1.4.19",
     "@types/marked": "^4.0.8",
