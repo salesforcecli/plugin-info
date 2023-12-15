@@ -13,7 +13,7 @@ import TerminalRenderer from 'marked-terminal';
 import { Env } from '@salesforce/kit';
 import { Flags, SfCommand, loglevel } from '@salesforce/sf-plugins-core';
 import { Lifecycle, Logger, Messages } from '@salesforce/core';
-import { AnyJson, JsonMap } from '@salesforce/ts-types';
+import type { AnyJson, JsonMap } from '@salesforce/ts-types';
 import shared from '../../../shared/index.js';
 
 // Initialize Messages with the current plugin directory

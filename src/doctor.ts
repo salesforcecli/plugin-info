@@ -10,7 +10,7 @@ import { join, dirname, basename } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { Messages, SfError } from '@salesforce/core';
 import { Env, omit } from '@salesforce/kit';
-import { AnyJson, KeyValue } from '@salesforce/ts-types';
+import type { AnyJson, KeyValue } from '@salesforce/ts-types';
 import { Interfaces } from '@oclif/core';
 import { PluginVersionDetail } from '@oclif/core/lib/interfaces';
 import { Diagnostics, DiagnosticStatus } from './diagnostics.js';
