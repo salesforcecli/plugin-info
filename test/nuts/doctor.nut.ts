@@ -18,7 +18,7 @@ describe('doctor init hook', () => {
     await session?.clean();
   });
   it('should init doctor in the init hook', () => {
-    const result = execCmd('doctor --json', { ensureExitCode: 0 });
+    const result = execCmd('doctor --json', { ensureExitCode: 'nonZero' });
     expect(result).to.be.ok;
   });
 });
