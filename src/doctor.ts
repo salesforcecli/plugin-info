@@ -7,7 +7,7 @@
 
 import fs from 'node:fs';
 import { join, dirname, basename } from 'node:path';
-import { fileURLToPath } from 'node:url';
+
 import { Messages, SfError } from '@salesforce/core';
 import { Env, omit } from '@salesforce/kit';
 import type { AnyJson, KeyValue } from '@salesforce/ts-types';
@@ -48,7 +48,7 @@ export interface SfDoctorDiagnosis {
   logFilePaths: string[];
 }
 
-Messages.importMessagesDirectory(dirname(fileURLToPath(import.meta.url)));
+Messages.importMessagesDirectoryFromMetaUrl(import.meta.url)
 const messages = Messages.loadMessages('@salesforce/plugin-info', 'doctor');
 
 const PINNED_SUGGESTIONS = [

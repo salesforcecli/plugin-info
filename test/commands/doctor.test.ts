@@ -7,7 +7,7 @@
 
 import path from 'node:path';
 import childProcess from 'node:child_process';
-import { fileURLToPath } from 'node:url';
+
 import fs from 'node:fs';
 import Sinon from 'sinon';
 import { expect } from 'chai';
@@ -19,7 +19,7 @@ import DoctorCmd from '../../src/commands/doctor.js';
 import { Diagnostics, DiagnosticStatus, Doctor, SfDoctorDiagnosis } from '../../src/index.js';
 import { formatPlugins } from '../../src/doctor.js';
 
-Messages.importMessagesDirectory(path.dirname(fileURLToPath(import.meta.url)));
+Messages.importMessagesDirectoryFromMetaUrl(import.meta.url)
 const messages = Messages.loadMessages('@salesforce/plugin-info', 'doctor');
 
 let oclifConfig: Config;

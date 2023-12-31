@@ -6,9 +6,9 @@
  */
 
 import { EOL } from 'node:os';
-import { dirname, resolve as pathResolve, join } from 'node:path';
+import { resolve as pathResolve, join } from 'node:path';
 import { spawn } from 'node:child_process';
-import { fileURLToPath } from 'node:url';
+
 import { Flags, loglevel, SfCommand } from '@salesforce/sf-plugins-core';
 import { Lifecycle, Messages, SfError } from '@salesforce/core';
 import open from 'open';
@@ -17,7 +17,7 @@ import { ProxyAgent } from 'proxy-agent';
 import { Doctor as SFDoctor, SfDoctor, SfDoctorDiagnosis } from '../doctor.js';
 import { DiagnosticStatus } from '../diagnostics.js';
 
-Messages.importMessagesDirectory(dirname(fileURLToPath(import.meta.url)));
+Messages.importMessagesDirectoryFromMetaUrl(import.meta.url)
 const messages = Messages.loadMessages('@salesforce/plugin-info', 'doctor');
 
 export default class Doctor extends SfCommand<SfDoctorDiagnosis> {
