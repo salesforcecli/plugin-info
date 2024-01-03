@@ -17,7 +17,7 @@ import { ProxyAgent } from 'proxy-agent';
 import { Doctor as SFDoctor, SfDoctor, SfDoctorDiagnosis } from '../doctor.js';
 import { DiagnosticStatus } from '../diagnostics.js';
 
-Messages.importMessagesDirectoryFromMetaUrl(import.meta.url)
+Messages.importMessagesDirectoryFromMetaUrl(import.meta.url);
 const messages = Messages.loadMessages('@salesforce/plugin-info', 'doctor');
 
 export default class Doctor extends SfCommand<SfDoctorDiagnosis> {
@@ -97,7 +97,7 @@ export default class Doctor extends SfCommand<SfDoctorDiagnosis> {
           this.tasks.push(this.config.runHook(eventName, { doctor: this.doctor }));
         }
       });
-      this.tasks = [...this.tasks, ...this.doctor.diagnose()];
+      this.doctor.diagnose().map((p) => this.tasks.push(p));
     }
 
     await Promise.all(this.tasks);
