@@ -20,7 +20,7 @@
     "@oclif/plugin-command-snapshot": "^5",
     "@salesforce/cli-plugins-testkit": "^5",
     "@salesforce/dev-scripts": "^8.2.0",
-    "@salesforce/plugin-command-reference": "^3.0.58",
+    "@salesforce/plugin-command-reference": "^3.0.59",
     "@salesforce/ts-sinon": "^1.4.19",
     "@salesforce/ts-types": "^2.0.9",
     "@types/marked": "^4.0.8",
