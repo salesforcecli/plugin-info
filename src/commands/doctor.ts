@@ -8,7 +8,6 @@
 import { EOL } from 'node:os';
 import { resolve as pathResolve, join } from 'node:path';
 import { spawn } from 'node:child_process';
-
 import { Flags, loglevel, SfCommand } from '@salesforce/sf-plugins-core';
 import { Lifecycle, Messages, SfError } from '@salesforce/core';
 import open from 'open';
@@ -16,6 +15,7 @@ import got from 'got';
 import { ProxyAgent } from 'proxy-agent';
 import { Doctor as SFDoctor, SfDoctor, SfDoctorDiagnosis } from '../doctor.js';
 import { DiagnosticStatus } from '../diagnostics.js';
+import { prompts } from '../shared/prompts.js';
 
 Messages.importMessagesDirectoryFromMetaUrl(import.meta.url);
 const messages = Messages.loadMessages('@salesforce/plugin-info', 'doctor');
@@ -123,13 +123,7 @@ export default class Doctor extends SfCommand<SfDoctorDiagnosis> {
         agent: { https: new ProxyAgent() },
       });
 
-      const title = (
-        await this.prompt({
-          type: 'input',
-          name: 'title',
-          message: 'Enter a title for your new issue',
-        })
-      ).title as string;
+      const title = await prompts.titleInput();
 
       const url = encodeURI(
         `https://github.com/forcedotcom/cli/issues/new?title=${title}&body=${this.generateIssueMarkdown(

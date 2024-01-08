@@ -18,8 +18,9 @@ import { SfCommand } from '@salesforce/sf-plugins-core';
 import DoctorCmd from '../../src/commands/doctor.js';
 import { Diagnostics, DiagnosticStatus, Doctor, SfDoctorDiagnosis } from '../../src/index.js';
 import { formatPlugins } from '../../src/doctor.js';
+import { prompts } from '../../src/shared/prompts.js';
 
-Messages.importMessagesDirectoryFromMetaUrl(import.meta.url)
+Messages.importMessagesDirectoryFromMetaUrl(import.meta.url);
 const messages = Messages.loadMessages('@salesforce/plugin-info', 'doctor');
 
 let oclifConfig: Config;
@@ -123,7 +124,7 @@ describe('Doctor Command', () => {
   const runDoctorCmd = async (params: string[]) => {
     const cmd = new TestDoctor(params, oclifConfig);
     uxLogStub = stubMethod(sandbox, SfCommand.prototype, 'log');
-    promptStub = stubMethod(sandbox, SfCommand.prototype, 'prompt').resolves({ title: 'my new and crazy issue' });
+    promptStub = sandbox.stub(prompts, 'titleInput').resolves('my new and crazy issue');
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     openStub = sandbox.stub(cmd, 'openUrl').resolves();
