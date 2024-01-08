@@ -1,3 +1,9 @@
+## [3.0.15](https://github.com/salesforcecli/plugin-info/compare/3.0.14...3.0.15) (2024-01-08)
+
+### Bug Fixes
+
+- use new inquirer ([#614](https://github.com/salesforcecli/plugin-info/issues/614)) ([bb1864b](https://github.com/salesforcecli/plugin-info/commit/bb1864bdcfe76a2028e650a01e44c23dc9109576))
+
 ## [3.0.14](https://github.com/salesforcecli/plugin-info/compare/3.0.13...3.0.14) (2024-01-07)
 
 ### Bug Fixes
