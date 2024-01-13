@@ -9,7 +9,7 @@
     "@oclif/core": "^3.16.0",
     "@salesforce/core": "^6.4.2",
     "@salesforce/kit": "^3.0.15",
-    "@salesforce/sf-plugins-core": "^7.0.0",
+    "@salesforce/sf-plugins-core": "^7.1.1",
     "got": "^13.0.0",
     "marked": "^4.3.0",
     "marked-terminal": "^4.2.0",
