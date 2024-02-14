@@ -48,7 +48,7 @@ export interface SfDoctorDiagnosis {
   logFilePaths: string[];
 }
 
-Messages.importMessagesDirectoryFromMetaUrl(import.meta.url)
+Messages.importMessagesDirectoryFromMetaUrl(import.meta.url);
 const messages = Messages.loadMessages('@salesforce/plugin-info', 'doctor');
 
 const PINNED_SUGGESTIONS = [
@@ -76,7 +76,14 @@ export class Doctor implements SfDoctor {
     __cliConfig = config;
     const sfdxEnvVars = new Env().entries().filter((e) => e[0].startsWith('SFDX_'));
     const sfEnvVars = new Env().entries().filter((e) => e[0].startsWith('SF_'));
-    const cliConfig = omit(config, ['plugins', 'pjson', 'userPJSON', 'options']) as CliConfig;
+    const cliConfig = omit(config, [
+      'plugins',
+      'pjson',
+      'userPJSON',
+      'options',
+      '_commandIDs',
+      'rootPlugin',
+    ]) as CliConfig;
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     cliConfig.nodeEngine = config.pjson.engines.node as string;
 

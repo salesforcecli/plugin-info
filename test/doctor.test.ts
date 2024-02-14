@@ -55,6 +55,8 @@ describe('Doctor Class', () => {
     },
     plugins: [{ name: '@salesforce/plugin-org' }, { name: '@salesforce/plugin-source' }, { name: 'salesforce-alm' }],
     versionDetails: getVersionDetailStub(),
+    _commandIDs: ['first', 'second'], // this should not be included in the diagnosis
+    rootPlugin: { foo: 'bar' }, // this should not be included in the diagnosis
   } as unknown as Config;
 
   afterEach(() => {
@@ -85,7 +87,10 @@ describe('Doctor Class', () => {
     expect(dr.getDiagnosis().pluginSpecificData).to.deep.equal(expectedEntry);
     dr.addPluginData(pluginName, dataEntries[1]);
     expectedEntry[pluginName] = [dataEntries[0], dataEntries[1]];
-    expect(dr.getDiagnosis().pluginSpecificData).to.deep.equal(expectedEntry);
+    const diagnosis = dr.getDiagnosis();
+    expect(diagnosis.pluginSpecificData).to.deep.equal(expectedEntry);
+    expect(diagnosis.cliConfig).to.not.have.property('_commandIDs');
+    expect(diagnosis.cliConfig).to.not.have.property('rootPlugin');
   });
 
   it('writes file names with doctor ID', async () => {
