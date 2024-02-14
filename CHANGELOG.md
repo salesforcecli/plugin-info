@@ -1,3 +1,9 @@
+## [3.0.25](https://github.com/salesforcecli/plugin-info/compare/3.0.24...3.0.25) (2024-02-14)
+
+### Bug Fixes
+
+- omit \_commandIDs and rootPlugin from doctor diagnosis ([a77b536](https://github.com/salesforcecli/plugin-info/commit/a77b5361dbd13683bbcddff39e2d3b472f8418b4))
+
 ## [3.0.24](https://github.com/salesforcecli/plugin-info/compare/3.0.23...3.0.24) (2024-02-11)
 
 ### Bug Fixes
