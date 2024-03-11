@@ -1,3 +1,9 @@
+## [3.0.31](https://github.com/salesforcecli/plugin-info/compare/3.0.30...3.0.31) (2024-03-11)
+
+### Bug Fixes
+
+- **deps:** bump open from 10.0.3 to 10.1.0 ([68d40e0](https://github.com/salesforcecli/plugin-info/commit/68d40e006827db84ed1738d08170461b32e39ab7))
+
 ## [3.0.30](https://github.com/salesforcecli/plugin-info/compare/3.0.29...3.0.30) (2024-03-10)
 
 ### Bug Fixes
