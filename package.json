@@ -7,7 +7,7 @@
   "dependencies": {
     "@inquirer/input": "^2.1.0",
     "@oclif/core": "^3.23.0",
-    "@salesforce/core": "^6.5.2",
+    "@salesforce/core": "^6.7.1",
     "@salesforce/kit": "^3.0.15",
     "@salesforce/sf-plugins-core": "^7.1.11",
     "got": "^13.0.0",
