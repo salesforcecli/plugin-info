@@ -76,93 +76,9 @@ sfdx plugins
 
 <!-- commands -->
 
-- [`sf doctor`](#sf-doctor)
-- [`sf info releasenotes display`](#sf-info-releasenotes-display)
+# Command Topics
 
-## `sf doctor`
-
-Gather CLI configuration data and run diagnostic tests to discover and report potential problems in your environment.
-
-```
-USAGE
-  $ sf doctor [--json] [-c <value>] [-p <value>] [-d <value>] [-i]
-
-FLAGS
-  -c, --command=<value>     Command to run in debug mode; results are written to a log file.
-  -d, --output-dir=<value>  Directory to save all created files rather than the current working directory.
-  -i, --create-issue        Create a new issue on our GitHub repo and attach all diagnostic results.
-  -p, --plugin=<value>      Specific plugin on which to run diagnostics.
-
-GLOBAL FLAGS
-  --json  Format output as json.
-
-DESCRIPTION
-  Gather CLI configuration data and run diagnostic tests to discover and report potential problems in your environment.
-
-  When you run the doctor command without parameters, it first displays a diagnostic overview of your environment. It
-  then writes a detailed diagnosis to a JSON file in the current directory. Use the --outputdir to specify a different
-  directory. To run diagnostic tests on a specific plugin, use the --plugin parameter. If the plugin isn't listening to
-  the doctor, then you get a warning.
-
-  Use the --command parameter to run a specific command in debug mode; the doctor writes both stdout and stderr to
-  \*.log files that you can provide to Salesforce Customer Support or attach to a GitHub issue.
-
-  Plugin providers can also implement their own doctor diagnostic tests by listening to the "sf-doctor" event and
-  running plugin specific tests that are then included in the doctor diagnostics log.
-
-EXAMPLES
-  Run CLI doctor diagnostics:
-
-    $ sf doctor
-
-  Run CLI doctor diagnostics and the specified command, and write the debug output to a file:
-
-    $ sf doctor --command "force:org:list --all"
-
-  Run CLI doctor diagnostics for a specific plugin:
-
-    $ sf doctor --plugin @salesforce/plugin-source
-```
-
-_See code: [src/commands/doctor.ts](https://github.com/salesforcecli/plugin-info/blob/3.0.33/src/commands/doctor.ts)_
-
-## `sf info releasenotes display`
-
-Display Salesforce CLI release notes on the command line.
-
-```
-USAGE
-  $ sf info releasenotes display [--json] [-v <value>]
-
-FLAGS
-  -v, --version=<value>  CLI version or tag for which to display release notes.
-
-GLOBAL FLAGS
-  --json  Format output as json.
-
-DESCRIPTION
-  Display Salesforce CLI release notes on the command line.
-
-  By default, this command displays release notes for the currently installed CLI version on your computer. Use the
-  --version flag to view release notes for a different release.
-
-ALIASES
-  $ sf whatsnew
-
-EXAMPLES
-  Display release notes for the currently installed CLI version:
-
-    $ sf info releasenotes display stable, stable-rc, latest, latest-rc, rc
-
-  Display release notes for CLI version 7.120.0:
-
-    $ sf info releasenotes display --version 7.120.0 stable, stable-rc, latest, latest-rc, rc
-
-  Display release notes for the CLI version that corresponds to a tag (stable, stable-rc, latest, latest-rc, rc):
-
-    $ sf info releasenotes display --version latest
-```
-
-_See code: [src/commands/info/releasenotes/display.ts](https://github.com/salesforcecli/plugin-info/blob/3.0.33/src/commands/info/releasenotes/display.ts)_
+- [`sf doctor`](docs/doctor.md) - Tools for diagnosing problems with Salesforce CLI.
+- [`sf info`](docs/info.md) - Access Salesforce CLI information from the command line.
 
 <!-- commandsstop -->
