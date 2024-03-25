@@ -7,7 +7,6 @@
 
 import childProcess from 'node:child_process';
 
-
 import { Interfaces } from '@oclif/core';
 import { Lifecycle, Messages } from '@salesforce/core';
 import { SfDoctor, SfDoctorDiagnosis } from './doctor.js';
@@ -24,7 +23,7 @@ export interface DiagnosticStatus {
   status: 'pass' | 'fail' | 'warn' | 'unknown';
 }
 
-Messages.importMessagesDirectoryFromMetaUrl(import.meta.url)
+Messages.importMessagesDirectoryFromMetaUrl(import.meta.url);
 const messages = Messages.loadMessages('@salesforce/plugin-info', 'diagnostics');
 
 /**

@@ -1,18 +1,18 @@
 [
   {
-    "command": "doctor",
-    "plugin": "@salesforce/plugin-info",
-    "flags": ["command", "create-issue", "json", "loglevel", "output-dir", "plugin"],
     "alias": [],
+    "command": "doctor",
+    "flagAliases": ["createissue", "o", "outputdir"],
     "flagChars": ["c", "d", "i", "p"],
-    "flagAliases": ["createissue", "o", "outputdir"]
+    "flags": ["command", "create-issue", "flags-dir", "json", "loglevel", "output-dir", "plugin"],
+    "plugin": "@salesforce/plugin-info"
   },
   {
-    "command": "info:releasenotes:display",
-    "plugin": "@salesforce/plugin-info",
-    "flags": ["hook", "json", "loglevel", "version"],
     "alias": ["whatsnew"],
+    "command": "info:releasenotes:display",
+    "flagAliases": [],
     "flagChars": ["v"],
-    "flagAliases": []
+    "flags": ["flags-dir", "hook", "json", "loglevel", "version"],
+    "plugin": "@salesforce/plugin-info"
   }
 ]
