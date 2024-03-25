@@ -7,7 +7,6 @@
 
 import { EOL } from 'node:os';
 
-
 import { marked } from 'marked';
 import TerminalRenderer from 'marked-terminal';
 import { Env } from '@salesforce/kit';
@@ -17,7 +16,7 @@ import type { AnyJson, JsonMap } from '@salesforce/ts-types';
 import shared from '../../../shared/index.js';
 
 // Initialize Messages with the current plugin directory
-Messages.importMessagesDirectoryFromMetaUrl(import.meta.url)
+Messages.importMessagesDirectoryFromMetaUrl(import.meta.url);
 
 const helpers = ['stable', 'stable-rc', 'latest', 'latest-rc', 'rc'];
 
