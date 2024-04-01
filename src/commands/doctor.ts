@@ -81,7 +81,7 @@ export default class Doctor extends SfCommand<SfDoctorDiagnosis> {
         const hasDoctorHook = plugin.hooks && Object.keys(plugin.hooks).some((hook) => hook === eventName);
         if (hasDoctorHook) {
           this.styledHeader(`Running diagnostics for plugin: ${flags.plugin}`);
-          this.tasks.push(this.config.runHook(eventName, { doctor: this.doctor }));
+          this.tasks.push(this.runDoctorHook(eventName));
         } else {
           this.log(`${flags.plugin} doesn't have diagnostic tests to run.`);
         }
@@ -94,7 +94,7 @@ export default class Doctor extends SfCommand<SfDoctorDiagnosis> {
       this.config.getPluginsList().forEach((plugin) => {
         const eventName = `sf-doctor-${plugin.name}`;
         if (plugin.hooks && Object.keys(plugin.hooks).find((hook) => hook === eventName)) {
-          this.tasks.push(this.config.runHook(eventName, { doctor: this.doctor }));
+          this.tasks.push(this.runDoctorHook(eventName));
         }
       });
       this.doctor.diagnose().map((p) => this.tasks.push(p));
@@ -135,6 +135,10 @@ export default class Doctor extends SfCommand<SfDoctorDiagnosis> {
     }
 
     return diagnosis;
+  }
+
+  private runDoctorHook(event: string): Promise<unknown> {
+    return this.config.runHook(event, { doctor: this.doctor });
   }
 
   /**
