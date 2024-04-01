@@ -35,24 +35,23 @@ describe('sfdx info:releasenotes:display', () => {
   let parseReleaseNotesSpy: Sinon.SinonSpy;
   let markedParserSpy: Sinon.SinonSpy;
 
-  const oclifConfigStub = fromStub(stubInterface<Config>(sandbox));
-
-  class TestDisplay extends Display {
-    public async runIt() {
-      await this.init();
-      return this.run();
-    }
-  }
+  const oclifConfigStub = fromStub(
+    stubInterface<Config>(sandbox, {
+      runHook: async () => ({
+        successes: [],
+        failures: [],
+      }),
+      bin: 'sfdx',
+    })
+  );
 
   const runDisplayCmd = async (params: string[]) => {
-    oclifConfigStub.bin = 'sfdx';
-
-    const cmd = new TestDisplay(params, oclifConfigStub);
+    const cmd = new Display(params, oclifConfigStub);
 
     uxLogStub = stubMethod(sandbox, SfCommand.prototype, 'log');
     uxWarnStub = stubMethod(sandbox, SfCommand.prototype, 'warn');
 
-    return cmd.runIt();
+    return cmd.run();
   };
 
   beforeEach(() => {
@@ -261,6 +260,7 @@ describe('sfdx info:releasenotes:display', () => {
     expect(json).to.deep.equal(expected);
   });
 });
+
 describe('sf info:releasenotes:display', () => {
   const sandbox = Sinon.createSandbox();
 
@@ -274,24 +274,23 @@ describe('sf info:releasenotes:display', () => {
   let parseReleaseNotesSpy: Sinon.SinonSpy;
   let markedParserSpy: Sinon.SinonSpy;
 
-  const oclifConfigStub = fromStub(stubInterface<Config>(sandbox));
-
-  class TestDisplay extends Display {
-    public async runIt() {
-      await this.init();
-      return this.run();
-    }
-  }
+  const oclifConfigStub = fromStub(
+    stubInterface<Config>(sandbox, {
+      runHook: async () => ({
+        successes: [],
+        failures: [],
+      }),
+      bin: 'sf',
+    })
+  );
 
   const runDisplayCmd = async (params: string[]) => {
-    oclifConfigStub.bin = 'sf';
-
-    const cmd = new TestDisplay(params, oclifConfigStub);
+    const cmd = new Display(params, oclifConfigStub);
 
     uxLogStub = stubMethod(sandbox, SfCommand.prototype, 'log');
     uxWarnStub = stubMethod(sandbox, SfCommand.prototype, 'warn');
 
-    return cmd.runIt();
+    return cmd.run();
   };
 
   beforeEach(() => {

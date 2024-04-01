@@ -11,12 +11,12 @@ import childProcess from 'node:child_process';
 import fs from 'node:fs';
 import Sinon from 'sinon';
 import { expect } from 'chai';
-import { stubMethod } from '@salesforce/ts-sinon';
+import { fromStub, stubInterface, stubMethod } from '@salesforce/ts-sinon';
 import { Lifecycle, Messages } from '@salesforce/core';
 import { Config, Interfaces } from '@oclif/core';
 import { SfCommand } from '@salesforce/sf-plugins-core';
 import DoctorCmd from '../../src/commands/doctor.js';
-import { Diagnostics, DiagnosticStatus, Doctor, SfDoctorDiagnosis } from '../../src/index.js';
+import { Diagnostics, Doctor, SfDoctorDiagnosis } from '../../src/index.js';
 import { formatPlugins } from '../../src/doctor.js';
 import { prompts } from '../../src/shared/prompts.js';
 
@@ -81,57 +81,67 @@ describe('Doctor Command', () => {
   let childProcessExecStub: sinon.SinonStub;
   let promptStub: sinon.SinonStub;
   let openStub: sinon.SinonStub;
+  let runHookStub: sinon.SinonStub;
 
-  oclifConfig = {
-    runHook: sandbox.stub(),
-    pjson: {
-      engines: {
-        node: 'node-v16.17.0',
-      },
-      oclif: {},
+  const plugins = [
+    {
+      name: '@salesforce/plugin-org',
+      hooks: { 'sf-doctor-@salesforce/plugin-org': ['./lib/hooks/diagnostics'] },
     },
-    plugins: [
-      {
-        name: '@salesforce/plugin-org',
-        hooks: { 'sf-doctor-@salesforce/plugin-org': './lib/hooks/diagnostics' },
+    {
+      name: '@salesforce/plugin-source',
+      hooks: { 'sf-doctor-@salesforce/plugin-source': ['./lib/hooks/diagnostics'] },
+    },
+    {
+      name: 'salesforce-alm',
+      hooks: {},
+    },
+    {
+      name: '@salesforce/plugin-data',
+      hooks: {},
+    },
+  ].map((p) => ({
+    ...p,
+    commands: [],
+    topics: [],
+    pjson: {
+      name: p.name,
+      oclif: {
+        hooks: p.hooks,
       },
-      {
-        name: '@salesforce/plugin-source',
-        hooks: { 'sf-doctor-@salesforce/plugin-source': './lib/hooks/diagnostics' },
-      },
-      {
-        name: 'salesforce-alm',
-      },
-      {
-        name: '@salesforce/plugin-data',
-      },
-    ],
-    getPluginsList: () => oclifConfig.plugins,
-    bin: 'sfdx',
-    versionDetails: {},
-  } as unknown as Config;
+    },
+  }));
 
-  // eslint-disable-next-line @typescript-eslint/unbound-method
-  const runHookStub = oclifConfig.runHook as sinon.SinonStub;
-
-  class TestDoctor extends DoctorCmd {
-    public async runIt() {
-      await this.init();
-      return this.run();
-    }
-  }
+  oclifConfig = fromStub(
+    stubInterface<Config>(sandbox, {
+      runHook: async () => ({
+        successes: [],
+        failures: [],
+      }),
+      pjson: {
+        engines: {
+          node: 'node-v16.17.0',
+        },
+        oclif: {},
+      },
+      plugins: new Map(plugins.map((p) => [p.name, p])),
+      getPluginsList: () => plugins,
+      bin: 'sfdx',
+      versionDetails: getVersionDetailStub(),
+    })
+  );
 
   const runDoctorCmd = async (params: string[]) => {
-    const cmd = new TestDoctor(params, oclifConfig);
+    const cmd = new DoctorCmd(params, oclifConfig);
     uxLogStub = stubMethod(sandbox, SfCommand.prototype, 'log');
     promptStub = sandbox.stub(prompts, 'titleInput').resolves('my new and crazy issue');
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
+    // @ts-expect-error because private method
     openStub = sandbox.stub(cmd, 'openUrl').resolves();
 
     uxStyledHeaderStub = stubMethod(sandbox, SfCommand.prototype, 'styledHeader');
-
-    return cmd.runIt();
+    // @ts-expect-error because private method
+    runHookStub = sandbox.stub(DoctorCmd.prototype, 'runDoctorHook');
+    return cmd.run();
   };
 
   beforeEach(async () => {
@@ -146,7 +156,6 @@ describe('Doctor Command', () => {
     stubMethod(sandbox, Doctor.prototype, 'createStderrWriteStream');
     stubMethod(sandbox, Doctor.prototype, 'closeStdout');
     stubMethod(sandbox, Doctor.prototype, 'closeStderr');
-    runHookStub.reset();
   });
 
   afterEach(() => {
@@ -186,10 +195,7 @@ describe('Doctor Command', () => {
   it('runs doctor command with no flags', async () => {
     const suggestion = 'work smarter, not faster';
     fsExistsSyncStub.returns(true);
-    const versionDetail = getVersionDetailStub();
-    const diagnosticStatus: DiagnosticStatus = { testName: 'doctor test', status: 'pass' };
-    // @ts-expect-error: stubbing a private property
-    oclifConfig.versionDetails = versionDetail;
+    const diagnosticStatus = { testName: 'doctor test', status: 'pass' };
     Doctor.init(oclifConfig);
     diagnosticsRunStub.callsFake(() => {
       const dr = Doctor.getInstance();
@@ -215,18 +221,15 @@ describe('Doctor Command', () => {
     expect(drWriteStderr.called).to.be.false;
     expect(fsWriteFileSyncStub.calledOnce).to.be.true;
     expect(runHookStub.calledTwice).to.be.true;
-    expect(runHookStub.args[0][0]).to.equal('sf-doctor-@salesforce/plugin-org');
-    expect(runHookStub.args[0][1]).to.deep.equal({ doctor: Doctor.getInstance() });
-    expect(runHookStub.args[1][0]).to.equal('sf-doctor-@salesforce/plugin-source');
-    expect(runHookStub.args[1][1]).to.deep.equal({ doctor: Doctor.getInstance() });
+    expect(runHookStub.args).to.deep.equal([
+      ['sf-doctor-@salesforce/plugin-org'],
+      ['sf-doctor-@salesforce/plugin-source'],
+    ]);
   });
 
   it('runs doctor command with outputdir flag (existing dir)', async () => {
     const outputdir = path.resolve('foo', 'bar', 'test');
     fsExistsSyncStub.returns(true);
-    const versionDetail = getVersionDetailStub();
-    // @ts-expect-error: stubbing a private property
-    oclifConfig.versionDetails = versionDetail;
     Doctor.init(oclifConfig);
     diagnosticsRunStub.callsFake(() => [Promise.resolve()]);
 
@@ -247,18 +250,15 @@ describe('Doctor Command', () => {
     expect(drWriteStdout.called).to.be.false;
     expect(drWriteStderr.called).to.be.false;
     expect(runHookStub.callCount, 'Expected runHooks to be called twice').to.equal(2);
-    expect(runHookStub.args[0][0]).to.equal('sf-doctor-@salesforce/plugin-org');
-    expect(runHookStub.args[0][1]).to.deep.equal({ doctor: Doctor.getInstance() });
-    expect(runHookStub.args[1][0]).to.equal('sf-doctor-@salesforce/plugin-source');
-    expect(runHookStub.args[1][1]).to.deep.equal({ doctor: Doctor.getInstance() });
+    expect(runHookStub.args).to.deep.equal([
+      ['sf-doctor-@salesforce/plugin-org'],
+      ['sf-doctor-@salesforce/plugin-source'],
+    ]);
   });
 
   it('runs doctor command with outputdir flag (non-existing dir)', async () => {
     const outputdir = path.resolve('foo', 'bar', 'test');
     fsExistsSyncStub.returns(false);
-    const versionDetail = getVersionDetailStub();
-    // @ts-expect-error: stubbing a private property
-    oclifConfig.versionDetails = versionDetail;
     Doctor.init(oclifConfig);
     diagnosticsRunStub.callsFake(() => [Promise.resolve()]);
 
@@ -279,19 +279,16 @@ describe('Doctor Command', () => {
     expect(drWriteStderr.called).to.be.false;
     expect(fsWriteFileSyncStub.calledOnce).to.be.true;
     expect(runHookStub.calledTwice).to.be.true;
-    expect(runHookStub.args[0][0]).to.equal('sf-doctor-@salesforce/plugin-org');
-    expect(runHookStub.args[0][1]).to.deep.equal({ doctor: Doctor.getInstance() });
-    expect(runHookStub.args[1][0]).to.equal('sf-doctor-@salesforce/plugin-source');
-    expect(runHookStub.args[1][1]).to.deep.equal({ doctor: Doctor.getInstance() });
+    expect(runHookStub.args).to.deep.equal([
+      ['sf-doctor-@salesforce/plugin-org'],
+      ['sf-doctor-@salesforce/plugin-source'],
+    ]);
   });
 
   it('runs doctor command with command flag (minimal)', async () => {
     const cmd = 'force:org:list --all';
     const expectedCmd = `${oclifConfig.bin} ${cmd} --dev-debug`;
     fsExistsSyncStub.returns(true);
-    const versionDetail = getVersionDetailStub();
-    // @ts-expect-error: stubbing a private property
-    oclifConfig.versionDetails = versionDetail;
     Doctor.init(oclifConfig);
     diagnosticsRunStub.callsFake(() => [Promise.resolve()]);
     childProcessExecStub.callsFake((cmdString, opts, cb: () => void) => {
@@ -316,19 +313,16 @@ describe('Doctor Command', () => {
     expect(drWriteStdout.called).to.be.true;
     expect(drWriteStderr.called).to.be.true;
     expect(runHookStub.calledTwice).to.be.true;
-    expect(runHookStub.args[0][0]).to.equal('sf-doctor-@salesforce/plugin-org');
-    expect(runHookStub.args[0][1]).to.deep.equal({ doctor: Doctor.getInstance() });
-    expect(runHookStub.args[1][0]).to.equal('sf-doctor-@salesforce/plugin-source');
-    expect(runHookStub.args[1][1]).to.deep.equal({ doctor: Doctor.getInstance() });
+    expect(runHookStub.args).to.deep.equal([
+      ['sf-doctor-@salesforce/plugin-org'],
+      ['sf-doctor-@salesforce/plugin-source'],
+    ]);
     expect(result).to.have.property('commandName', expectedCmd);
   });
 
   it('runs doctor command with command flag (full)', async () => {
     const cmd = `${oclifConfig.bin} force:org:list --all --dev-debug`;
     fsExistsSyncStub.returns(true);
-    const versionDetail = getVersionDetailStub();
-    // @ts-expect-error: stubbing a private property
-    oclifConfig.versionDetails = versionDetail;
     Doctor.init(oclifConfig);
     diagnosticsRunStub.callsFake(() => [Promise.resolve()]);
     childProcessExecStub.callsFake((cmdString, opts, cb: () => void) => {
@@ -354,18 +348,15 @@ describe('Doctor Command', () => {
     expect(drWriteStdout.called).to.be.true;
     expect(drWriteStderr.called).to.be.true;
     expect(runHookStub.calledTwice).to.be.true;
-    expect(runHookStub.args[0][0]).to.equal('sf-doctor-@salesforce/plugin-org');
-    expect(runHookStub.args[0][1]).to.deep.equal({ doctor: Doctor.getInstance() });
-    expect(runHookStub.args[1][0]).to.equal('sf-doctor-@salesforce/plugin-source');
-    expect(runHookStub.args[1][1]).to.deep.equal({ doctor: Doctor.getInstance() });
+    expect(runHookStub.args).to.deep.equal([
+      ['sf-doctor-@salesforce/plugin-org'],
+      ['sf-doctor-@salesforce/plugin-source'],
+    ]);
     expect(result).to.have.property('commandName', cmd);
   });
 
   it('runs doctor command with plugin flag', async () => {
     fsExistsSyncStub.returns(true);
-    const versionDetail = getVersionDetailStub();
-    // @ts-expect-error: stubbing a private property
-    oclifConfig.versionDetails = versionDetail;
     Doctor.init(oclifConfig);
     diagnosticsRunStub.callsFake(() => [Promise.resolve()]);
 
@@ -386,8 +377,7 @@ describe('Doctor Command', () => {
     expect(drWriteStdout.called).to.be.false;
     expect(drWriteStderr.called).to.be.false;
     expect(runHookStub.calledOnce).to.be.true;
-    expect(runHookStub.args[0][0]).to.equal('sf-doctor-@salesforce/plugin-org');
-    expect(runHookStub.args[0][1]).to.deep.equal({ doctor: Doctor.getInstance() });
+    expect(runHookStub.args).to.deep.equal([['sf-doctor-@salesforce/plugin-org']]);
   });
 
   it('runs doctor command with plugin flag (no plugin tests)', async () => {
