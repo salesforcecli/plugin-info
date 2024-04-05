@@ -18,7 +18,7 @@ import { SfDoctor, SfDoctorDiagnosis } from './doctor.js';
 //   'cmd.exe'
 // ];
 
-export interface DiagnosticStatus {
+export type DiagnosticStatus = {
   testName: string;
   status: 'pass' | 'fail' | 'warn' | 'unknown';
 }
