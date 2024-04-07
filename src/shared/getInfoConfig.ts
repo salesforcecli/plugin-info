@@ -9,13 +9,13 @@ import pathPkg from 'node:path';
 import fs from 'node:fs/promises';
 import { Interfaces } from '@oclif/core';
 
-export interface PjsonWithInfo extends Interfaces.PJSON {
+export type PjsonWithInfo = {
   oclif: Interfaces.PJSON['oclif'] & {
     info: InfoConfig;
   };
-}
+} & Interfaces.PJSON
 
-export interface InfoConfig {
+export type InfoConfig = {
   releasenotes: {
     distTagUrl: string;
     releaseNotesPath: string;
