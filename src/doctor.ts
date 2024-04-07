@@ -15,7 +15,7 @@ import { Interfaces } from '@oclif/core';
 import { PluginVersionDetail } from '@oclif/core/lib/interfaces';
 import { Diagnostics, DiagnosticStatus } from './diagnostics.js';
 
-export interface SfDoctor {
+export type SfDoctor = {
   addCommandName(commandName: string): void;
   addDiagnosticStatus(status: DiagnosticStatus): void;
   addPluginData(pluginName: string, data: AnyJson): void;
@@ -35,7 +35,7 @@ export interface SfDoctor {
 
 type CliConfig = Partial<Interfaces.Config> & { nodeEngine: string };
 
-export interface SfDoctorDiagnosis {
+export type SfDoctorDiagnosis = {
   versionDetail: Omit<Interfaces.VersionDetails, 'pluginVersions'> & { pluginVersions: string[] };
   sfdxEnvVars: Array<KeyValue<string>>;
   sfEnvVars: Array<KeyValue<string>>;

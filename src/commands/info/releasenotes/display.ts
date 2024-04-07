@@ -133,7 +133,7 @@ export default class Display extends SfCommand<DisplayOutput | undefined> {
   }
 }
 
-export interface DisplayOutput {
+export type DisplayOutput = {
   body: string;
   url: string;
 }
