@@ -11,7 +11,7 @@ import { expect, use as chaiUse, assert } from 'chai';
 import Sinon from 'sinon';
 import SinonChai from 'sinon-chai';
 import { stubMethod, spyMethod } from '@salesforce/ts-sinon';
-import { shouldThrow } from '@salesforce/core/lib/testSetup.js';
+import { shouldThrow } from '@salesforce/core/testSetup';
 import { getInfoConfig, PjsonWithInfo } from '../../src/shared/getInfoConfig.js';
 
 chaiUse(SinonChai);
