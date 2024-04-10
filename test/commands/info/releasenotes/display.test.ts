@@ -10,7 +10,7 @@ import Sinon from 'sinon';
 import SinonChai from 'sinon-chai';
 import { expect, use as chaiUse } from 'chai';
 import { fromStub, stubInterface, stubMethod, spyMethod } from '@salesforce/ts-sinon';
-import { shouldThrow } from '@salesforce/core/lib/testSetup.js';
+import { shouldThrow } from '@salesforce/core/testSetup';
 import { marked } from 'marked';
 import { Env } from '@salesforce/kit';
 import { Lifecycle } from '@salesforce/core';
