@@ -1396,10 +1396,10 @@
     strip-ansi "6.0.1"
     ts-retry-promise "^0.8.0"
 
-"@salesforce/core@^7.3.1", "@salesforce/core@^7.3.3", "@salesforce/core@^7.3.4":
-  version "7.3.4"
-  resolved "https://registry.yarnpkg.com/@salesforce/core/-/core-7.3.4.tgz#0630a5b236254a7a690872d7179f7216dff02560"
-  integrity sha512-m6XY5Ju3rh2ljaqVydSPS1vekw+EyQ4uHiNV6mIdJeBile7WJgn5TbE7AJUU91ASPYy9X+/ZuiHyIbOaMc2YrA==
+"@salesforce/core@^7.3.1", "@salesforce/core@^7.3.3", "@salesforce/core@^7.3.5":
+  version "7.3.5"
+  resolved "https://registry.yarnpkg.com/@salesforce/core/-/core-7.3.5.tgz#0dccb4d8ddd36cde449d67a482dfb52e63de1c9f"
+  integrity sha512-9hkK4EyV1Z7T1mDyb/Rj1dO0Owp3f2PNGXSyQhCG2nozSCxAQlPeFFqn2L3d7kJJxdhlr58P4QXiFCoJVVvbLQ==
   dependencies:
     "@jsforce/jsforce-node" "^3.2.0"
     "@salesforce/kit" "^3.1.1"
