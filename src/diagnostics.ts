@@ -9,19 +9,13 @@ import childProcess from 'node:child_process';
 
 import { Interfaces } from '@oclif/core';
 import { Lifecycle, Messages } from '@salesforce/core';
+import { Connection } from '@jsforce/jsforce-node';
 import { SfDoctor, SfDoctorDiagnosis } from './doctor.js';
-
-// const SUPPORTED_SHELLS = [
-//   'bash',
-//   'zsh',
-//   'powershell'
-//   'cmd.exe'
-// ];
 
 export type DiagnosticStatus = {
   testName: string;
   status: 'pass' | 'fail' | 'warn' | 'unknown';
-}
+};
 
 Messages.importMessagesDirectoryFromMetaUrl(import.meta.url);
 const messages = Messages.loadMessages('@salesforce/plugin-info', 'diagnostics');
@@ -126,6 +120,32 @@ export class Diagnostics {
       this.doctor.addSuggestion(messages.getMessage('salesforceDxPluginDetected', [bin]));
     }
     await Lifecycle.getInstance().emit('Doctor:diagnostic', { testName, status });
+  }
+
+  public async networkCheck(): Promise<void> {
+    await Promise.all(
+      [
+        // salesforce endpoints
+        'https://test.salesforce.com',
+        'https://appexchange.salesforce.com/services/data',
+        // npm and yarn registries
+        'https://registry.npmjs.org',
+        'https://registry.yarnpkg.com',
+        // our S3 bucket, use the buildmanifest to avoid downloading the entire CLI
+        'https://developer.salesforce.com/media/salesforce-cli/sf/channels/stable/sf-win32-x64-buildmanifest',
+      ].map(async (url) => {
+        try {
+          const conn = new Connection();
+          await conn.request(url);
+          await Lifecycle.getInstance().emit('Doctor:diagnostic', { testName: url, status: 'pass' });
+        } catch (e) {
+          await Lifecycle.getInstance().emit('Doctor:diagnostic', { testName: url, status: 'fail' });
+          this.doctor.addSuggestion(
+            `Cannot reach ${url} - potential network configuration error, check proxies, firewalls, environment variables`
+          );
+        }
+      })
+    );
   }
 
   /**
