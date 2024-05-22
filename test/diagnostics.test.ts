@@ -108,7 +108,7 @@ describe('Diagnostics', () => {
       expect(lifecycleEmitSpy.called).to.be.true;
       expect(lifecycleEmitSpy.args[0][1]).to.deep.equal({
         status: 'pass',
-        testName: 'https://test.salesforce.com',
+        testName: 'can access: https://test.salesforce.com',
       });
     });
 
@@ -125,7 +125,7 @@ describe('Diagnostics', () => {
       expect(lifecycleEmitSpy.called).to.be.true;
       expect(lifecycleEmitSpy.args[0][1]).to.deep.equal({
         status: 'fail',
-        testName: 'https://test.salesforce.com',
+        testName: "can't access: https://test.salesforce.com",
       });
     });
 
@@ -143,11 +143,11 @@ describe('Diagnostics', () => {
       expect(lifecycleEmitSpy.called).to.be.true;
       expect(lifecycleEmitSpy.args[0][1]).to.deep.equal({
         status: 'pass',
-        testName: 'https://test.salesforce.com',
+        testName: 'can access: https://test.salesforce.com',
       });
       expect(lifecycleEmitSpy.args[1][1]).to.deep.equal({
         status: 'fail',
-        testName: 'https://appexchange.salesforce.com/services/data',
+        testName: "can't access: https://appexchange.salesforce.com/services/data",
       });
     });
   });

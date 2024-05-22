@@ -132,9 +132,9 @@ export class Diagnostics {
         try {
           const conn = new Connection();
           await conn.request(url);
-          await Lifecycle.getInstance().emit('Doctor:diagnostic', { testName: url, status: 'pass' });
+          await Lifecycle.getInstance().emit('Doctor:diagnostic', { testName: `can access: ${url}`, status: 'pass' });
         } catch (e) {
-          await Lifecycle.getInstance().emit('Doctor:diagnostic', { testName: url, status: 'fail' });
+          await Lifecycle.getInstance().emit('Doctor:diagnostic', { testName: `can't access: ${url}`, status: 'fail' });
           this.doctor.addSuggestion(
             `Cannot reach ${url} - potential network configuration error, check proxies, firewalls, environment variables`
           );
@@ -146,9 +146,15 @@ export class Diagnostics {
       'https://developer.salesforce.com/media/salesforce-cli/sf/channels/stable/sf-win32-x64-buildmanifest';
     try {
       await got.get(manifestUrl);
-      await Lifecycle.getInstance().emit('Doctor:diagnostic', { testName: manifestUrl, status: 'pass' });
+      await Lifecycle.getInstance().emit('Doctor:diagnostic', {
+        testName: `can access: ${manifestUrl}`,
+        status: 'pass',
+      });
     } catch (e) {
-      await Lifecycle.getInstance().emit('Doctor:diagnostic', { testName: manifestUrl, status: 'fail' });
+      await Lifecycle.getInstance().emit('Doctor:diagnostic', {
+        testName: `can't access: ${manifestUrl}`,
+        status: 'fail',
+      });
       this.doctor.addSuggestion(
         `Cannot reach ${manifestUrl} - potential network configuration error, check proxies, firewalls, environment variables`
       );
