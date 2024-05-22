@@ -6,7 +6,7 @@
  */
 
 import childProcess from 'node:child_process';
-
+import { got } from 'got';
 import { Interfaces } from '@oclif/core';
 import { Lifecycle, Messages } from '@salesforce/core';
 import { Connection } from '@jsforce/jsforce-node';
@@ -128,11 +128,6 @@ export class Diagnostics {
         // salesforce endpoints
         'https://test.salesforce.com',
         'https://appexchange.salesforce.com/services/data',
-        // npm and yarn registries
-        'https://registry.npmjs.org',
-        'https://registry.yarnpkg.com',
-        // our S3 bucket, use the buildmanifest to avoid downloading the entire CLI
-        'https://developer.salesforce.com/media/salesforce-cli/sf/channels/stable/sf-win32-x64-buildmanifest',
       ].map(async (url) => {
         try {
           const conn = new Connection();
@@ -146,6 +141,18 @@ export class Diagnostics {
         }
       })
     );
+    // our S3 bucket, use the buildmanifest to avoid downloading the entire CLI
+    const manifestUrl =
+      'https://developer.salesforce.com/media/salesforce-cli/sf/channels/stable/sf-win32-x64-buildmanifest';
+    try {
+      await got.get(manifestUrl);
+      await Lifecycle.getInstance().emit('Doctor:diagnostic', { testName: manifestUrl, status: 'pass' });
+    } catch (e) {
+      await Lifecycle.getInstance().emit('Doctor:diagnostic', { testName: manifestUrl, status: 'fail' });
+      this.doctor.addSuggestion(
+        `Cannot reach ${manifestUrl} - potential network configuration error, check proxies, firewalls, environment variables`
+      );
+    }
   }
 
   /**
