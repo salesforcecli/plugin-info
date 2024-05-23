@@ -6,22 +6,16 @@
  */
 
 import childProcess from 'node:child_process';
-
+import { got } from 'got';
 import { Interfaces } from '@oclif/core';
 import { Lifecycle, Messages } from '@salesforce/core';
+import { Connection } from '@jsforce/jsforce-node';
 import { SfDoctor, SfDoctorDiagnosis } from './doctor.js';
-
-// const SUPPORTED_SHELLS = [
-//   'bash',
-//   'zsh',
-//   'powershell'
-//   'cmd.exe'
-// ];
 
 export type DiagnosticStatus = {
   testName: string;
   status: 'pass' | 'fail' | 'warn' | 'unknown';
-}
+};
 
 Messages.importMessagesDirectoryFromMetaUrl(import.meta.url);
 const messages = Messages.loadMessages('@salesforce/plugin-info', 'diagnostics');
@@ -126,6 +120,45 @@ export class Diagnostics {
       this.doctor.addSuggestion(messages.getMessage('salesforceDxPluginDetected', [bin]));
     }
     await Lifecycle.getInstance().emit('Doctor:diagnostic', { testName, status });
+  }
+
+  public async networkCheck(): Promise<void> {
+    await Promise.all(
+      [
+        // salesforce endpoints
+        'https://test.salesforce.com',
+        'https://appexchange.salesforce.com/services/data',
+      ].map(async (url) => {
+        try {
+          const conn = new Connection();
+          await conn.request(url);
+          await Lifecycle.getInstance().emit('Doctor:diagnostic', { testName: `can access: ${url}`, status: 'pass' });
+        } catch (e) {
+          await Lifecycle.getInstance().emit('Doctor:diagnostic', { testName: `can't access: ${url}`, status: 'fail' });
+          this.doctor.addSuggestion(
+            `Cannot reach ${url} - potential network configuration error, check proxies, firewalls, environment variables`
+          );
+        }
+      })
+    );
+    // our S3 bucket, use the buildmanifest to avoid downloading the entire CLI
+    const manifestUrl =
+      'https://developer.salesforce.com/media/salesforce-cli/sf/channels/stable/sf-win32-x64-buildmanifest';
+    try {
+      await got.get(manifestUrl);
+      await Lifecycle.getInstance().emit('Doctor:diagnostic', {
+        testName: `can access: ${manifestUrl}`,
+        status: 'pass',
+      });
+    } catch (e) {
+      await Lifecycle.getInstance().emit('Doctor:diagnostic', {
+        testName: `can't access: ${manifestUrl}`,
+        status: 'fail',
+      });
+      this.doctor.addSuggestion(
+        `Cannot reach ${manifestUrl} - potential network configuration error, check proxies, firewalls, environment variables`
+      );
+    }
   }
 
   /**
