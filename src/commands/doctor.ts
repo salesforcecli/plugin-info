@@ -130,7 +130,9 @@ export default class Doctor extends SfCommand<SfDoctorDiagnosis> {
           ghIssue.body,
           diagnosis
         )}&labels=doctor,investigating,${this.config.bin}`
-      );
+      )
+        // # were not encoding correctly from encodeURI to be parsed in the issue body
+        .replace(/#/g, '%23');
       await this.openUrl(url);
     }
 
@@ -155,7 +157,7 @@ export default class Doctor extends SfCommand<SfDoctorDiagnosis> {
     const info = `
 \`\`\`
 ${diagnosis.cliConfig.userAgent}
-${(diagnosis.versionDetail.pluginVersions ?? []).join(EOL)}
+${diagnosis.versionDetail.pluginVersions.join(EOL)}
 \`\`\`
 ${
   diagnosis.sfdxEnvVars.length
@@ -167,7 +169,6 @@ ${diagnosis.sfdxEnvVars.join(EOL)}
 `
     : ''
 }
-
 ${
   diagnosis.sfEnvVars.length
     ? `
@@ -182,7 +183,6 @@ ${diagnosis.sfEnvVars.join(EOL)}
 Windows: ${diagnosis.cliConfig.windows}
 Shell: ${diagnosis.cliConfig.shell}
 Channel: ${diagnosis.cliConfig.channel}
-${diagnosis.cliConfig.userAgent}
 \`\`\`
 ---
 ### Diagnostics
@@ -194,8 +194,9 @@ ${this.doctor
   .join(EOL)}
 `;
     return body
-      .replace(new RegExp(`---(.|${EOL})*---${EOL}${EOL}`), '')
-      .replace(new RegExp(`${EOL}- Which shell/terminal (.|${EOL})*- Paste the output here`), info);
+      .replace(/---(?:.*\n)*>\s.*\n/gm, '')
+      .replace(/<!-- Which shell(?:.*\n)*.*/gm, info)
+      .trim();
   }
 
   // Takes the command flag and:
