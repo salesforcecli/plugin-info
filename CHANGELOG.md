@@ -1,3 +1,9 @@
+# [3.3.0](https://github.com/salesforcecli/plugin-info/compare/3.2.8...3.3.0) (2024-05-23)
+
+### Features
+
+- add network check and UT ([#746](https://github.com/salesforcecli/plugin-info/issues/746)) ([4e9f345](https://github.com/salesforcecli/plugin-info/commit/4e9f345ce13617a1055cd67c7b8251b77230f862))
+
 ## [3.2.8](https://github.com/salesforcecli/plugin-info/compare/3.2.7...3.2.8) (2024-05-12)
 
 ### Bug Fixes
