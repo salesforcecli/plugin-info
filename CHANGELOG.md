@@ -1,3 +1,9 @@
+## [3.3.2](https://github.com/salesforcecli/plugin-info/compare/3.3.1...3.3.2) (2024-05-26)
+
+### Bug Fixes
+
+- **deps:** bump @inquirer/input from 2.1.6 to 2.1.8 ([d263509](https://github.com/salesforcecli/plugin-info/commit/d26350965231d2c0c1906415cd87ebf9aafb5f04))
+
 ## [3.3.1](https://github.com/salesforcecli/plugin-info/compare/3.3.0...3.3.1) (2024-05-26)
 
 ### Bug Fixes
