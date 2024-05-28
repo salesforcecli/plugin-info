@@ -31,7 +31,7 @@ export type SfDoctor = {
   writeFileSync(filePath: string, contents: string): string;
   writeStderr(contents: string): Promise<boolean>;
   writeStdout(contents: string): Promise<boolean>;
-}
+};
 
 type CliConfig = Partial<Interfaces.Config> & { nodeEngine: string };
 
@@ -46,7 +46,7 @@ export type SfDoctorDiagnosis = {
   commandName?: string;
   commandExitCode?: string | number;
   logFilePaths: string[];
-}
+};
 
 Messages.importMessagesDirectoryFromMetaUrl(import.meta.url);
 const messages = Messages.loadMessages('@salesforce/plugin-info', 'doctor');
@@ -67,7 +67,7 @@ export class Doctor implements SfDoctor {
   public readonly id: number;
 
   // Contains all gathered data and results of diagnostics.
-  private diagnosis: SfDoctorDiagnosis;
+  private readonly diagnosis: SfDoctorDiagnosis;
   private stdoutWriteStream: fs.WriteStream | undefined;
   private stderrWriteStream: fs.WriteStream | undefined;
 

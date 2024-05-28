@@ -12,6 +12,7 @@ import { fromStub, spyMethod, stubInterface, stubMethod } from '@salesforce/ts-s
 import { Config, Interfaces } from '@oclif/core';
 import { Lifecycle } from '@salesforce/core';
 import { ux } from '@oclif/core';
+import { Connection } from '@jsforce/jsforce-node';
 import { Doctor } from '../src/doctor.js';
 import { Diagnostics } from '../src/diagnostics.js';
 
@@ -87,12 +88,68 @@ describe('Diagnostics', () => {
     const results = diagnostics.run();
 
     // This will have to be updated with each new test
-    expect(results.length).to.equal(4);
+    expect(results.length).to.equal(5);
     expect(childProcessExecStub.called).to.be.true;
     expect(lifecycleEmitSpy.called).to.be.true;
     expect(lifecycleEmitSpy.args[0][0]).to.equal('Doctor:diagnostic');
     expect(lifecycleEmitSpy.args[0][1]).to.have.property('testName');
     expect(lifecycleEmitSpy.args[0][1]).to.have.property('status');
+  });
+
+  describe('networkCheck', () => {
+    it('passes when all URLs can be reached', async () => {
+      stubMethod(sandbox, Connection.prototype, 'request').resolves('{}');
+
+      const dr = Doctor.init(oclifConfig);
+      const diagnostics = new Diagnostics(dr, oclifConfig);
+      await diagnostics.networkCheck();
+
+      expect(drAddSuggestionSpy.called).to.be.false;
+      expect(lifecycleEmitSpy.called).to.be.true;
+      expect(lifecycleEmitSpy.args[0][1]).to.deep.equal({
+        status: 'pass',
+        testName: 'can access: https://test.salesforce.com',
+      });
+    });
+
+    it('fails when one URL cannot be reached', async () => {
+      stubMethod(sandbox, Connection.prototype, 'request').rejects(
+        '{"error":"unsupported_grant_type","error_description":"grant type not supported"}'
+      );
+
+      const dr = Doctor.init(oclifConfig);
+      const diagnostics = new Diagnostics(dr, oclifConfig);
+      await diagnostics.networkCheck();
+
+      expect(drAddSuggestionSpy.called).to.be.true;
+      expect(lifecycleEmitSpy.called).to.be.true;
+      expect(lifecycleEmitSpy.args[0][1]).to.deep.equal({
+        status: 'fail',
+        testName: "can't access: https://test.salesforce.com",
+      });
+    });
+
+    it('fails when one URL cannot be reached and others can be', async () => {
+      stubMethod(sandbox, Connection.prototype, 'request')
+        .onFirstCall()
+        .resolves('{}')
+        .rejects('{"error":"unsupported_grant_type","error_description":"grant type not supported"}');
+
+      const dr = Doctor.init(oclifConfig);
+      const diagnostics = new Diagnostics(dr, oclifConfig);
+      await diagnostics.networkCheck();
+
+      expect(drAddSuggestionSpy.called).to.be.true;
+      expect(lifecycleEmitSpy.called).to.be.true;
+      expect(lifecycleEmitSpy.args[0][1]).to.deep.equal({
+        status: 'pass',
+        testName: 'can access: https://test.salesforce.com',
+      });
+      expect(lifecycleEmitSpy.args[1][1]).to.deep.equal({
+        status: 'fail',
+        testName: "can't access: https://appexchange.salesforce.com/services/data",
+      });
+    });
   });
 
   describe('outdatedCliVersionCheck', () => {

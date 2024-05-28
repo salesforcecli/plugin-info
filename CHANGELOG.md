@@ -1,3 +1,21 @@
+## [3.3.2](https://github.com/salesforcecli/plugin-info/compare/3.3.1...3.3.2) (2024-05-26)
+
+### Bug Fixes
+
+- **deps:** bump @inquirer/input from 2.1.6 to 2.1.8 ([d263509](https://github.com/salesforcecli/plugin-info/commit/d26350965231d2c0c1906415cd87ebf9aafb5f04))
+
+## [3.3.1](https://github.com/salesforcecli/plugin-info/compare/3.3.0...3.3.1) (2024-05-26)
+
+### Bug Fixes
+
+- **deps:** bump @salesforce/core from 7.3.8 to 7.3.9 ([4831431](https://github.com/salesforcecli/plugin-info/commit/4831431770f83b79821b4059259be92357a813a8))
+
+# [3.3.0](https://github.com/salesforcecli/plugin-info/compare/3.2.8...3.3.0) (2024-05-23)
+
+### Features
+
+- add network check and UT ([#746](https://github.com/salesforcecli/plugin-info/issues/746)) ([4e9f345](https://github.com/salesforcecli/plugin-info/commit/4e9f345ce13617a1055cd67c7b8251b77230f862))
+
 ## [3.2.8](https://github.com/salesforcecli/plugin-info/compare/3.2.7...3.2.8) (2024-05-12)
 
 ### Bug Fixes
