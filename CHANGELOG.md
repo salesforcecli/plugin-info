@@ -1,3 +1,9 @@
+## [3.3.3](https://github.com/salesforcecli/plugin-info/compare/3.3.2...3.3.3) (2024-05-28)
+
+### Bug Fixes
+
+- encode #, reduce URL length ([#747](https://github.com/salesforcecli/plugin-info/issues/747)) ([e4070d6](https://github.com/salesforcecli/plugin-info/commit/e4070d64538d9d49fad1a40e45add6f988c0ccf6))
+
 ## [3.3.2](https://github.com/salesforcecli/plugin-info/compare/3.3.1...3.3.2) (2024-05-26)
 
 ### Bug Fixes
