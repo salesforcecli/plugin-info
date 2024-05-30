@@ -239,7 +239,7 @@ describe('Diagnostics', () => {
       expect(drAddSuggestionSpy.called).to.be.false;
       expect(lifecycleEmitSpy.called).to.be.true;
       expect(lifecycleEmitSpy.args[0][1]).to.deep.equal({
-        testName: 'salesforcedx plugin not installed',
+        testName: 'salesforcedx plugin isn’t installed',
         status: 'pass',
       });
     });
@@ -257,7 +257,7 @@ describe('Diagnostics', () => {
       expect(drAddSuggestionSpy.called).to.be.true;
       expect(lifecycleEmitSpy.called).to.be.true;
       expect(lifecycleEmitSpy.args[0][1]).to.deep.equal({
-        testName: 'salesforcedx plugin not installed',
+        testName: 'salesforcedx plugin is installed',
         status: 'fail',
       });
     });
@@ -312,7 +312,7 @@ describe('Diagnostics', () => {
       expect(drAddSuggestionSpy.called).to.be.false;
       expect(lifecycleEmitSpy.called).to.be.true;
       expect(lifecycleEmitSpy.args[0][1]).to.deep.equal({
-        testName: 'no linked plugins',
+        testName: "you don't have any linked plugins",
         status: 'pass',
       });
     });
@@ -344,7 +344,7 @@ describe('Diagnostics', () => {
       expect(drAddSuggestionSpy.called).to.be.true;
       expect(lifecycleEmitSpy.called).to.be.true;
       expect(lifecycleEmitSpy.args[0][1]).to.deep.equal({
-        testName: 'no linked plugins',
+        testName: 'you have at least one linked plugin',
         status: 'fail',
       });
     });
