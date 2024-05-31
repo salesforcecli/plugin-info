@@ -110,7 +110,6 @@ export class Diagnostics {
    * to uninstall it if there.
    */
   public async salesforceDxPluginCheck(): Promise<void> {
-    const testName = 'salesforcedx plugin not installed';
     let status: DiagnosticStatus['status'] = 'pass';
 
     const plugins = Object.keys(this.config.versionDetails.pluginVersions ?? {});
@@ -119,7 +118,10 @@ export class Diagnostics {
       const bin = this.diagnosis.cliConfig.bin;
       this.doctor.addSuggestion(messages.getMessage('salesforceDxPluginDetected', [bin]));
     }
-    await Lifecycle.getInstance().emit('Doctor:diagnostic', { testName, status });
+    await Lifecycle.getInstance().emit('Doctor:diagnostic', {
+      testName: status === 'pass' ? 'salesforcedx plugin isn’t installed' : 'salesforcedx plugin is installed',
+      status,
+    });
   }
 
   public async networkCheck(): Promise<void> {
@@ -165,7 +167,6 @@ export class Diagnostics {
    * Checks and warns if any plugins are linked.
    */
   public async linkedPluginCheck(): Promise<void> {
-    const testName = 'no linked plugins';
     let status: DiagnosticStatus['status'] = 'pass';
 
     const plugins = this.config.getPluginsList();
@@ -174,6 +175,9 @@ export class Diagnostics {
       status = 'fail';
       this.doctor.addSuggestion(messages.getMessage('linkedPluginWarning', [lp.name]));
     });
-    await Lifecycle.getInstance().emit('Doctor:diagnostic', { testName, status });
+    await Lifecycle.getInstance().emit('Doctor:diagnostic', {
+      testName: status === 'pass' ? "you don't have any linked plugins" : 'you have at least one linked plugin',
+      status,
+    });
   }
 }

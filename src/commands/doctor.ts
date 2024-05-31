@@ -155,7 +155,10 @@ export default class Doctor extends SfCommand<SfDoctorDiagnosis> {
   private generateIssueMarkdown(body: string, diagnosis: SfDoctorDiagnosis): string {
     const info = `
 \`\`\`
+CLI:
 ${diagnosis.cliConfig.userAgent}
+
+Plugin Version:
 ${diagnosis.versionDetail.pluginVersions.join(EOL)}
 \`\`\`
 ${
