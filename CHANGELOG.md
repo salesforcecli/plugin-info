@@ -1,3 +1,9 @@
+## [3.3.4](https://github.com/salesforcecli/plugin-info/compare/3.3.3...3.3.4) (2024-05-31)
+
+### Bug Fixes
+
+- add plugin version section([#755](https://github.com/salesforcecli/plugin-info/issues/755)) ([9a7432c](https://github.com/salesforcecli/plugin-info/commit/9a7432c61d06e97e787897d74676dda35467612e))
+
 ## [3.3.3](https://github.com/salesforcecli/plugin-info/compare/3.3.2...3.3.3) (2024-05-28)
 
 ### Bug Fixes
