@@ -7,10 +7,10 @@
   "dependencies": {
     "@inquirer/input": "^2.1.8",
     "@jsforce/jsforce-node": "^3.2.0",
-    "@oclif/core": "^3.26.5",
+    "@oclif/core": "^4",
     "@salesforce/core": "^7.3.9",
     "@salesforce/kit": "^3.1.0",
-    "@salesforce/sf-plugins-core": "^9.0.7",
+    "@salesforce/sf-plugins-core": "^10.0.0",
     "got": "^13.0.0",
     "marked": "^4.3.0",
     "marked-terminal": "^4.2.0",
@@ -21,7 +21,7 @@
   "devDependencies": {
     "@oclif/plugin-command-snapshot": "^5",
     "@salesforce/cli-plugins-testkit": "^5.3.8",
-    "@salesforce/dev-scripts": "^9.1.2",
+    "@salesforce/dev-scripts": "^10.1.0",
     "@salesforce/plugin-command-reference": "^3.0.89",
     "@salesforce/ts-sinon": "^1.4.19",
     "@salesforce/ts-types": "^2.0.9",
