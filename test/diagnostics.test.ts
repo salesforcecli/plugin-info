@@ -56,7 +56,7 @@ describe('Diagnostics', () => {
   let lifecycleEmitSpy: sinon.SinonSpy;
 
   beforeEach(() => {
-    stubMethod(sandbox, ux, 'log');
+    stubMethod(sandbox, ux, 'stdout');
     childProcessExecStub = stubMethod(sandbox, childProcess, 'exec');
     drAddSuggestionSpy = spyMethod(sandbox, Doctor.prototype, 'addSuggestion');
     lifecycleEmitSpy = spyMethod(sandbox, lifecycle, 'emit');
