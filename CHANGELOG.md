@@ -1,3 +1,9 @@
+## [3.3.5](https://github.com/salesforcecli/plugin-info/compare/3.3.4...3.3.5) (2024-06-05)
+
+### Bug Fixes
+
+- **deps:** devScripts update for oclif4 ([1cdcde6](https://github.com/salesforcecli/plugin-info/commit/1cdcde6a04b5c08a2b7e9e4778c04f6f72515c0f))
+
 ## [3.3.4](https://github.com/salesforcecli/plugin-info/compare/3.3.3...3.3.4) (2024-05-31)
 
 ### Bug Fixes
