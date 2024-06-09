@@ -1486,7 +1486,7 @@
     "@inquirer/type" "^1.3.3"
     ansi-escapes "^4.3.2"
 
-"@inquirer/select@^2.3.4":
+"@inquirer/select@^2.3.5":
   version "2.3.5"
   resolved "https://registry.yarnpkg.com/@inquirer/select/-/select-2.3.5.tgz#db4ff1ba482ed87f2cdd33e03e64c7b430acdd7d"
   integrity sha512-IyBj8oEtmdF2Gx4FJTPtEya37MD6s0KATKsHqgmls0lK7EQbhYSq9GQlcFq6cBsYe/cgQ0Fg2cCqYYPi/d/fxQ==
@@ -1611,7 +1611,7 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@oclif/core@^3.26.2", "@oclif/core@^3.26.6":
+"@oclif/core@^3.26.6":
   version "3.26.6"
   resolved "https://registry.yarnpkg.com/@oclif/core/-/core-3.26.6.tgz#f371868cfa0fe150a6547e6af98b359065d2f971"
   integrity sha512-+FiTw1IPuJTF9tSAlTsY8bGK4sgthehjz7c2SvYdgQncTkxI2xvUch/8QpjNYGLEmUneNygvYMRBax2KJcLccA==
@@ -1645,7 +1645,7 @@
     wordwrap "^1.0.0"
     wrap-ansi "^7.0.0"
 
-"@oclif/core@^4", "@oclif/core@^4.0.0-beta.12", "@oclif/core@^4.0.0-beta.13":
+"@oclif/core@^4", "@oclif/core@^4.0.0-beta.13":
   version "4.0.2"
   resolved "https://registry.yarnpkg.com/@oclif/core/-/core-4.0.2.tgz#e6b15c4397e52b31fde9b7695f537c20b56634ed"
   integrity sha512-0r+JwE1FbVlEYNQlLonMULnZb6rKR0RqT8eUgKeJTb5cILhsKUjlZf2NLIX4GP3SZrK8POwGGLcztmj42hZYiw==
@@ -1683,20 +1683,20 @@
     semver "^7.6.0"
     ts-json-schema-generator "^1.5.1"
 
-"@oclif/plugin-help@^6.0.21":
-  version "6.0.21"
-  resolved "https://registry.yarnpkg.com/@oclif/plugin-help/-/plugin-help-6.0.21.tgz#c48e688bf6df574e74557ebe2f877556f08dc60b"
-  integrity sha512-w860r9d456xhw1GPaos9yQF+BZeFY9UKdrINbL3fZFX5ZHhr/zGT4Fep5wUkHogjjnSB8+ZHi3D6j2jScIizUw==
+"@oclif/plugin-help@^6.2.0":
+  version "6.2.1"
+  resolved "https://registry.yarnpkg.com/@oclif/plugin-help/-/plugin-help-6.2.1.tgz#af13f012df1bcc4cd8f88cd19a3626bc15e3427a"
+  integrity sha512-ipWBN2eYr3jnac5ruRjsVfcoXyuzpjNKc/9qnL8a366vZ9b+Kdb0Z+6nFkfL7hiPI9Yo0DD+OqEjBKhETGHjRA==
   dependencies:
-    "@oclif/core" "^3.26.2"
+    "@oclif/core" "^4"
 
-"@oclif/plugin-not-found@^3.1.10":
-  version "3.2.1"
-  resolved "https://registry.yarnpkg.com/@oclif/plugin-not-found/-/plugin-not-found-3.2.1.tgz#59664f68ef7a67899e2a48ed7379126a44411dad"
-  integrity sha512-Y2FyWLEziTrgdQwd4LtZcYv3VOMeDhW0pW6hbE0u3fJdxs8f3JLfOHJPd8FPorVt2ldsaj4zcXUWA6vMQKeKbQ==
+"@oclif/plugin-not-found@^3.2.1":
+  version "3.2.3"
+  resolved "https://registry.yarnpkg.com/@oclif/plugin-not-found/-/plugin-not-found-3.2.3.tgz#90e1ee6829315d0822969bc1dde0296a70caa8be"
+  integrity sha512-hDHuvMFl7CfJ+GdtDVkLDAMc9J+9Tk1ZRSuFQT7vw4eBtv0EmiXtlTafQqCW9kXypQHgw6UigC3Dz1HXkPpwNQ==
   dependencies:
     "@inquirer/confirm" "^3.1.9"
-    "@oclif/core" "^4.0.0-beta.13"
+    "@oclif/core" "^4"
     ansis "^3.2.0"
     fast-levenshtein "^3.0.0"
 
@@ -6544,19 +6544,19 @@ object.values@^1.1.7:
     define-properties "^1.2.0"
     es-abstract "^1.22.1"
 
-oclif@^4.12.1:
-  version "4.12.1"
-  resolved "https://registry.yarnpkg.com/oclif/-/oclif-4.12.1.tgz#9d61a9c329b6be16fc0053dc2c9a96a1499ea24f"
-  integrity sha512-O1a/30Nmx2lAvkRENCzfSIP5MboIxv+0whsWVgg9TAQDuPCXy+NU5/CqKN22EfEZKL+0HfgEnpwdfng+EFjF3g==
+oclif@^4.13.3:
+  version "4.13.3"
+  resolved "https://registry.yarnpkg.com/oclif/-/oclif-4.13.3.tgz#b7f0fec410610d7645788787673e9327fbaf125e"
+  integrity sha512-tAuwVHlEuq+gk2N6iHM694Z1hjgxwd2qC9jnHUhn4mQFQ26HqNfXX9AYplBfXGjTC/kZfYxxuybRPoknFoVktw==
   dependencies:
     "@aws-sdk/client-cloudfront" "^3.574.0"
     "@aws-sdk/client-s3" "^3.583.0"
     "@inquirer/confirm" "^3.1.6"
     "@inquirer/input" "^2.1.9"
-    "@inquirer/select" "^2.3.4"
-    "@oclif/core" "^4.0.0-beta.12"
-    "@oclif/plugin-help" "^6.0.21"
-    "@oclif/plugin-not-found" "^3.1.10"
+    "@inquirer/select" "^2.3.5"
+    "@oclif/core" "^4"
+    "@oclif/plugin-help" "^6.2.0"
+    "@oclif/plugin-not-found" "^3.2.1"
     "@oclif/plugin-warn-if-update-available" "^3.0.19"
     async-retry "^1.3.3"
     chalk "^4"
