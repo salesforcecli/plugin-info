@@ -249,7 +249,7 @@ ${this.doctor
       // eslint-disable-next-line @typescript-eslint/no-misused-promises
       cp.on('exit', async (code) => {
         this.doctor.setExitCode(code ?? 0);
-        await this.doctor.writeStdout(`\nCommand exit code: ${code}\n`);
+        await this.doctor.writeStdout(`\nCommand exit code: ${code ?? 'null'}\n`);
         this.doctor.closeStdout();
         this.doctor.closeStderr();
         this.filesWrittenMsgs.push(`Wrote command stdout log to: ${stdoutLogLocation}`);
