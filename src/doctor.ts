@@ -32,7 +32,11 @@ export type SfDoctor = {
   writeStdout(contents: string): Promise<boolean>;
 };
 
-type CliConfig = Partial<Interfaces.Config> & { nodeEngine: string };
+// oclif has some properties marked as optional in the Interface, but they will be present after Load() is called
+type CliConfig = Partial<Interfaces.Config> & { nodeEngine: string } & Pick<
+    Required<Interfaces.Config>,
+    'windows' | 'userAgent' | 'shell' | 'channel'
+  >;
 
 export type SfDoctorDiagnosis = {
   versionDetail: Omit<Interfaces.VersionDetails, 'pluginVersions'> & { pluginVersions: string[] };
