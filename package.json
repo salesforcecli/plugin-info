@@ -5,7 +5,7 @@
   "author": "Salesforce",
   "bugs": "https://github.com/forcedotcom/cli/issues",
   "dependencies": {
-    "@inquirer/input": "^2.1.8",
+    "@inquirer/input": "^2.1.11",
     "@jsforce/jsforce-node": "^3.2.0",
     "@oclif/core": "^4",
     "@salesforce/core": "^8.1.0",
