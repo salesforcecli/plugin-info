@@ -1,3 +1,9 @@
+## [3.3.19](https://github.com/salesforcecli/plugin-info/compare/3.3.18...3.3.19) (2024-07-19)
+
+### Bug Fixes
+
+- avoid nullish in template literal ([94d6c73](https://github.com/salesforcecli/plugin-info/commit/94d6c736ede589d9d611b0ebf9f7457efe6e3745))
+
 ## [3.3.18](https://github.com/salesforcecli/plugin-info/compare/3.3.17...3.3.18) (2024-07-14)
 
 ### Bug Fixes
