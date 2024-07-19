@@ -107,7 +107,7 @@ export default class Display extends SfCommand<DisplayOutput | undefined> {
         // --hook is passed in the post install/update scripts
         const { message, stack, name } = err as Error;
 
-        this.warn(`${this.id} failed: ${message}`);
+        this.warn(`${this.id ?? '<no command id>'} failed: ${message}`);
 
         logger.trace(stack);
         await Lifecycle.getInstance().emitTelemetry({
@@ -136,4 +136,4 @@ export default class Display extends SfCommand<DisplayOutput | undefined> {
 export type DisplayOutput = {
   body: string;
   url: string;
-}
+};
