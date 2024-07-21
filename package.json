@@ -6,7 +6,7 @@
   "bugs": "https://github.com/forcedotcom/cli/issues",
   "dependencies": {
     "@inquirer/input": "^2.2.1",
-    "@jsforce/jsforce-node": "^3.2.0",
+    "@jsforce/jsforce-node": "^3.2.4",
     "@oclif/core": "^4",
     "@salesforce/core": "^8.1.0",
     "@salesforce/kit": "^3.1.6",
