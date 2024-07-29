@@ -21,7 +21,7 @@
   "devDependencies": {
     "@oclif/plugin-command-snapshot": "^5.2.7",
     "@salesforce/cli-plugins-testkit": "^5.3.20",
-    "@salesforce/dev-scripts": "^10.2.4",
+    "@salesforce/dev-scripts": "^10.2.5",
     "@salesforce/plugin-command-reference": "^3.1.9",
     "@salesforce/ts-sinon": "^1.4.22",
     "@salesforce/ts-types": "^2.0.10",
@@ -33,7 +33,7 @@
     "oclif": "^4.14.9",
     "sinon-chai": "^3.7.0",
     "ts-node": "^10.9.2",
-    "typescript": "^5.5.3"
+    "typescript": "^5.5.4"
   },
   "config": {},
   "engines": {
