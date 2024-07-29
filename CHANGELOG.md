@@ -1,3 +1,15 @@
+## [3.3.23](https://github.com/salesforcecli/plugin-info/compare/3.3.22...3.3.23) (2024-07-28)
+
+### Bug Fixes
+
+- **deps:** bump @salesforce/core from 8.2.3 to 8.2.4 ([81e7a75](https://github.com/salesforcecli/plugin-info/commit/81e7a75243c2f9affd1940785d3e8195d0e5ef9c))
+
+## [3.3.22](https://github.com/salesforcecli/plugin-info/compare/3.3.21...3.3.22) (2024-07-28)
+
+### Bug Fixes
+
+- **deps:** bump @inquirer/input from 2.2.1 to 2.2.4 ([22fe712](https://github.com/salesforcecli/plugin-info/commit/22fe712a8253dcfe14a252190e6cf47f88ac325d))
+
 ## [3.3.21](https://github.com/salesforcecli/plugin-info/compare/3.3.20...3.3.21) (2024-07-21)
 
 ### Bug Fixes
