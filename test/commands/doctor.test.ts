@@ -166,6 +166,15 @@ describe('Doctor Command', () => {
     delete Doctor.instance;
   });
 
+  const resetProxyEnvVars = () => {
+    delete process.env.http_proxy;
+    delete process.env.https_proxy;
+    delete process.env.HTTP_PROXY;
+    delete process.env.HTTPS_PROXY;
+    delete process.env.no_proxy;
+    delete process.env.NO_PROXY;
+  };
+
   const verifySuggestions = (result: SfDoctorDiagnosis, suggestions: string[] = []) => {
     const defaults = [
       messages.getMessage('pinnedSuggestions.checkGitHubIssues'),
@@ -183,13 +192,14 @@ describe('Doctor Command', () => {
     });
   };
 
-  const verifyEnvVars = (result: SfDoctorDiagnosis) => {
+  const verifyEnvVars = (result: SfDoctorDiagnosis, expectedProxyEnvVars: string[] | string[][] = []) => {
     result.sfdxEnvVars.every((envVar) => {
       expect(envVar[0].startsWith('SFDX_')).to.be.true;
     });
     result.sfEnvVars.every((envVar) => {
       expect(envVar[0].startsWith('SF_')).to.be.true;
     });
+    expect(result.proxyEnvVars).to.deep.equal(expectedProxyEnvVars);
   };
 
   it('runs doctor command with no flags', async () => {
@@ -225,6 +235,34 @@ describe('Doctor Command', () => {
       ['sf-doctor-@salesforce/plugin-org'],
       ['sf-doctor-@salesforce/plugin-source'],
     ]);
+  });
+
+  it('reports on uppercase and lowercase proxy env vars', async () => {
+    const httpProxyEnv = ['http_proxy', 'test.http.proxy'];
+    const httpsProxyEnv = ['HTTPS_PROXY', 'test.HTTPS.proxy'];
+    const noProxyEnv = ['no_proxy', 'test.blah.com'];
+    process.env[httpProxyEnv[0]] = httpProxyEnv[1];
+    process.env[httpsProxyEnv[0]] = httpsProxyEnv[1];
+    process.env[noProxyEnv[0]] = noProxyEnv[1];
+
+    const suggestion = 'work smarter, not faster';
+    fsExistsSyncStub.returns(true);
+    const diagnosticStatus = { testName: 'doctor test', status: 'pass' };
+    Doctor.init(oclifConfig);
+    diagnosticsRunStub.callsFake(() => {
+      const dr = Doctor.getInstance();
+      const promise = Lifecycle.getInstance().emit('Doctor:diagnostic', diagnosticStatus);
+      dr.addSuggestion(suggestion);
+      return [promise];
+    });
+
+    // set proxy env vars
+    try {
+      const result = await runDoctorCmd([]);
+      verifyEnvVars(result, [httpProxyEnv, httpsProxyEnv, noProxyEnv]);
+    } finally {
+      resetProxyEnvVars();
+    }
   });
 
   it('runs doctor command with outputdir flag (existing dir)', async () => {

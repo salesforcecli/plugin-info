@@ -88,12 +88,84 @@ describe('Diagnostics', () => {
     const results = diagnostics.run();
 
     // This will have to be updated with each new test
-    expect(results.length).to.equal(5);
+    expect(results.length).to.equal(6);
     expect(childProcessExecStub.called).to.be.true;
     expect(lifecycleEmitSpy.called).to.be.true;
     expect(lifecycleEmitSpy.args[0][0]).to.equal('Doctor:diagnostic');
     expect(lifecycleEmitSpy.args[0][1]).to.have.property('testName');
     expect(lifecycleEmitSpy.args[0][1]).to.have.property('status');
+  });
+
+  describe('proxyEnvVarsCheck', () => {
+    const httpProxy = 'http://test.dr.diagnostics';
+    const httpsProxy = 'https://test.dr.diagnostics';
+    const noProxy = 'point.break';
+
+    it('passes with no proxy env vars', async () => {
+      const dr = Doctor.init(oclifConfig);
+      stubMethod(sandbox, dr, 'getDiagnosis').returns({
+        proxyEnvVars: [],
+      });
+      const diagnostics = new Diagnostics(dr, oclifConfig);
+      await diagnostics.proxyEnvVarsCheck();
+
+      expect(lifecycleEmitSpy.callCount, 'Expected "Doctor:diagnostic" event fired 3 times').to.equal(3);
+      expect(drAddSuggestionSpy.called, 'Expected no suggestions to be added').to.be.false;
+    });
+
+    it('passes with matching proxy env vars', async () => {
+      const dr = Doctor.init(oclifConfig);
+      stubMethod(sandbox, dr, 'getDiagnosis').returns({
+        proxyEnvVars: [
+          ['http_proxy', httpProxy],
+          ['https_proxy', httpsProxy],
+          ['no_proxy', noProxy],
+          ['HTTP_PROXY', httpProxy],
+          ['HTTPS_PROXY', httpsProxy],
+          ['NO_PROXY', noProxy],
+        ],
+      });
+      const diagnostics = new Diagnostics(dr, oclifConfig);
+      await diagnostics.proxyEnvVarsCheck();
+
+      expect(lifecycleEmitSpy.callCount, 'Expected "Doctor:diagnostic" event fired 3 times').to.equal(3);
+      expect(drAddSuggestionSpy.called, 'Expected no suggestions to be added').to.be.false;
+    });
+
+    it('passes with proxy env vars in only lowercase', async () => {
+      const dr = Doctor.init(oclifConfig);
+      stubMethod(sandbox, dr, 'getDiagnosis').returns({
+        proxyEnvVars: [
+          ['http_proxy', httpProxy],
+          ['https_proxy', httpsProxy],
+          ['no_proxy', noProxy],
+        ],
+      });
+      const diagnostics = new Diagnostics(dr, oclifConfig);
+      await diagnostics.proxyEnvVarsCheck();
+
+      expect(lifecycleEmitSpy.callCount, 'Expected "Doctor:diagnostic" event fired 3 times').to.equal(3);
+      expect(drAddSuggestionSpy.called, 'Expected no suggestions to be added').to.be.false;
+    });
+
+    it('fails with non-matching proxy env vars', async () => {
+      const dr = Doctor.init(oclifConfig);
+      stubMethod(sandbox, dr, 'getDiagnosis').returns({
+        proxyEnvVars: [
+          ['http_proxy', httpProxy],
+          ['https_proxy', httpsProxy],
+          ['no_proxy', noProxy],
+          ['HTTP_PROXY', 'http://test.foo.diagnostics'],
+          ['HTTPS_PROXY', 'https://test.bar.diagnostics'],
+          ['NO_PROXY', 'something'],
+        ],
+      });
+      const diagnostics = new Diagnostics(dr, oclifConfig);
+      await diagnostics.proxyEnvVarsCheck();
+
+      expect(lifecycleEmitSpy.callCount, 'Expected "Doctor:diagnostic" event fired 3 times').to.equal(3);
+      expect(drAddSuggestionSpy.callCount, 'Expected 3 suggestions to be added').to.equal(3);
+    });
   });
 
   describe('networkCheck', () => {

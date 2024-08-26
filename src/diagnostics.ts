@@ -180,4 +180,54 @@ export class Diagnostics {
       status,
     });
   }
+
+  /**
+   * Checks and warns if proxy env vars conflict.
+   */
+  public async proxyEnvVarsCheck(): Promise<void> {
+    const httpProxyEnvVars: string[] = [];
+    const httpsProxyEnvVars: string[] = [];
+    const noProxyEnvVars: string[] = [];
+    this.diagnosis.proxyEnvVars.forEach((pev) => {
+      if (['http_proxy', 'HTTP_PROXY'].includes(pev[0])) {
+        httpProxyEnvVars.push(pev[1]);
+      }
+      if (['https_proxy', 'HTTPS_PROXY'].includes(pev[0])) {
+        httpsProxyEnvVars.push(pev[1]);
+      }
+      if (['no_proxy', 'NO_PROXY'].includes(pev[0])) {
+        noProxyEnvVars.push(pev[1]);
+      }
+    });
+
+    const getStatus = (envVars: string[]): DiagnosticStatus['status'] =>
+      (envVars[0] && envVars.length === 1) || envVars[0] === envVars[1] ? 'pass' : 'fail';
+
+    const httpProxyEnvVarStatus = getStatus(httpProxyEnvVars);
+    const httpsProxyEnvVarStatus = getStatus(httpsProxyEnvVars);
+    const noProxyEnvVarStatus = getStatus(noProxyEnvVars);
+
+    await Lifecycle.getInstance().emit('Doctor:diagnostic', {
+      testName: 'http_proxy and HTTP_proxy environment variables match',
+      status: httpProxyEnvVarStatus,
+    });
+    await Lifecycle.getInstance().emit('Doctor:diagnostic', {
+      testName: 'https_proxy and HTTPS_PROXY environment variables match',
+      status: httpsProxyEnvVarStatus,
+    });
+    await Lifecycle.getInstance().emit('Doctor:diagnostic', {
+      testName: 'no_proxy and NO_PROXY environment variables match',
+      status: noProxyEnvVarStatus,
+    });
+
+    if (httpProxyEnvVarStatus === 'fail') {
+      this.doctor.addSuggestion(messages.getMessage('matchProxyEnvVarSuggestion', ['http_proxy', 'HTTP_PROXY']));
+    }
+    if (httpsProxyEnvVarStatus === 'fail') {
+      this.doctor.addSuggestion(messages.getMessage('matchProxyEnvVarSuggestion', ['https_proxy', 'HTTPS_PROXY']));
+    }
+    if (noProxyEnvVarStatus === 'fail') {
+      this.doctor.addSuggestion(messages.getMessage('matchProxyEnvVarSuggestion', ['no_proxy', 'NO_PROXY']));
+    }
+  }
 }
