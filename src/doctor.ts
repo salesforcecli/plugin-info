@@ -42,6 +42,7 @@ export type SfDoctorDiagnosis = {
   versionDetail: Omit<Interfaces.VersionDetails, 'pluginVersions'> & { pluginVersions: string[] };
   sfdxEnvVars: Array<KeyValue<string>>;
   sfEnvVars: Array<KeyValue<string>>;
+  proxyEnvVars: Array<KeyValue<string>>;
   cliConfig: CliConfig;
   pluginSpecificData: { [pluginName: string]: AnyJson[] };
   diagnosticResults: DiagnosticStatus[];
@@ -79,6 +80,9 @@ export class Doctor implements SfDoctor {
     __cliConfig = config;
     const sfdxEnvVars = new Env().entries().filter((e) => e[0].startsWith('SFDX_'));
     const sfEnvVars = new Env().entries().filter((e) => e[0].startsWith('SF_'));
+    const proxyEnvVars = new Env()
+      .entries()
+      .filter((e) => ['http_proxy', 'https_proxy', 'no_proxy'].includes(e[0].toLowerCase()));
     const cliConfig = omit(config, [
       'plugins',
       'pjson',
@@ -96,6 +100,7 @@ export class Doctor implements SfDoctor {
       versionDetail: { ...versionDetails, pluginVersions: formatPlugins(config, pluginVersions ?? {}) },
       sfdxEnvVars,
       sfEnvVars,
+      proxyEnvVars,
       cliConfig,
       pluginSpecificData: {},
       diagnosticResults: [],
