@@ -1,3 +1,13 @@
+# [3.4.0](https://github.com/salesforcecli/plugin-info/compare/3.3.30...3.4.0) (2024-08-27)
+
+### Bug Fixes
+
+- better tests ([2e00828](https://github.com/salesforcecli/plugin-info/commit/2e0082838e2f3ea7fe2b3641c7776c789dbd3e90))
+
+### Features
+
+- add proxy checks to doctor ([3c39193](https://github.com/salesforcecli/plugin-info/commit/3c39193b364e3945654f703ed1f38330916042fa))
+
 ## [3.3.30](https://github.com/salesforcecli/plugin-info/compare/3.3.29...3.3.30) (2024-08-25)
 
 ### Bug Fixes
