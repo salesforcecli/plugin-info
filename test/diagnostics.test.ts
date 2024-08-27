@@ -109,7 +109,7 @@ describe('Diagnostics', () => {
       const diagnostics = new Diagnostics(dr, oclifConfig);
       await diagnostics.proxyEnvVarsCheck();
 
-      expect(lifecycleEmitSpy.callCount, 'Expected "Doctor:diagnostic" event fired 3 times').to.equal(3);
+      expect(lifecycleEmitSpy.callCount, 'Expected no "Doctor:diagnostic" event fired').to.equal(0);
       expect(drAddSuggestionSpy.called, 'Expected no suggestions to be added').to.be.false;
     });
 
