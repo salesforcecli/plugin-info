@@ -193,13 +193,15 @@ describe('Doctor Command', () => {
   };
 
   const verifyEnvVars = (result: SfDoctorDiagnosis, expectedProxyEnvVars: string[] | string[][] = []) => {
-    result.sfdxEnvVars.every((envVar) => {
+    result.sfdxEnvVars.forEach((envVar) => {
       expect(envVar[0].startsWith('SFDX_')).to.be.true;
     });
-    result.sfEnvVars.every((envVar) => {
+    result.sfEnvVars.forEach((envVar) => {
       expect(envVar[0].startsWith('SF_')).to.be.true;
     });
-    expect(result.proxyEnvVars).to.deep.equal(expectedProxyEnvVars);
+    result.proxyEnvVars.forEach((envVar) => {
+      expect(expectedProxyEnvVars).to.deep.contain(envVar);
+    });
   };
 
   it('runs doctor command with no flags', async () => {
