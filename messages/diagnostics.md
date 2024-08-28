@@ -22,3 +22,7 @@ Uninstall the deprecated Salesforce CLI (%s) version %s and install the @salesfo
 # matchProxyEnvVarSuggestion
 
 Modify the values for %s and %s environment variables to match.
+
+# noProxyEnvVarSet
+
+Warning: The CLI does not fully support the "no_proxy" and "NO_PROXY" environment variables and could cause connection issues when running commands.

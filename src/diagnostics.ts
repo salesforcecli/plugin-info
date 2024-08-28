@@ -224,6 +224,11 @@ export class Diagnostics {
         testName: 'no_proxy and NO_PROXY environment variables match',
         status: noProxyEnvVarStatus,
       });
+      await Lifecycle.getInstance().emit('Doctor:diagnostic', {
+        testName: 'no_proxy and/or NO_PROXY environment variables set',
+        status: 'warn',
+      });
+      this.doctor.addSuggestion(messages.getMessage('noProxyEnvVarSet'));
     }
 
     if (httpProxyEnvVarStatus === 'fail') {
