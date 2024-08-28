@@ -1,3 +1,9 @@
+## [3.4.1](https://github.com/salesforcecli/plugin-info/compare/3.4.0...3.4.1) (2024-08-28)
+
+### Bug Fixes
+
+- no events without proxy env vars ([3b9abc6](https://github.com/salesforcecli/plugin-info/commit/3b9abc656ddd95fffd03f1ed7c4c123aac3a6100))
+
 # [3.4.0](https://github.com/salesforcecli/plugin-info/compare/3.3.30...3.4.0) (2024-08-27)
 
 ### Bug Fixes
