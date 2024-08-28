@@ -207,18 +207,24 @@ export class Diagnostics {
     const httpsProxyEnvVarStatus = getStatus(httpsProxyEnvVars);
     const noProxyEnvVarStatus = getStatus(noProxyEnvVars);
 
-    await Lifecycle.getInstance().emit('Doctor:diagnostic', {
-      testName: 'http_proxy and HTTP_proxy environment variables match',
-      status: httpProxyEnvVarStatus,
-    });
-    await Lifecycle.getInstance().emit('Doctor:diagnostic', {
-      testName: 'https_proxy and HTTPS_PROXY environment variables match',
-      status: httpsProxyEnvVarStatus,
-    });
-    await Lifecycle.getInstance().emit('Doctor:diagnostic', {
-      testName: 'no_proxy and NO_PROXY environment variables match',
-      status: noProxyEnvVarStatus,
-    });
+    if (httpProxyEnvVars.length) {
+      await Lifecycle.getInstance().emit('Doctor:diagnostic', {
+        testName: 'http_proxy and HTTP_PROXY environment variables match',
+        status: httpProxyEnvVarStatus,
+      });
+    }
+    if (httpsProxyEnvVars.length) {
+      await Lifecycle.getInstance().emit('Doctor:diagnostic', {
+        testName: 'https_proxy and HTTPS_PROXY environment variables match',
+        status: httpsProxyEnvVarStatus,
+      });
+    }
+    if (noProxyEnvVars.length) {
+      await Lifecycle.getInstance().emit('Doctor:diagnostic', {
+        testName: 'no_proxy and NO_PROXY environment variables match',
+        status: noProxyEnvVarStatus,
+      });
+    }
 
     if (httpProxyEnvVarStatus === 'fail') {
       this.doctor.addSuggestion(messages.getMessage('matchProxyEnvVarSuggestion', ['http_proxy', 'HTTP_PROXY']));
