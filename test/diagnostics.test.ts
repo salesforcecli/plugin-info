@@ -128,8 +128,8 @@ describe('Diagnostics', () => {
       const diagnostics = new Diagnostics(dr, oclifConfig);
       await diagnostics.proxyEnvVarsCheck();
 
-      expect(lifecycleEmitSpy.callCount, 'Expected "Doctor:diagnostic" event fired 3 times').to.equal(3);
-      expect(drAddSuggestionSpy.called, 'Expected no suggestions to be added').to.be.false;
+      expect(lifecycleEmitSpy.callCount, 'Expected "Doctor:diagnostic" event fired 4 times').to.equal(4);
+      expect(drAddSuggestionSpy.callCount, 'Expected suggestion to be added for no_proxy').to.equal(1);
     });
 
     it('passes with proxy env vars in only lowercase', async () => {
@@ -144,8 +144,8 @@ describe('Diagnostics', () => {
       const diagnostics = new Diagnostics(dr, oclifConfig);
       await diagnostics.proxyEnvVarsCheck();
 
-      expect(lifecycleEmitSpy.callCount, 'Expected "Doctor:diagnostic" event fired 3 times').to.equal(3);
-      expect(drAddSuggestionSpy.called, 'Expected no suggestions to be added').to.be.false;
+      expect(lifecycleEmitSpy.callCount, 'Expected "Doctor:diagnostic" event fired 4 times').to.equal(4);
+      expect(drAddSuggestionSpy.callCount, 'Expected suggestion to be added for no_proxy').to.equal(1);
     });
 
     it('fails with non-matching proxy env vars', async () => {
@@ -163,8 +163,8 @@ describe('Diagnostics', () => {
       const diagnostics = new Diagnostics(dr, oclifConfig);
       await diagnostics.proxyEnvVarsCheck();
 
-      expect(lifecycleEmitSpy.callCount, 'Expected "Doctor:diagnostic" event fired 3 times').to.equal(3);
-      expect(drAddSuggestionSpy.callCount, 'Expected 3 suggestions to be added').to.equal(3);
+      expect(lifecycleEmitSpy.callCount, 'Expected "Doctor:diagnostic" event fired 4 times').to.equal(4);
+      expect(drAddSuggestionSpy.callCount, 'Expected 4 suggestions to be added').to.equal(4);
     });
   });
 
