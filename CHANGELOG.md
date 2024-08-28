@@ -1,3 +1,9 @@
+## [3.4.2](https://github.com/salesforcecli/plugin-info/compare/3.4.1...3.4.2) (2024-08-28)
+
+### Bug Fixes
+
+- add warning when no proxy env vars are set ([#850](https://github.com/salesforcecli/plugin-info/issues/850)) ([99fef04](https://github.com/salesforcecli/plugin-info/commit/99fef04ccd32f833c239f1381476aed719a37c75))
+
 ## [3.4.1](https://github.com/salesforcecli/plugin-info/compare/3.4.0...3.4.1) (2024-08-28)
 
 ### Bug Fixes
