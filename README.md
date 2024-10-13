@@ -125,7 +125,7 @@ EXAMPLES
     $ sf doctor --plugin @salesforce/plugin-source
 ```
 
-_See code: [src/commands/doctor.ts](https://github.com/salesforcecli/plugin-info/blob/3.4.9/src/commands/doctor.ts)_
+_See code: [src/commands/doctor.ts](https://github.com/salesforcecli/plugin-info/blob/3.4.10/src/commands/doctor.ts)_
 
 ## `sf info releasenotes display`
 
@@ -154,17 +154,17 @@ ALIASES
 EXAMPLES
   Display release notes for the currently installed CLI version:
 
-    $ sf info releasenotes display stable, stable-rc, latest, latest-rc, rc
+    $ sf info releasenotes display
 
   Display release notes for CLI version 7.120.0:
 
-    $ sf info releasenotes display --version 7.120.0 stable, stable-rc, latest, latest-rc, rc
+    $ sf info releasenotes display --version 7.120.0
 
   Display release notes for the CLI version that corresponds to a tag (stable, stable-rc, latest, latest-rc, rc):
 
     $ sf info releasenotes display --version latest
 ```
 
-_See code: [src/commands/info/releasenotes/display.ts](https://github.com/salesforcecli/plugin-info/blob/3.4.9/src/commands/info/releasenotes/display.ts)_
+_See code: [src/commands/info/releasenotes/display.ts](https://github.com/salesforcecli/plugin-info/blob/3.4.10/src/commands/info/releasenotes/display.ts)_
 
 <!-- commandsstop -->
