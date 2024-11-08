@@ -1,3 +1,9 @@
+## [3.4.18](https://github.com/salesforcecli/plugin-info/compare/3.4.17...3.4.18) (2024-11-08)
+
+### Bug Fixes
+
+- bump sf-plugins-core ([db979d5](https://github.com/salesforcecli/plugin-info/commit/db979d5adab23836fbe41ded4a614d265db2532a))
+
 ## [3.4.17](https://github.com/salesforcecli/plugin-info/compare/3.4.16...3.4.17) (2024-11-03)
 
 ### Bug Fixes
