@@ -1,3 +1,9 @@
+## [3.4.39](https://github.com/salesforcecli/plugin-info/compare/3.4.38...3.4.39) (2025-02-09)
+
+### Bug Fixes
+
+- **deps:** bump semver from 7.7.0 to 7.7.1 ([86ba8e9](https://github.com/salesforcecli/plugin-info/commit/86ba8e9a1d8c7d64abe708efb8fb2c9489ce659c))
+
 ## [3.4.38](https://github.com/salesforcecli/plugin-info/compare/3.4.37...3.4.38) (2025-02-09)
 
 ### Bug Fixes
