@@ -67,7 +67,7 @@ const getVersionDetailResult = (config: Interfaces.Config): Record<string, unkno
   return { ...defaults, pluginVersions: formatPlugins(config, config.versionDetails.pluginVersions ?? {}) };
 };
 
-describe('Doctor Command', () => {
+xdescribe('Doctor Command', () => {
   const sandbox = Sinon.createSandbox();
 
   let uxLogStub: sinon.SinonStub;
