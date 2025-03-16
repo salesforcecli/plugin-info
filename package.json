@@ -30,7 +30,7 @@
     "@types/semver": "^7.5.8",
     "@types/sinon-chai": "^3.2.12",
     "eslint-plugin-sf-plugin": "^1.20.16",
-    "oclif": "^4.17.30",
+    "oclif": "^4.17.36",
     "sinon-chai": "^3.7.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.5.4"
