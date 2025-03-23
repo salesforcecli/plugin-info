@@ -6449,10 +6449,10 @@ object.values@^1.1.7:
     define-properties "^1.2.0"
     es-abstract "^1.22.1"
 
-oclif@^4.17.36:
-  version "4.17.36"
-  resolved "https://registry.yarnpkg.com/oclif/-/oclif-4.17.36.tgz#f64328a9bd1bcbb89cc1d73d7eaf6566a6f0689d"
-  integrity sha512-lvgnJbj0mV50It2FE7cP5u6L6oqCmBjgD4Fxk0GGDz0kPHKl5jRhQ2LOkwTcepT3r/h6uY65Jiu8287W/o/NPw==
+oclif@^4.17.37:
+  version "4.17.37"
+  resolved "https://registry.yarnpkg.com/oclif/-/oclif-4.17.37.tgz#5e98292fab1b2a1674f13dfa02d25ef3098fe970"
+  integrity sha512-sB71e7euBGmoMgIJ9UgM49QdpMVTqp26be31ZLfO1iV6MetCR7XLL2aAL+32NuucaCbTVdH9YkgbcU9xJMfZfA==
   dependencies:
     "@aws-sdk/client-cloudfront" "^3.764.0"
     "@aws-sdk/client-s3" "^3.749.0"
@@ -6475,7 +6475,7 @@ oclif@^4.17.36:
     lodash "^4.17.21"
     normalize-package-data "^6"
     semver "^7.7.1"
-    sort-package-json "^2.14.0"
+    sort-package-json "^2.15.1"
     tiny-jsonc "^1.0.1"
     validate-npm-package-name "^5.0.1"
 
@@ -7463,10 +7463,10 @@ sort-object-keys@^1.1.3:
   resolved "https://registry.yarnpkg.com/sort-object-keys/-/sort-object-keys-1.1.3.tgz#bff833fe85cab147b34742e45863453c1e190b45"
   integrity sha512-855pvK+VkU7PaKYPc+Jjnmt4EzejQHyhhF33q31qG8x7maDzkeFhAAThdCYay11CISO+qAMwjOBP+fPZe0IPyg==
 
-sort-package-json@^2.14.0:
-  version "2.14.0"
-  resolved "https://registry.yarnpkg.com/sort-package-json/-/sort-package-json-2.14.0.tgz#ba0c7420dc6edea4b0eb7e9f502fda63f57586d8"
-  integrity sha512-xBRdmMjFB/KW3l51mP31dhlaiFmqkHLfWTfZAno8prb/wbDxwBPWFpxB16GZbiPbYr3wL41H8Kx22QIDWRe8WQ==
+sort-package-json@^2.15.1:
+  version "2.15.1"
+  resolved "https://registry.yarnpkg.com/sort-package-json/-/sort-package-json-2.15.1.tgz#e5a035fad7da277b1947b9eecc93ea09c1c2526e"
+  integrity sha512-9x9+o8krTT2saA9liI4BljNjwAbvUnWf11Wq+i/iZt8nl2UGYnf3TH5uBydE7VALmP7AGwlfszuEeL8BDyb0YA==
   dependencies:
     detect-indent "^7.0.1"
     detect-newline "^4.0.0"
