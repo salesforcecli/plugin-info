@@ -128,7 +128,7 @@ export default class Doctor extends SfCommand<SfDoctorDiagnosis> {
         `https://github.com/forcedotcom/cli/issues/new?title=${title}&body=${this.generateIssueMarkdown(
           ghIssue.body,
           diagnosis
-        )}&labels=doctor,investigating,${this.config.bin}`
+        )}&labels=doctor,investigating,${this.config.bin}&template=bug_report`
       )
         // # were not encoding correctly from encodeURI to be parsed in the issue body
         .replace(/#/g, '%23');
