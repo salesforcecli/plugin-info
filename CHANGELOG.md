@@ -1,3 +1,9 @@
+## [3.4.52](https://github.com/salesforcecli/plugin-info/compare/3.4.51...3.4.52) (2025-04-11)
+
+### Bug Fixes
+
+- set issue template to be used in URL ([f85419a](https://github.com/salesforcecli/plugin-info/commit/f85419a26658eedb69b26461cf69b1781819f8b4))
+
 ## [3.4.51](https://github.com/salesforcecli/plugin-info/compare/3.4.50...3.4.51) (2025-03-30)
 
 ### Bug Fixes
