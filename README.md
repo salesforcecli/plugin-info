@@ -1,6 +1,6 @@
 # plugin-info
 
-[![NPM](https://img.shields.io/npm/v/@salesforce/plugin-info.svg?label=@salesforce/plugin-info)](https://www.npmjs.com/package/@salesforce/plugin-info) [![Downloads/week](https://img.shields.io/npm/dw/@salesforce/plugin-info.svg)](https://npmjs.org/package/@salesforce/plugin-info) [![License](https://img.shields.io/badge/License-BSD%203--Clause-brightgreen.svg)](https://raw.githubusercontent.com/salesforcecli/plugin-info/main/LICENSE.txt)
+[![NPM](https://img.shields.io/npm/v/@salesforce/plugin-info.svg?label=@salesforce/plugin-info)](https://www.npmjs.com/package/@salesforce/plugin-info) [![Downloads/week](https://img.shields.io/npm/dw/@salesforce/plugin-info.svg)](https://npmjs.org/package/@salesforce/plugin-info) [![License](https://img.shields.io/badge/License-Apache--2.0-blue.svg)](https://opensource.org/license/apache-2-0)
 
 ## Learn about the plugin-info
 
