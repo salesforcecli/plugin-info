@@ -8,7 +8,7 @@
     "@inquirer/input": "^2.3.0",
     "@jsforce/jsforce-node": "^3.8.1",
     "@oclif/core": "^4",
-    "@salesforce/core": "^8.10.2",
+    "@salesforce/core": "^8.10.3",
     "@salesforce/kit": "^3.2.3",
     "@salesforce/sf-plugins-core": "^12",
     "got": "^13.0.0",
