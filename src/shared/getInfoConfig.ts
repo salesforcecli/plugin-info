@@ -13,7 +13,7 @@ export type PjsonWithInfo = {
   oclif: Interfaces.PJSON['oclif'] & {
     info: InfoConfig;
   };
-} & Interfaces.PJSON
+} & Interfaces.PJSON;
 
 export type InfoConfig = {
   releasenotes: {
@@ -21,7 +21,7 @@ export type InfoConfig = {
     releaseNotesPath: string;
     releaseNotesFilename: string;
   };
-}
+};
 
 /* sfdx example to add to cli pjson.oclif
 
