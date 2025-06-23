@@ -1,3 +1,9 @@
+## [3.4.69](https://github.com/salesforcecli/plugin-info/compare/3.4.68...3.4.69) (2025-06-23)
+
+### Bug Fixes
+
+- disable ANSI color seq for debug logs ([e811968](https://github.com/salesforcecli/plugin-info/commit/e81196800e21ef049df145429c0784b5eb405fc1))
+
 ## [3.4.68](https://github.com/salesforcecli/plugin-info/compare/3.4.67...3.4.68) (2025-06-22)
 
 ### Bug Fixes
