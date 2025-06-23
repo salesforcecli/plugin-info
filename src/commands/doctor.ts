@@ -232,7 +232,16 @@ ${this.doctor
       const debugLogLocation = this.doctor.getDoctoredFilePath(join(this.outputDir, 'command-debug.log'));
       this.doctor.createStdoutWriteStream(stdoutLogLocation);
       this.doctor.createStderrWriteStream(debugLogLocation);
-      const cp = spawn(cmdString, [], { shell: true, env: Object.assign({}, process.env) });
+      const cp = spawn(cmdString, [], {
+        shell: true,
+        env: Object.assign(
+          {},
+          {
+            ...process.env,
+            SF_LOG_COLORIZE: 'false',
+          }
+        ),
+      });
 
       cp.on('error', (err) => {
         this.log(`Error executing command: ${err.message}`);
