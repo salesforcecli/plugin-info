@@ -1706,30 +1706,6 @@
     semver "^7.6.3"
     ts-retry-promise "^0.8.1"
 
-"@salesforce/core@^8.14.0":
-  version "8.14.0"
-  resolved "https://registry.yarnpkg.com/@salesforce/core/-/core-8.14.0.tgz#fcdd8b641221fee668b95ed2ede56b251668077c"
-  integrity sha512-Ta1aY15TfgxLyFNNlkw60Mm3dDtiEb50TSp3/wzrbuMgkEGvFBEZQca/ChrjANXhpw8pURDUTzL4VV/1eGCHrQ==
-  dependencies:
-    "@jsforce/jsforce-node" "^3.8.2"
-    "@salesforce/kit" "^3.2.2"
-    "@salesforce/schemas" "^1.9.0"
-    "@salesforce/ts-types" "^2.0.10"
-    ajv "^8.17.1"
-    change-case "^4.1.2"
-    fast-levenshtein "^3.0.0"
-    faye "^1.4.0"
-    form-data "^4.0.0"
-    js2xmlparser "^4.0.1"
-    jsonwebtoken "9.0.2"
-    jszip "3.10.1"
-    pino "^9.7.0"
-    pino-abstract-transport "^1.2.0"
-    pino-pretty "^11.3.0"
-    proper-lockfile "^4.1.2"
-    semver "^7.6.3"
-    ts-retry-promise "^0.8.1"
-
 "@salesforce/dev-config@^4.3.1":
   version "4.3.1"
   resolved "https://registry.yarnpkg.com/@salesforce/dev-config/-/dev-config-4.3.1.tgz#4dac8245df79d675258b50e1d24e8c636eaa5e10"
@@ -1774,10 +1750,10 @@
   dependencies:
     "@salesforce/ts-types" "^2.0.12"
 
-"@salesforce/plugin-command-reference@^3.1.57":
-  version "3.1.57"
-  resolved "https://registry.yarnpkg.com/@salesforce/plugin-command-reference/-/plugin-command-reference-3.1.57.tgz#ae1a5606efb71d259b3e581877c7cebf10bde826"
-  integrity sha512-S6NpHHBTi/ckGGUPpy415o4miy5bYV8GY8a7erWx5Sd/Ajml/G7KQbcaKaJt2GZNiUVoGU6pzNbNQQ0keQgqRA==
+"@salesforce/plugin-command-reference@^3.1.58":
+  version "3.1.58"
+  resolved "https://registry.yarnpkg.com/@salesforce/plugin-command-reference/-/plugin-command-reference-3.1.58.tgz#4cef5ee3db0e9e6d6f722c18d627053ff42c73c3"
+  integrity sha512-dr8f7TEhUZ88/euXfiQXlpj488G89XEEl4IrpU+H4qk5lrIGhy9OWuSxLBCc/UHTwxirFq7+H6vRVzNTLYqgXQ==
   dependencies:
     "@oclif/core" "^4"
     "@salesforce/core" "^8.14.0"
