@@ -16,7 +16,7 @@
     "marked-terminal": "^4.2.0",
     "open": "^10.2.0",
     "proxy-agent": "^6.5.0",
-    "semver": "^7.7.2"
+    "semver": "^7.7.3"
   },
   "devDependencies": {
     "@oclif/plugin-command-snapshot": "^5.3.6",
