@@ -11,7 +11,7 @@
     "@jsforce/jsforce-node": "^3.10.14",
     "@oclif/core": "^4",
     "@salesforce/core": "^8.28.1",
-    "@salesforce/kit": "^3.2.3",
+    "@salesforce/kit": "^3.2.6",
     "@salesforce/sf-plugins-core": "^12",
     "got": "^13.0.0",
     "marked": "^4.3.0",
