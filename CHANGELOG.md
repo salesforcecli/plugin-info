@@ -1,3 +1,9 @@
+## [3.4.128](https://github.com/salesforcecli/plugin-info/compare/3.4.127...3.4.128) (2026-05-09)
+
+### Bug Fixes
+
+- **deps:** bump fast-xml-builder from 1.1.4 to 1.2.0 ([18da87e](https://github.com/salesforcecli/plugin-info/commit/18da87e7eb20ac00c2132650a298311e8edbfd76))
+
 ## [3.4.127](https://github.com/salesforcecli/plugin-info/compare/3.4.126...3.4.127) (2026-05-09)
 
 ### Bug Fixes
