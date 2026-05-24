@@ -1,3 +1,9 @@
+## [3.4.135](https://github.com/salesforcecli/plugin-info/compare/3.4.134...3.4.135) (2026-05-24)
+
+### Bug Fixes
+
+- **deps:** bump ws from 8.18.0 to 8.21.0 ([ecc2d41](https://github.com/salesforcecli/plugin-info/commit/ecc2d411f6d02879203631d709ddafc134b1fa04))
+
 ## [3.4.134](https://github.com/salesforcecli/plugin-info/compare/3.4.133...3.4.134) (2026-05-24)
 
 ### Bug Fixes
