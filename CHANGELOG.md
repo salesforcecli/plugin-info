@@ -1,3 +1,9 @@
+## [3.4.141](https://github.com/salesforcecli/plugin-info/compare/3.4.140...3.4.141) (2026-06-17)
+
+### Bug Fixes
+
+- **deps:** bump markdown-it from 14.1.0 to 14.2.0 ([e3b634b](https://github.com/salesforcecli/plugin-info/commit/e3b634b3018c2d18ee1960251e0f27f57fb132de))
+
 ## [3.4.140](https://github.com/salesforcecli/plugin-info/compare/3.4.139...3.4.140) (2026-06-14)
 
 ### Bug Fixes
