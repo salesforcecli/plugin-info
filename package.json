@@ -8,7 +8,7 @@
   "o11yUploadEndpoint": "https://794testsite.my.site.com/byolwr/webruntime/log/metrics",
   "dependencies": {
     "@inquirer/input": "^2.3.0",
-    "@jsforce/jsforce-node": "^3.10.16",
+    "@jsforce/jsforce-node": "^3.10.19",
     "@oclif/core": "^4",
     "@salesforce/core": "^8.31.4",
     "@salesforce/kit": "^3.2.6",
