@@ -1,0 +1,204 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$ref": "#/definitions/SfDoctorDiagnosis",
+  "definitions": {
+    "SfDoctorDiagnosis": {
+      "type": "object",
+      "properties": {
+        "versionDetail": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "pluginVersions": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "architecture": {
+              "type": "string"
+            },
+            "cliVersion": {
+              "type": "string"
+            },
+            "nodeVersion": {
+              "type": "string"
+            },
+            "osVersion": {
+              "type": "string"
+            },
+            "rootPath": {
+              "type": "string"
+            },
+            "shell": {
+              "type": "string"
+            }
+          },
+          "required": ["architecture", "cliVersion", "nodeVersion", "pluginVersions"]
+        },
+        "sfdxEnvVars": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/KeyValue%3Cstring%3E"
+          }
+        },
+        "sfEnvVars": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/KeyValue%3Cstring%3E"
+          }
+        },
+        "proxyEnvVars": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/KeyValue%3Cstring%3E"
+          }
+        },
+        "cliConfig": {
+          "type": "object",
+          "properties": {
+            "bin": {
+              "type": "string"
+            },
+            "nodeEngine": {
+              "type": "string"
+            },
+            "windows": {
+              "type": "boolean"
+            },
+            "userAgent": {
+              "type": "string"
+            },
+            "shell": {
+              "type": "string"
+            },
+            "channel": {
+              "type": "string"
+            }
+          },
+          "required": ["bin", "channel", "nodeEngine", "shell", "userAgent", "windows"]
+        },
+        "pluginSpecificData": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/AnyJson"
+            }
+          }
+        },
+        "diagnosticResults": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/DiagnosticStatus"
+          }
+        },
+        "suggestions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "commandName": {
+          "type": "string"
+        },
+        "commandExitCode": {
+          "type": ["string", "number"]
+        },
+        "logFilePaths": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "versionDetail",
+        "sfdxEnvVars",
+        "sfEnvVars",
+        "proxyEnvVars",
+        "cliConfig",
+        "pluginSpecificData",
+        "diagnosticResults",
+        "suggestions",
+        "logFilePaths"
+      ],
+      "additionalProperties": false
+    },
+    "KeyValue<string>": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 2,
+      "maxItems": 2,
+      "description": "An alias for a tuple of type `[string, T]' for a given generic type `T`. `T` defaults to `unknown` if not otherwise defined."
+    },
+    "AnyJson": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/JsonPrimitive"
+        },
+        {
+          "$ref": "#/definitions/JsonCollection"
+        }
+      ],
+      "description": "Any valid JSON value."
+    },
+    "JsonPrimitive": {
+      "type": ["null", "boolean", "number", "string"],
+      "description": "Any valid JSON primitive value."
+    },
+    "JsonCollection": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/JsonMap"
+        },
+        {
+          "$ref": "#/definitions/JsonArray"
+        }
+      ],
+      "description": "Any valid JSON collection value."
+    },
+    "JsonMap": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/definitions/Optional%3CAnyJson%3E"
+      },
+      "properties": {},
+      "description": "Any JSON-compatible object."
+    },
+    "Optional<AnyJson>": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/AnyJson"
+        },
+        {
+          "not": {}
+        }
+      ],
+      "description": "A union type for either the parameterized type `T` or `undefined` -- the opposite of  {@link  NonOptional  } ."
+    },
+    "JsonArray": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/AnyJson"
+      },
+      "description": "Any JSON-compatible array."
+    },
+    "DiagnosticStatus": {
+      "type": "object",
+      "properties": {
+        "testName": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["pass", "fail", "warn", "unknown"]
+        }
+      },
+      "required": ["testName", "status"],
+      "additionalProperties": false
+    }
+  }
+}
