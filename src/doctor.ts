@@ -20,7 +20,7 @@ import { join, dirname, basename } from 'node:path';
 import { Messages, SfError } from '@salesforce/core';
 import { Env, omit } from '@salesforce/kit';
 import type { AnyJson, KeyValue } from '@salesforce/ts-types';
-import Interfaces from '@oclif/core/interfaces';
+import { Interfaces } from '@oclif/core';
 import { Diagnostics, DiagnosticStatus } from './diagnostics.js';
 
 export type SfDoctor = {
@@ -42,10 +42,14 @@ export type SfDoctor = {
 };
 
 // oclif has some properties marked as optional in the Interface, but they will be present after Load() is called
-type CliConfig = Partial<Interfaces.Config> & { nodeEngine: string } & Pick<
-    Required<Interfaces.Config>,
-    'windows' | 'userAgent' | 'shell' | 'channel'
-  >;
+type CliConfig = Record<string, unknown> & {
+  bin: string;
+  nodeEngine: string;
+  windows: boolean;
+  userAgent: string;
+  shell: string;
+  channel: string;
+};
 
 export type SfDoctorDiagnosis = {
   versionDetail: Omit<Interfaces.VersionDetails, 'pluginVersions'> & { pluginVersions: string[] };

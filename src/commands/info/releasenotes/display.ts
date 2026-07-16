@@ -33,7 +33,7 @@ const helpers = ['stable', 'stable-rc', 'latest', 'latest-rc', 'rc'];
 // or any library that is using the messages framework can also be loaded this way.
 const messages = Messages.loadMessages('@salesforce/plugin-info', 'display');
 
-export default class Display extends SfCommand<DisplayOutput | undefined> {
+export default class Display extends SfCommand<DisplayOutput> {
   public static readonly summary = messages.getMessage('summary');
   public static readonly description = messages.getMessage('description');
 
@@ -53,7 +53,7 @@ export default class Display extends SfCommand<DisplayOutput | undefined> {
     loglevel,
   };
 
-  public async run(): Promise<DisplayOutput | undefined> {
+  public async run(): Promise<DisplayOutput> {
     const HIDE_NOTES = this.config.bin === 'sf' ? 'SF_HIDE_RELEASE_NOTES' : 'SFDX_HIDE_RELEASE_NOTES';
     const HIDE_FOOTER = this.config.bin === 'sf' ? 'SF_HIDE_RELEASE_NOTES_FOOTER' : 'SFDX_HIDE_RELEASE_NOTES_FOOTER';
 
@@ -142,7 +142,9 @@ export default class Display extends SfCommand<DisplayOutput | undefined> {
   }
 }
 
-export type DisplayOutput = {
-  body: string;
-  url: string;
-};
+export type DisplayOutput =
+  | {
+      body: string;
+      url: string;
+    }
+  | undefined;
