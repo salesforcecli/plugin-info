@@ -73,7 +73,9 @@ export class Diagnostics {
       const testName = 'using latest or latest-rc CLI version';
       let status: DiagnosticStatus['status'] = 'unknown';
 
-      childProcess.exec(`npm view ${cliName} dist-tags.latest`, {}, (error, stdout, stderr) => {
+      // Use execFile instead of exec to avoid shell interpretation.
+      // exec invokes cmd.exe on Windows, which resolves commands from CWD before PATH.
+      childProcess.execFile('npm', ['view', cliName, 'dist-tags.latest'], (error, stdout, stderr) => {
         const code = error?.code ?? 0;
         if (code === 0) {
           const latest = stdout.trim();
