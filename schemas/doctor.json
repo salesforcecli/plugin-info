@@ -56,7 +56,6 @@
         },
         "cliConfig": {
           "type": "object",
-          "additionalProperties": {},
           "properties": {
             "bin": {
               "type": "string"
