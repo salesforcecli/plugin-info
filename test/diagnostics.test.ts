@@ -60,13 +60,13 @@ describe('Diagnostics', () => {
   const sandbox = Sinon.createSandbox();
   const lifecycle = Lifecycle.getInstance();
 
-  let childProcessExecStub: sinon.SinonStub;
+  let childProcessExecFileStub: sinon.SinonStub;
   let drAddSuggestionSpy: sinon.SinonSpy;
   let lifecycleEmitSpy: sinon.SinonSpy;
 
   beforeEach(() => {
     stubMethod(sandbox, ux, 'stdout');
-    childProcessExecStub = stubMethod(sandbox, childProcess, 'exec');
+    childProcessExecFileStub = sandbox.stub(childProcess, 'execFile');
     drAddSuggestionSpy = spyMethod(sandbox, Doctor.prototype, 'addSuggestion');
     lifecycleEmitSpy = spyMethod(sandbox, lifecycle, 'emit');
     oclifConfig = {
@@ -98,7 +98,7 @@ describe('Diagnostics', () => {
 
     // This will have to be updated with each new test
     expect(results.length).to.equal(6);
-    expect(childProcessExecStub.called).to.be.true;
+    expect(childProcessExecFileStub.called).to.be.true;
     expect(lifecycleEmitSpy.called).to.be.true;
     expect(lifecycleEmitSpy.args[0][0]).to.equal('Doctor:diagnostic');
     expect(lifecycleEmitSpy.args[0][1]).to.have.property('testName');
@@ -235,11 +235,13 @@ describe('Diagnostics', () => {
 
   describe('outdatedCliVersionCheck', () => {
     it('passes when CLI version is equal to latest', async () => {
-      childProcessExecStub.callsFake((cmdString, opts, cb: (e: unknown, stdout: unknown, stderr: unknown) => void) => {
-        expect(cmdString).to.equal('npm view sfdx-cli dist-tags.latest');
-        expect(opts).to.be.ok;
-        cb({}, '7.160.0', '');
-      });
+      childProcessExecFileStub.callsFake(
+        (cmd: string, args: string[], cb: (e: unknown, stdout: unknown, stderr: unknown) => void) => {
+          expect(cmd).to.equal('npm');
+          expect(args).to.deep.equal(['view', 'sfdx-cli', 'dist-tags.latest']);
+          cb(null, '7.160.0', '');
+        }
+      );
 
       const dr = Doctor.init(oclifConfig);
       const diagnostics = new Diagnostics(dr, oclifConfig);
@@ -254,11 +256,13 @@ describe('Diagnostics', () => {
     });
 
     it('passes when CLI version is greater than latest', async () => {
-      childProcessExecStub.callsFake((cmdString, opts, cb: (e: unknown, stdout: unknown, stderr: unknown) => void) => {
-        expect(cmdString).to.equal('npm view sfdx-cli dist-tags.latest');
-        expect(opts).to.be.ok;
-        cb({}, '7.159.0', '');
-      });
+      childProcessExecFileStub.callsFake(
+        (cmd: string, args: string[], cb: (e: unknown, stdout: unknown, stderr: unknown) => void) => {
+          expect(cmd).to.equal('npm');
+          expect(args).to.deep.equal(['view', 'sfdx-cli', 'dist-tags.latest']);
+          cb(null, '7.159.0', '');
+        }
+      );
 
       const dr = Doctor.init(oclifConfig);
       const diagnostics = new Diagnostics(dr, oclifConfig);
@@ -273,11 +277,13 @@ describe('Diagnostics', () => {
     });
 
     it('fails when CLI version is less than latest', async () => {
-      childProcessExecStub.callsFake((cmdString, opts, cb: (e: unknown, stdout: unknown, stderr: unknown) => void) => {
-        expect(cmdString).to.equal('npm view sfdx-cli dist-tags.latest');
-        expect(opts).to.be.ok;
-        cb({}, '7.162.0', '');
-      });
+      childProcessExecFileStub.callsFake(
+        (cmd: string, args: string[], cb: (e: unknown, stdout: unknown, stderr: unknown) => void) => {
+          expect(cmd).to.equal('npm');
+          expect(args).to.deep.equal(['view', 'sfdx-cli', 'dist-tags.latest']);
+          cb(null, '7.162.0', '');
+        }
+      );
 
       const dr = Doctor.init(oclifConfig);
       const diagnostics = new Diagnostics(dr, oclifConfig);
@@ -292,11 +298,13 @@ describe('Diagnostics', () => {
     });
 
     it('fails when npm request fails', async () => {
-      childProcessExecStub.callsFake((cmdString, opts, cb: (e: unknown, stdout: unknown, stderr: unknown) => void) => {
-        expect(cmdString).to.equal('npm view sfdx-cli dist-tags.latest');
-        expect(opts).to.be.ok;
-        cb({ code: 1 }, '', 'connection timeout');
-      });
+      childProcessExecFileStub.callsFake(
+        (cmd: string, args: string[], cb: (e: unknown, stdout: unknown, stderr: unknown) => void) => {
+          expect(cmd).to.equal('npm');
+          expect(args).to.deep.equal(['view', 'sfdx-cli', 'dist-tags.latest']);
+          cb({ code: 1 }, '', 'connection timeout');
+        }
+      );
 
       const dr = Doctor.init(oclifConfig);
       const diagnostics = new Diagnostics(dr, oclifConfig);
