@@ -1,3 +1,9 @@
+## [4.0.4](https://github.com/salesforcecli/plugin-info/compare/4.0.3...4.0.4) (2026-08-04)
+
+### Bug Fixes
+
+- use execFile instead of exec for npm calls-W-23661850 ([#1246](https://github.com/salesforcecli/plugin-info/issues/1246)) ([da6cfdf](https://github.com/salesforcecli/plugin-info/commit/da6cfdf55d3194401691fef06db6f591b5d834b8))
+
 ## [4.0.3](https://github.com/salesforcecli/plugin-info/compare/4.0.2...4.0.3) (2026-08-04)
 
 ### Bug Fixes
