@@ -48,7 +48,7 @@ describe('getInfoConfig tests', () => {
           },
         },
       },
-    } as PjsonWithInfo;
+    };
 
     // keep pjsonMock as JSON to access values in tests
     readFileStub = stubMethod(sandbox, fs.promises, 'readFile').resolves(JSON.stringify(pjsonMock));

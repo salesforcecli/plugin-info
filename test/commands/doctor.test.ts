@@ -170,7 +170,7 @@ describe('Doctor Command', () => {
   afterEach(() => {
     sandbox.restore();
     // Reset the instance for testing
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment,@typescript-eslint/no-unsafe-assignment
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     delete Doctor.instance;
   });
