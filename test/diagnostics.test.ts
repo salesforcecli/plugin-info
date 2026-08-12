@@ -18,6 +18,7 @@ import childProcess from 'node:child_process';
 import Sinon from 'sinon';
 import { expect } from 'chai';
 import { fromStub, spyMethod, stubInterface, stubMethod } from '@salesforce/ts-sinon';
+import which from 'which';
 import { Config, Interfaces } from '@oclif/core';
 import { Lifecycle } from '@salesforce/core';
 import { ux } from '@oclif/core';
@@ -66,6 +67,7 @@ describe('Diagnostics', () => {
 
   beforeEach(() => {
     stubMethod(sandbox, ux, 'stdout');
+    sandbox.stub(which, 'sync').returns('/usr/local/bin/npm');
     childProcessExecFileStub = sandbox.stub(childProcess, 'execFile');
     drAddSuggestionSpy = spyMethod(sandbox, Doctor.prototype, 'addSuggestion');
     lifecycleEmitSpy = spyMethod(sandbox, lifecycle, 'emit');
@@ -236,8 +238,8 @@ describe('Diagnostics', () => {
   describe('outdatedCliVersionCheck', () => {
     it('passes when CLI version is equal to latest', async () => {
       childProcessExecFileStub.callsFake(
-        (cmd: string, args: string[], cb: (e: unknown, stdout: unknown, stderr: unknown) => void) => {
-          expect(cmd).to.equal('npm');
+        (cmd: string, args: string[], opts: unknown, cb: (e: unknown, stdout: unknown, stderr: unknown) => void) => {
+          expect(cmd).to.equal('/usr/local/bin/npm');
           expect(args).to.deep.equal(['view', 'sfdx-cli', 'dist-tags.latest']);
           cb(null, '7.160.0', '');
         }
@@ -257,8 +259,8 @@ describe('Diagnostics', () => {
 
     it('passes when CLI version is greater than latest', async () => {
       childProcessExecFileStub.callsFake(
-        (cmd: string, args: string[], cb: (e: unknown, stdout: unknown, stderr: unknown) => void) => {
-          expect(cmd).to.equal('npm');
+        (cmd: string, args: string[], opts: unknown, cb: (e: unknown, stdout: unknown, stderr: unknown) => void) => {
+          expect(cmd).to.equal('/usr/local/bin/npm');
           expect(args).to.deep.equal(['view', 'sfdx-cli', 'dist-tags.latest']);
           cb(null, '7.159.0', '');
         }
@@ -278,8 +280,8 @@ describe('Diagnostics', () => {
 
     it('fails when CLI version is less than latest', async () => {
       childProcessExecFileStub.callsFake(
-        (cmd: string, args: string[], cb: (e: unknown, stdout: unknown, stderr: unknown) => void) => {
-          expect(cmd).to.equal('npm');
+        (cmd: string, args: string[], opts: unknown, cb: (e: unknown, stdout: unknown, stderr: unknown) => void) => {
+          expect(cmd).to.equal('/usr/local/bin/npm');
           expect(args).to.deep.equal(['view', 'sfdx-cli', 'dist-tags.latest']);
           cb(null, '7.162.0', '');
         }
@@ -299,8 +301,8 @@ describe('Diagnostics', () => {
 
     it('fails when npm request fails', async () => {
       childProcessExecFileStub.callsFake(
-        (cmd: string, args: string[], cb: (e: unknown, stdout: unknown, stderr: unknown) => void) => {
-          expect(cmd).to.equal('npm');
+        (cmd: string, args: string[], opts: unknown, cb: (e: unknown, stdout: unknown, stderr: unknown) => void) => {
+          expect(cmd).to.equal('/usr/local/bin/npm');
           expect(args).to.deep.equal(['view', 'sfdx-cli', 'dist-tags.latest']);
           cb({ code: 1 }, '', 'connection timeout');
         }
