@@ -1,3 +1,9 @@
+## [4.0.6](https://github.com/salesforcecli/plugin-info/compare/4.0.5...4.0.6) (2026-08-13)
+
+### Bug Fixes
+
+- resolve npm from PATH only, excluding CWD ([f63e2e9](https://github.com/salesforcecli/plugin-info/commit/f63e2e9e5ae6ab4cd62072c3f72467bcb5e6f84a))
+
 ## [4.0.5](https://github.com/salesforcecli/plugin-info/compare/4.0.4...4.0.5) (2026-08-09)
 
 ### Bug Fixes
