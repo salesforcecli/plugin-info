@@ -15,10 +15,12 @@
  */
 
 import childProcess from 'node:child_process';
+import { dirname, resolve } from 'node:path';
 import { got } from 'got';
 import { Interfaces } from '@oclif/core';
 import { Lifecycle, Messages } from '@salesforce/core';
 import { Connection } from '@jsforce/jsforce-node';
+import which from 'which';
 import { SfDoctor, SfDoctorDiagnosis } from './doctor.js';
 
 export type DiagnosticStatus = {
@@ -69,29 +71,44 @@ export class Diagnostics {
     const cliName = this.config.name;
     const cliVersion = this.config.version;
 
-    return new Promise<void>((resolve) => {
+    return new Promise<void>((resolve_) => {
       const testName = 'using latest or latest-rc CLI version';
       let status: DiagnosticStatus['status'] = 'unknown';
 
-      // Use execFile instead of exec to avoid shell interpretation.
-      // exec invokes cmd.exe on Windows, which resolves commands from CWD before PATH.
-      childProcess.execFile('npm', ['view', cliName, 'dist-tags.latest'], (error, stdout, stderr) => {
-        const code = error?.code ?? 0;
-        if (code === 0) {
-          const latest = stdout.trim();
-          if (cliVersion < latest) {
-            status = 'fail';
-            this.doctor.addSuggestion(messages.getMessage('updateCliVersion', [cliVersion, latest]));
-          } else {
-            status = 'pass';
-          }
-        } else {
-          this.doctor.addSuggestion(messages.getMessage('latestCliVersionError', [stderr]));
-        }
+      // Resolve npm from PATH only, excluding CWD. On Windows, both execFile (CreateProcess)
+      // and the `which` module resolve executables from CWD before PATH.
+      const cwd = resolve(process.cwd());
+      const npmPath = which.sync('npm', { nothrow: true });
+      if (!npmPath || dirname(resolve(npmPath)) === cwd) {
         void Lifecycle.getInstance()
           .emit('Doctor:diagnostic', { testName, status })
-          .then(() => resolve());
-      });
+          .then(() => resolve_());
+        return;
+      }
+
+      const useShell = /\.(cmd|bat)$/i.test(npmPath);
+      childProcess.execFile(
+        npmPath,
+        ['view', cliName, 'dist-tags.latest'],
+        { shell: useShell },
+        (error, stdout, stderr) => {
+          const code = error?.code ?? 0;
+          if (code === 0) {
+            const latest = stdout.trim();
+            if (cliVersion < latest) {
+              status = 'fail';
+              this.doctor.addSuggestion(messages.getMessage('updateCliVersion', [cliVersion, latest]));
+            } else {
+              status = 'pass';
+            }
+          } else {
+            this.doctor.addSuggestion(messages.getMessage('latestCliVersionError', [stderr]));
+          }
+          void Lifecycle.getInstance()
+            .emit('Doctor:diagnostic', { testName, status })
+            .then(() => resolve_());
+        }
+      );
     });
   }
 
