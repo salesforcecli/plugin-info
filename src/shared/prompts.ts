@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import input from '@inquirer/input';
+import { input } from '@inquirer/prompts';
 
 // a wrapper object to make inquirer prompts stubbable by sinon
 export const prompts = {
