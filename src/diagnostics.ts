@@ -163,7 +163,7 @@ export class Diagnostics {
           const conn = new Connection();
           await conn.request(url);
           await Lifecycle.getInstance().emit('Doctor:diagnostic', { testName: `can access: ${url}`, status: 'pass' });
-        } catch (e) {
+        } catch (_e) {
           await Lifecycle.getInstance().emit('Doctor:diagnostic', { testName: `can't access: ${url}`, status: 'fail' });
           this.doctor.addSuggestion(
             `Cannot reach ${url} - potential network configuration error, check proxies, firewalls, environment variables`
@@ -180,7 +180,7 @@ export class Diagnostics {
         testName: `can access: ${manifestUrl}`,
         status: 'pass',
       });
-    } catch (e) {
+    } catch (_e) {
       await Lifecycle.getInstance().emit('Doctor:diagnostic', {
         testName: `can't access: ${manifestUrl}`,
         status: 'fail',
