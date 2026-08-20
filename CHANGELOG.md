@@ -1,3 +1,15 @@
+## [4.0.9](https://github.com/salesforcecli/plugin-info/compare/4.0.8...4.0.9) (2026-08-18)
+
+### Bug Fixes
+
+- **@W-23807280@:** bump jsforce-node and @salesforce/core ([a0d1005](https://github.com/salesforcecli/plugin-info/commit/a0d10051f58673a1e1c861719bede3ed33cd54da))
+
+## [4.0.8](https://github.com/salesforcecli/plugin-info/compare/4.0.7...4.0.8) (2026-08-16)
+
+### Bug Fixes
+
+- **deps:** bump @salesforce/core from 9.1.0 to 9.1.2 ([991ca19](https://github.com/salesforcecli/plugin-info/commit/991ca19dcc4fcd9571022055c5a32d36fa872600))
+
 ## [4.0.7](https://github.com/salesforcecli/plugin-info/compare/4.0.6...4.0.7) (2026-08-16)
 
 ### Bug Fixes
