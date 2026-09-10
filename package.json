@@ -38,7 +38,7 @@
     "@types/sinon-chai": "^3.2.12",
     "@types/which": "^3",
     "eslint": "^10.4.0",
-    "eslint-config-salesforce-typescript": "^6.0.0",
+    "eslint-config-salesforce-typescript": "^6.0.2",
     "eslint-plugin-sf-plugin": "^3.0.0",
     "oclif": "^5.0.0",
     "sinon-chai": "^3.7.0",
