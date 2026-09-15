@@ -53,7 +53,7 @@ type ArgSchema = {
   multiple?: boolean;
 };
 
-type CommandSchema = {
+export type CommandSchema = {
   command: string;
   summary?: string;
   requiresProject: boolean;
@@ -67,7 +67,7 @@ type CommandSchema = {
   errorCodes?: Array<{ name: string; description: string }>;
 };
 
-type CommandIndex = {
+export type CommandIndex = {
   commands: Array<{
     id: string;
     summary?: string;
@@ -78,6 +78,8 @@ type CommandIndex = {
     acceptsDevHub: boolean;
   }>;
 };
+
+export type SchemaResult = CommandSchema | CommandIndex;
 
 function addRelationships(schema: FlagSchema, flag: Command.Flag.Cached): void {
   if (flag.exclusive?.length) schema.exclusive = flag.exclusive;
@@ -134,7 +136,7 @@ function getErrorCodes(cmd: Command.Loadable): Array<{ name: string; description
   );
 }
 
-export default class Schema extends SfCommand<CommandSchema | CommandIndex> {
+export default class Schema extends SfCommand<SchemaResult> {
   public static readonly summary = messages.getMessage('summary');
   public static readonly description = messages.getMessage('description');
   public static readonly examples = messages.getMessages('examples');
@@ -151,7 +153,7 @@ export default class Schema extends SfCommand<CommandSchema | CommandIndex> {
     return true;
   }
 
-  public async run(): Promise<CommandSchema | CommandIndex> {
+  public async run(): Promise<SchemaResult> {
     const { flags } = await this.parse(Schema);
 
     if (flags.command) {

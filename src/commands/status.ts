@@ -53,7 +53,7 @@ type ProjectInfo = {
   sourceApiVersion?: string;
 };
 
-type StatusResult = {
+export type StatusResult = {
   config: Record<string, ConfigEntry>;
   targetOrg?: OrgDetail;
   targetDevHub?: OrgDetail;
