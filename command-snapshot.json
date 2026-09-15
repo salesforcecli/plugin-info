@@ -14,5 +14,21 @@
     "flagChars": ["v"],
     "flags": ["flags-dir", "hook", "json", "loglevel", "version"],
     "plugin": "@salesforce/plugin-info"
+  },
+  {
+    "alias": [],
+    "command": "schema",
+    "flagAliases": [],
+    "flagChars": [],
+    "flags": ["command", "flags-dir", "json"],
+    "plugin": "@salesforce/plugin-info"
+  },
+  {
+    "alias": [],
+    "command": "status",
+    "flagAliases": [],
+    "flagChars": [],
+    "flags": ["flags-dir", "json"],
+    "plugin": "@salesforce/plugin-info"
   }
 ]
