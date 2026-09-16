@@ -32,6 +32,18 @@ jobs:
       github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     steps:
+      - name: Get failed jobs
+        id: failed
+        run: |
+          FAILED=""
+          if [ "$LINUX" = "failure" ]; then FAILED="linux-unit-tests"; fi
+          if [ "$WINDOWS" = "failure" ]; then FAILED="${FAILED:+$FAILED, }windows-unit-tests"; fi
+          if [ "$NUTS" = "failure" ]; then FAILED="${FAILED:+$FAILED, }nuts"; fi
+          echo "jobs=$FAILED" >> "$GITHUB_OUTPUT"
+        env:
+          LINUX: ${{ needs.linux-unit-tests.result }}
+          WINDOWS: ${{ needs.windows-unit-tests.result }}
+          NUTS: ${{ needs.nuts.result }}
       - name: Get PR info
         id: pr
         run: |
@@ -64,20 +76,20 @@ jobs:
         with:
           payload: |
             {
-              "text": "Tests failed in ${{ github.event.repository.name }}",
+              "text": "tests/${{ steps.failed.outputs.jobs }} failed in ${{ github.event.repository.name }}",
               "blocks": [
                 {
                   "type": "header",
                   "text": {
                     "type": "plain_text",
-                    "text": ":x: Tests failed in ${{ github.event.repository.name }}"
+                    "text": ":bh-alert: tests/${{ steps.failed.outputs.jobs }} failed in ${{ github.event.repository.name }} :bh-alert:"
                   }
                 },
                 {
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "*Repo:* <${{ github.event.repository.html_url }}|${{ github.event.repository.name }}>\n*Author:* ${{ steps.slack-user.outputs.mention }}\n*PR:* <${{ github.event.repository.html_url }}/pull/${{ steps.pr.outputs.number }}|#${{ steps.pr.outputs.number }} ${{ steps.pr.outputs.title }}>\n*Job url:* ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                    "text": "*PR:* <${{ github.event.repository.html_url }}/pull/${{ steps.pr.outputs.number }}|#${{ steps.pr.outputs.number }} ${{ steps.pr.outputs.title }}>\n*Author:* ${{ steps.slack-user.outputs.mention }}\n*Job url:* ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
                   }
                 }
               ]
