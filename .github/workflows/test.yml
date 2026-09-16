@@ -76,13 +76,13 @@ jobs:
         with:
           payload: |
             {
-              "text": "tests/${{ steps.failed.outputs.jobs }} failed in ${{ github.event.repository.name }}",
+              "text": "Workflow \"tests/${{ steps.failed.outputs.jobs }}\" failed in ${{ github.event.repository.name }}",
               "blocks": [
                 {
                   "type": "header",
                   "text": {
                     "type": "plain_text",
-                    "text": ":bh-alert: tests/${{ steps.failed.outputs.jobs }} failed in ${{ github.event.repository.name }} :bh-alert:"
+                    "text": ":x: Workflow \"tests/${{ steps.failed.outputs.jobs }}\" failed in ${{ github.event.repository.name }} :x:"
                   }
                 },
                 {
