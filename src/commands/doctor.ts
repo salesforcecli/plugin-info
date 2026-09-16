@@ -17,7 +17,7 @@
 import { EOL } from 'node:os';
 import { resolve as pathResolve, join } from 'node:path';
 import { spawn } from 'node:child_process';
-import { Flags, loglevel, SfCommand } from '@salesforce/sf-plugins-core';
+import { Flags, loglevel, SfCommand, StandardColors } from '@salesforce/sf-plugins-core';
 import { Lifecycle, Messages, SfError } from '@salesforce/core';
 import open from 'open';
 import got from 'got';
@@ -73,7 +73,14 @@ export default class Doctor extends SfCommand<SfDoctorDiagnosis> {
     this.outputDir = pathResolve(flags['output-dir'] ?? process.cwd());
 
     lifecycle.on<DiagnosticStatus>('Doctor:diagnostic', async (data) => {
-      this.log(`${data.status} - ${data.testName}`);
+      const colorMap = {
+        pass: StandardColors.success,
+        fail: StandardColors.error,
+        warn: StandardColors.warning,
+        unknown: StandardColors.warning,
+      } as const;
+      const colorFn = colorMap[data.status];
+      this.log(`${colorFn(data.status)} - ${data.testName}`);
       return Promise.resolve(this.doctor.addDiagnosticStatus(data));
     });
 
@@ -122,7 +129,14 @@ export default class Doctor extends SfCommand<SfDoctorDiagnosis> {
 
     this.log();
     this.styledHeader('Suggestions');
-    diagnosis.suggestions.forEach((s) => this.log(`  * ${s}`));
+    const pinnedCount = 2;
+    const pinned = diagnosis.suggestions.slice(0, pinnedCount);
+    const actionable = diagnosis.suggestions.slice(pinnedCount);
+    if (actionable.length) {
+      actionable.forEach((s) => this.log(`  ${StandardColors.warning('⚠')} ${s}`));
+      this.log();
+    }
+    pinned.forEach((s) => this.log(`  * ${s}`));
 
     if (flags['create-issue']) {
       const raw = 'https://raw.githubusercontent.com/forcedotcom/cli/main/.github/ISSUE_TEMPLATE/bug_report.md';
@@ -162,51 +176,42 @@ export default class Doctor extends SfCommand<SfDoctorDiagnosis> {
   }
 
   private generateIssueMarkdown(body: string, diagnosis: SfDoctorDiagnosis): string {
-    const info = `
-\`\`\`
-CLI:
-${diagnosis.cliConfig.userAgent}
+    const diagnosticIcon = (status: string): string => {
+      if (status === 'pass') return ':white_check_mark:';
+      if (status === 'warn') return ':warning:';
+      return ':x:';
+    };
 
-Plugin Version:
-${diagnosis.versionDetail.pluginVersions.join(EOL)}
-\`\`\`
-${
-  diagnosis.sfdxEnvVars.length
-    ? `
-\`\`\`
-SFDX ENV. VARS.
-${diagnosis.sfdxEnvVars.join(EOL)}
-\`\`\`
-`
-    : ''
-}
-${
-  diagnosis.sfEnvVars.length
-    ? `
-\`\`\`
-SF ENV. VARS.
-${diagnosis.sfEnvVars.join(EOL)}
-\`\`\`
-`
-    : ''
-}
-\`\`\`
-Windows: ${diagnosis.cliConfig.windows}
-Shell: ${diagnosis.cliConfig.shell}
-Channel: ${diagnosis.cliConfig.channel}
-\`\`\`
----
-### Diagnostics
-${this.doctor
-  .getDiagnosis()
-  .diagnosticResults.map(
-    (res) => `${res.status === 'pass' ? ':white_check_mark:' : ':x:'} ${res.status} - ${res.testName}`
-  )
-  .join(EOL)}
-`;
+    const systemInfo = [
+      '```',
+      'CLI:',
+      diagnosis.cliConfig.userAgent,
+      '',
+      'Plugin Version:',
+      ...diagnosis.versionDetail.pluginVersions,
+      '```',
+      ...(diagnosis.sfdxEnvVars.length ? ['', '```', 'SFDX ENV. VARS.', ...diagnosis.sfdxEnvVars, '```'] : []),
+      ...(diagnosis.sfEnvVars.length ? ['', '```', 'SF ENV. VARS.', ...diagnosis.sfEnvVars, '```'] : []),
+      '',
+      '```',
+      `Windows: ${diagnosis.cliConfig.windows}`,
+      `Shell: ${diagnosis.cliConfig.shell}`,
+      `Channel: ${diagnosis.cliConfig.channel}`,
+      '```',
+      '---',
+      '### Diagnostics',
+      ...this.doctor
+        .getDiagnosis()
+        .diagnosticResults.map((res) => `${diagnosticIcon(res.status)} ${res.status} - ${res.testName}`),
+    ].join(EOL);
+
+    // Remove the frontmatter and Note block, but preserve Summary, Steps To Reproduce,
+    // and all other sections. Replace the System Information placeholder with actual data.
     return body
-      .replace(/---(?:.*\n)*>\s.*\n/gm, '')
-      .replace(/<!-- Which shell(?:.*\n)*.*/gm, info)
+      .replace(/---\nname:[\s\S]*?---\n/, '')
+      .replace(/> \*\*Note\*\*[\s\S]*?> {3}- If you require immediate assistance.*\n/m, '')
+      .replace(/> \[!TIP\]\n>.*\n/m, '')
+      .replace(/<!-- Which shell[\s\S]*PASTE_VERSION_OUTPUT_HERE\n```/m, systemInfo)
       .trim();
   }
 
