@@ -1,0 +1,50 @@
+name: Notify Slack on Test Failure
+
+on:
+  workflow_run:
+    workflows: [tests]
+    types: [completed]
+
+jobs:
+  notify-failure:
+    runs-on: ubuntu-latest
+    if: >-
+      github.event.workflow_run.conclusion == 'failure' &&
+      github.event.workflow_run.actor.login != 'svc-cli-bot' &&
+      github.event.workflow_run.actor.login != 'dependabot[bot]'
+    steps:
+      - name: Get PR number
+        id: pr
+        run: |
+          PR=$(gh api "repos/${{ github.repository }}/pulls?head=${{ github.repository_owner }}:${{ github.event.workflow_run.head_branch }}&state=open" --jq '.[0].number')
+          TITLE=$(gh api "repos/${{ github.repository }}/pulls?head=${{ github.repository_owner }}:${{ github.event.workflow_run.head_branch }}&state=open" --jq '.[0].title')
+          echo "number=$PR" >> "$GITHUB_OUTPUT"
+          echo "title=$TITLE" >> "$GITHUB_OUTPUT"
+        env:
+          GH_TOKEN: ${{ github.token }}
+      - name: Announce Test Failure
+        uses: slackapi/slack-github-action@v1.26.0
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.CLI_ALERTS_SLACK_WEBHOOK }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+        with:
+          payload: |
+            {
+              "text": "Tests failed in ${{ github.event.workflow_run.repository.name }}",
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": ":x: Tests failed in ${{ github.event.workflow_run.repository.name }}"
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*Repo:* <${{ github.event.workflow_run.repository.html_url }}|${{ github.event.workflow_run.repository.name }}>\n*Author:* ${{ github.event.workflow_run.actor.login }}\n*PR:* <${{ github.event.workflow_run.repository.html_url }}/pull/${{ steps.pr.outputs.number }}|#${{ steps.pr.outputs.number }} ${{ steps.pr.outputs.title }}>\n*Run:* ${{ github.event.workflow_run.html_url }}"
+                  }
+                }
+              ]
+            }
