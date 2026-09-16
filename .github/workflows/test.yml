@@ -24,3 +24,49 @@ jobs:
       fail-fast: false
     with:
       os: ${{ matrix.os }}
+  notify-failure:
+    needs: [linux-unit-tests, windows-unit-tests, nuts]
+    if: >-
+      failure() &&
+      github.actor != 'svc-cli-bot' &&
+      github.actor != 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get PR info
+        id: pr
+        run: |
+          PR_JSON=$(gh api "repos/${REPO}/pulls?head=${OWNER}:${BRANCH}&state=open" --jq '.[0] | {number, title}')
+          echo "number=$(echo "$PR_JSON" | jq -r '.number')" >> "$GITHUB_OUTPUT"
+          echo "title=$(echo "$PR_JSON" | jq -r '.title')" >> "$GITHUB_OUTPUT"
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          OWNER: ${{ github.repository_owner }}
+          BRANCH: ${{ github.ref_name }}
+      - name: Notify Slack
+        if: steps.pr.outputs.number != 'null'
+        uses: slackapi/slack-github-action@v1.26.0
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.CLI_ALERTS_SLACK_WEBHOOK }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+        with:
+          payload: |
+            {
+              "text": "Tests failed in ${{ github.event.repository.name }}",
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": ":x: Tests failed in ${{ github.event.repository.name }}"
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*Repo:* <${{ github.event.repository.html_url }}|${{ github.event.repository.name }}>\n*Author:* ${{ github.actor }}\n*PR:* <${{ github.event.repository.html_url }}/pull/${{ steps.pr.outputs.number }}|#${{ steps.pr.outputs.number }} ${{ steps.pr.outputs.title }}>\n*Run:* ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                  }
+                }
+              ]
+            }
