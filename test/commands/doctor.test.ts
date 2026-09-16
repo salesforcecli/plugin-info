@@ -32,6 +32,12 @@ import { prompts } from '../../src/shared/prompts.js';
 Messages.importMessagesDirectoryFromMetaUrl(import.meta.url);
 const messages = Messages.loadMessages('@salesforce/plugin-info', 'doctor');
 
+describe('TEMPORARY - test slack notification', () => {
+  it('should fail on purpose', () => {
+    expect(true).to.equal(false);
+  });
+});
+
 let oclifConfig: Config;
 
 const getVersionDetailStub = (overrides?: Partial<Interfaces.VersionDetails>): Interfaces.VersionDetails => {
