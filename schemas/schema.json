@@ -1,0 +1,230 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$ref": "#/definitions/SchemaResult",
+  "definitions": {
+    "SchemaResult": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/CommandSchema"
+        },
+        {
+          "$ref": "#/definitions/CommandIndex"
+        }
+      ]
+    },
+    "CommandSchema": {
+      "type": "object",
+      "properties": {
+        "command": {
+          "type": "string"
+        },
+        "summary": {
+          "type": "string"
+        },
+        "requiresProject": {
+          "type": "boolean"
+        },
+        "requiresOrg": {
+          "type": "boolean"
+        },
+        "acceptsOrg": {
+          "type": "boolean"
+        },
+        "requiresDevHub": {
+          "type": "boolean"
+        },
+        "acceptsDevHub": {
+          "type": "boolean"
+        },
+        "enableJsonFlag": {
+          "type": "boolean"
+        },
+        "flags": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["boolean", "option"]
+              },
+              "summary": {
+                "type": "string"
+              },
+              "char": {
+                "type": "string"
+              },
+              "required": {
+                "type": "boolean"
+              },
+              "multiple": {
+                "type": "boolean"
+              },
+              "helpValue": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                ]
+              },
+              "options": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "delimiter": {
+                "type": "string"
+              },
+              "exclusive": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "dependsOn": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "exactlyOne": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "atLeastOne": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "deprecated": {
+                "anyOf": [
+                  {
+                    "type": "boolean",
+                    "const": true
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "to": {
+                        "type": "string"
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "version": {
+                        "type": ["string", "number"]
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                ]
+              }
+            },
+            "required": ["type"],
+            "additionalProperties": false
+          }
+        },
+        "args": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "summary": {
+                "type": "string"
+              },
+              "required": {
+                "type": "boolean"
+              },
+              "options": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "multiple": {
+                "type": "boolean"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "errorCodes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              }
+            },
+            "required": ["name", "description"],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "command",
+        "requiresProject",
+        "requiresOrg",
+        "acceptsOrg",
+        "requiresDevHub",
+        "acceptsDevHub",
+        "enableJsonFlag",
+        "flags",
+        "args"
+      ],
+      "additionalProperties": false
+    },
+    "CommandIndex": {
+      "type": "object",
+      "properties": {
+        "commands": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "summary": {
+                "type": "string"
+              },
+              "requiresProject": {
+                "type": "boolean"
+              },
+              "requiresOrg": {
+                "type": "boolean"
+              },
+              "acceptsOrg": {
+                "type": "boolean"
+              },
+              "requiresDevHub": {
+                "type": "boolean"
+              },
+              "acceptsDevHub": {
+                "type": "boolean"
+              }
+            },
+            "required": ["id", "requiresProject", "requiresOrg", "acceptsOrg", "requiresDevHub", "acceptsDevHub"],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": ["commands"],
+      "additionalProperties": false
+    }
+  }
+}

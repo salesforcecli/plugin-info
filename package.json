@@ -90,6 +90,12 @@
       },
       "doctor": {
         "description": "Tools for diagnosing problems with Salesforce CLI."
+      },
+      "schema": {
+        "description": "Display the schema for CLI commands."
+      },
+      "status": {
+        "description": "Display the current CLI environment context."
       }
     },
     "flexibleTaxonomy": true,
