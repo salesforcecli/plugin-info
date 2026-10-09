@@ -1,3 +1,9 @@
+## [4.0.15](https://github.com/salesforcecli/plugin-info/compare/4.0.14...4.0.15) (2026-10-09)
+
+### Bug Fixes
+
+- **deps:** bump source-map-js from 1.2.1 to 1.2.2 ([a5f5a8c](https://github.com/salesforcecli/plugin-info/commit/a5f5a8c6cc0167fb4fab27d74fbeb56483a61e94))
+
 ## [4.0.14](https://github.com/salesforcecli/plugin-info/compare/4.0.13...4.0.14) (2026-10-09)
 
 ### Bug Fixes
