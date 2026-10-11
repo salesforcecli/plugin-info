@@ -27,7 +27,7 @@
     "@salesforce/dev-scripts": "^15.0.0",
     "@salesforce/plugin-command-reference": "^3.1.133",
     "@salesforce/ts-sinon": "^1.4.36",
-    "@salesforce/ts-types": "^3.2.0",
+    "@salesforce/ts-types": "^3.2.1",
     "@types/chai": "^4.3.17",
     "@types/marked": "^4.0.8",
     "@types/marked-terminal": "^3.1.3",
