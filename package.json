@@ -9,7 +9,7 @@
   "dependencies": {
     "@inquirer/prompts": "^7.10.1",
     "@jsforce/jsforce-node": "^3.10.25",
-    "@oclif/core": "^5.0.0",
+    "@oclif/core": "^5.1.8",
     "@salesforce/core": "^9.1.11",
     "@salesforce/kit": "^4.0.1",
     "@salesforce/sf-plugins-core": "^13.0.4",
