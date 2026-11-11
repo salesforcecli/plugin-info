@@ -24,7 +24,7 @@
   "devDependencies": {
     "@oclif/plugin-command-snapshot": "^6.0.7",
     "@salesforce/cli-plugins-testkit": "^5.3.78",
-    "@salesforce/dev-scripts": "^15.0.0",
+    "@salesforce/dev-scripts": "^15.0.1",
     "@salesforce/plugin-command-reference": "^3.1.142",
     "@salesforce/ts-sinon": "^1.4.36",
     "@salesforce/ts-types": "^3.2.1",
@@ -38,7 +38,7 @@
     "@types/sinon-chai": "^3.2.12",
     "@types/which": "^3",
     "eslint": "^10.14.0",
-    "eslint-config-salesforce-typescript": "^6.0.0",
+    "eslint-config-salesforce-typescript": "^6.0.2",
     "eslint-plugin-sf-plugin": "^3.0.0",
     "oclif": "^5.0.2",
     "sinon-chai": "^3.7.0",
