@@ -1,3 +1,9 @@
+## [4.0.27](https://github.com/salesforcecli/plugin-info/compare/4.0.26...4.0.27) (2026-11-12)
+
+### Bug Fixes
+
+- **deps:** bump js-yaml from 3.14.1 to 3.15.2 ([bd08d59](https://github.com/salesforcecli/plugin-info/commit/bd08d59102f6107d00237b03d7c800f91423591c))
+
 ## [4.0.26](https://github.com/salesforcecli/plugin-info/compare/4.0.25...4.0.26) (2026-11-08)
 
 ### Bug Fixes
