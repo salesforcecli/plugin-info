@@ -1,0 +1,160 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$ref": "#/definitions/StatusResult",
+  "definitions": {
+    "StatusResult": {
+      "type": "object",
+      "properties": {
+        "config": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "string"
+              },
+              "location": {
+                "type": "string"
+              }
+            },
+            "required": ["value", "location"],
+            "additionalProperties": false
+          }
+        },
+        "targetOrg": {
+          "type": "object",
+          "properties": {
+            "username": {
+              "type": "string"
+            },
+            "alias": {
+              "type": "string"
+            },
+            "orgId": {
+              "type": "string"
+            },
+            "instanceUrl": {
+              "type": "string"
+            },
+            "isScratchOrg": {
+              "type": "boolean"
+            },
+            "isDevHub": {
+              "type": "boolean"
+            },
+            "isSandbox": {
+              "type": "boolean"
+            },
+            "tracksSource": {
+              "type": "boolean"
+            },
+            "expirationDate": {
+              "type": "string"
+            },
+            "error": {
+              "type": "string"
+            }
+          },
+          "required": ["username"],
+          "additionalProperties": false
+        },
+        "targetDevHub": {
+          "type": "object",
+          "properties": {
+            "username": {
+              "type": "string"
+            },
+            "alias": {
+              "type": "string"
+            },
+            "orgId": {
+              "type": "string"
+            },
+            "instanceUrl": {
+              "type": "string"
+            },
+            "isScratchOrg": {
+              "type": "boolean"
+            },
+            "isDevHub": {
+              "type": "boolean"
+            },
+            "isSandbox": {
+              "type": "boolean"
+            },
+            "tracksSource": {
+              "type": "boolean"
+            },
+            "expirationDate": {
+              "type": "string"
+            },
+            "error": {
+              "type": "string"
+            }
+          },
+          "required": ["username"],
+          "additionalProperties": false
+        },
+        "project": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "string"
+            },
+            "defaultPackagePath": {
+              "type": "string"
+            },
+            "packageDirectories": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "path": {
+                    "type": "string"
+                  },
+                  "default": {
+                    "type": "boolean"
+                  }
+                },
+                "required": ["path"],
+                "additionalProperties": false
+              }
+            },
+            "namespace": {
+              "type": "string"
+            },
+            "sourceApiVersion": {
+              "type": "string"
+            }
+          },
+          "required": ["path", "packageDirectories"],
+          "additionalProperties": false
+        },
+        "cli": {
+          "type": "object",
+          "properties": {
+            "version": {
+              "type": "string"
+            },
+            "node": {
+              "type": "string"
+            },
+            "os": {
+              "type": "string"
+            },
+            "shell": {
+              "type": "string"
+            },
+            "arch": {
+              "type": "string"
+            }
+          },
+          "required": ["version", "node", "arch"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["config", "cli"],
+      "additionalProperties": false
+    }
+  }
+}
